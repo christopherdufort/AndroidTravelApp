@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.android.bonvoyagetravelapp.MainActivity" >
+
+    <item
+        android:id="@+id/menu_dawson"
+        android:orderInCategory="100"
+        android:showAsAction="always"
+        android:title="@string/menu_dawson"/>
+    
+    <item
+        android:id="@+id/menu_about"
+        android:orderInCategory="100"
+        android:showAsAction="always"
+        android:title="@string/menu_about"/>
+
+</menu>

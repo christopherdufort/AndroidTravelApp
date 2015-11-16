@@ -1,0 +1,194 @@
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.android.bonvoyagetravelapp.MainActivity" >
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:scrollbars="none" >
+
+        <!-- TO BE ABLE TO SET SCROLLING VERTICAL -->
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+
+            <TableRow
+                android:id="@+id/tableRow1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+                
+                <ImageView 
+                    android:id="@+id/teamLogo"
+                    android:layout_width="fill_parent"
+                	android:layout_height="fill_parent"
+                	android:background="@drawable/bon_voyage"/>
+            </TableRow>
+            
+            <TableRow
+                android:id="@+id/tableRow2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:onClick="currentTripItinerary"
+                    android:padding="15px"
+                    android:src="@drawable/current_trip_itinerary_edited" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:onClick="today"
+                    android:paddingLeft="40px"
+                    android:paddingRight="15px"
+                    android:paddingTop="15px"
+                    android:paddingBottom="15px"
+                    android:src="@drawable/today_edited" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:onClick="tipCalculator"
+                    android:padding="15px"
+                    android:src="@drawable/tip_calculator_edited" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:onClick="distanceVolumeWeightConversion"
+                    android:paddingLeft="40px"
+                    android:paddingRight="15px"
+                    android:paddingTop="15px"
+                    android:paddingBottom="15px"
+                    android:src="@drawable/conversion_edited" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:onClick="nearMe"
+                    android:padding="15px"
+                    android:src="@drawable/whats_near_me_edited" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:onClick="weatherCheck"
+                    android:paddingLeft="40px"
+                    android:paddingRight="15px"
+                    android:paddingTop="15px"
+                    android:paddingBottom="15px"
+                    android:src="@drawable/weather_check_edited" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:onClick="currencyConversion"
+                    android:padding="15px"
+                    android:src="@drawable/currency_conversion_edited" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:onClick="budget"
+                    android:paddingLeft="40px"
+                    android:paddingRight="15px"
+                    android:paddingTop="15px"
+                    android:paddingBottom="15px"
+                    android:src="@drawable/budget_edited" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:onClick="localCustoms"
+                    android:padding="15px"
+                    android:src="@drawable/local_customs_edited" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:onClick="interets"
+                    android:paddingLeft="40px"
+                    android:paddingRight="15px"
+                    android:paddingTop="15px"
+                    android:paddingBottom="15px"
+                    android:src="@drawable/points_of_interest_edited" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow7"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <ImageButton
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@null"
+                    android:onClick="manageTrips"
+                    android:padding="15px"
+                    android:src="@drawable/manage_trips_edited" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow8"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+                
+                <TextView 
+                    android:id="@+id/greetingText"
+                    android:layout_width="fill_parent"
+                	android:layout_height="fill_parent"
+                	android:text="Hello PERSON!"
+                	android:textStyle="bold"
+                	android:textSize="80px"
+                	android:gravity="center"
+                	android:background="@drawable/text_background"/>
+            </TableRow>
+        </LinearLayout>
+    </ScrollView>
+
+</TableLayout>
