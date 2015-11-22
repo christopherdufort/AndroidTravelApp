@@ -42,7 +42,13 @@
     <string name="nameProblem">Your name must ONLY contain letters</string>
     
     <string name="aboutTitle">CREDITS</string>
-    <string name="aboutSchoolText">Institution:</string>
+    <string name="aboutSchoolText"><u>Institution:</u></string>
     <string name="aboutSchoolLink"><u>Dawson College</u></string>
+    <string name="aboutCourseText"><u>Project\'s Course Number:</u></string>
+    <string name="aboutCourseLink"><u>420-518-DW</u></string>
+    <string name="aboutAuthorsText"><u>Made By (Images lauch our wiki):</u></string>
+    <string name="aboutAuthor1">Annie So</string>
+    <string name="aboutAuthor2">Christopher Dufort</string>
+    <string name="aboutAuthor3">Irina Patrocinio Frazao</string>
 
 </resources>

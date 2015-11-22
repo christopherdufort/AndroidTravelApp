@@ -1,20 +1,10 @@
 package com.android.bonvoyagetravelapp;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.text.util.Linkify;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class AboutActivity extends Activity {
 
@@ -23,9 +13,21 @@ public class AboutActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.about_activity);
 	}
-	
-	public void dawsonWebPage(View view){
+
+	public void dawsonWebPage(View view) {
 		String url = "http://www.dawsoncollege.qc.ca/";
+		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+		startActivity(intent);
+	}
+
+	public void computerScienceWebPage(View view) {
+		String url = "http://www.dawsoncollege.qc.ca/computer-science-technology/";
+		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+		startActivity(intent);
+	}
+
+	public void launchWiki(View view) {
+		String url = "https://sites.google.com/site/bonvoyagetravelproject/";
 		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 		startActivity(intent);
 	}
