@@ -28,6 +28,9 @@
          
          <activity
              android:name=".AboutActivity"></activity>
+         
+         <activity
+             android:name=".ComingSoon"></activity>
         
     </application>
 

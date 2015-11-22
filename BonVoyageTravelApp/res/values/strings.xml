@@ -50,5 +50,7 @@
     <string name="aboutAuthor1">Annie So</string>
     <string name="aboutAuthor2">Christopher Dufort</string>
     <string name="aboutAuthor3">Irina Patrocinio Frazao</string>
+    
+    <string name="comingSoon">This feature will be coming soon!</string>
 
 </resources>

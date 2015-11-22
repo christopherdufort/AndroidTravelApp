@@ -111,4 +111,37 @@ public class MainActivity extends Activity {
 		Intent intent = new Intent(this, TipCalculator.class);
 		startActivity(intent);
 	}
+	
+	public void launchComingSoon(){
+		Intent intent = new Intent(this, ComingSoon.class);
+		startActivity(intent);
+	}
+	
+	public void nearMe(View view){
+		launchComingSoon();
+	}
+	
+	public void weatherCheck(View view){
+		launchComingSoon();
+	}
+	
+	public void currencyConversion(View view){
+		launchComingSoon();
+	}
+	
+	public void budget(View view){
+		launchComingSoon();
+	}
+	
+	public void localCustoms(View view){
+		launchComingSoon();
+	}
+	
+	public void interests(View view){
+		launchComingSoon();
+	}
+	
+	public void manageTrips(View view){
+		launchComingSoon();
+	}
 }
