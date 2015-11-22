@@ -40,5 +40,9 @@
     <string name="nameDialogInstruction">Please enter your name :)</string>
     <string name="okBtn">OK</string>
     <string name="nameProblem">Your name must ONLY contain letters</string>
+    
+    <string name="aboutTitle">CREDITS</string>
+    <string name="aboutSchoolText">Institution:</string>
+    <string name="aboutSchoolLink"><u>Dawson College</u></string>
 
 </resources>

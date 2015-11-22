@@ -25,6 +25,9 @@
         
          <activity
             android:name=".TipCalculator"></activity>
+         
+         <activity
+             android:name=".AboutActivity"></activity>
         
     </application>
 

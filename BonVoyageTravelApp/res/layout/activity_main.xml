@@ -30,7 +30,8 @@
                     android:id="@+id/teamLogo"
                     android:layout_width="fill_parent"
                 	android:layout_height="fill_parent"
-                	android:background="@drawable/bon_voyage"/>
+                	android:background="@drawable/bon_voyage"
+                	android:onClick="aboutActivity"/>
             </TableRow>
             
             <TableRow
