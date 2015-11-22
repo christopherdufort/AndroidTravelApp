@@ -182,7 +182,6 @@
                     android:id="@+id/greetingText"
                     android:layout_width="fill_parent"
                 	android:layout_height="fill_parent"
-                	android:text="Hello PERSON!"
                 	android:textStyle="bold"
                 	android:textSize="80px"
                 	android:gravity="center"
