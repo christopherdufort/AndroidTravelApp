@@ -112,6 +112,10 @@ public class MainActivity extends Activity {
 		startActivity(intent);
 	}
 	
+	public void distanceVolumeWeightConversion(View view) {
+		Intent intent = new Intent(this, UnitConversionActivity.class);
+		startActivity(intent);
+	}
 	public void launchComingSoon(){
 		Intent intent = new Intent(this, ComingSoon.class);
 		startActivity(intent);

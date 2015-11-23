@@ -1,0 +1,132 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.android.bonvoyagetravelapp.UnitConversionActivity" >
+    
+	<RadioGroup
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" 
+            android:id="@+id/unitConvertRadioGroup">
+
+            <RadioButton
+                android:id="@+id/radio_distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onUnitRadioButtonClicked"
+                android:text="@string/radio_distance"
+                android:checked="true" />
+
+            <RadioButton
+                android:id="@+id/radio_mass"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onUnitRadioButtonClicked"
+                android:text="@string/radio_mass" />
+
+            <RadioButton
+                android:id="@+id/radio_volume"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onUnitRadioButtonClicked"
+                android:text="@string/radio_volume" />
+    </RadioGroup>
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/value" />
+    <EditText
+        android:id="@+id/valueToConvert"
+        android:inputType="numberDecimal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/valueToConvertHint">
+	</EditText>
+	
+	<TextView
+	    android:id="@+id/valueToConvertError"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="" />
+	
+	<LinearLayout android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+        
+       	<TextView
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/from" />
+       	
+       	<Spinner
+            android:id="@+id/distanceFromSpinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/distance_spinner_choices"
+            android:prompt="@string/distance_spinner_prompt"
+            android:gravity="center" />
+	    
+    </LinearLayout>
+
+    <TextView
+       android:layout_width="fill_parent"
+       android:layout_height="wrap_content"
+       android:text="@string/convert"
+       android:gravity="center" />
+       
+    <LinearLayout android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+        
+       	<TextView
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/to" />
+       	
+       	<Spinner
+            android:id="@+id/distanceToSpinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/distance_spinner_choices"
+            android:prompt="@string/distance_spinner_prompt"
+            android:gravity="center" />
+	 
+    </LinearLayout>
+     
+     <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+       	
+	     <Button
+	        android:id="@+id/calculateDistance"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentRight="true"
+	        android:text="@string/calculate"
+	        android:onClick="convertUnits" />
+         
+     </RelativeLayout>    
+       
+	 <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/result" />
+	 
+	  <TextView
+	    android:id="@+id/resultShown"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="" />
+	 
+	 
+	    
+</LinearLayout>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="spinner_choices">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    
+   <string-array name="distance_spinner_choices">
+        <item>kilometer</item>
+        <item>meter</item>
+        <item>centimeter</item>
+        <item>milimeter</item>
+        <item>mile</item>
+        <item>yard</item>
+        <item>foot</item>
+        <item>inch</item>
+    </string-array>
+    
+	<string-array name="mass_spinner_choices">
+        <item>tonne</item>
+        <item>kilogram</item>
+        <item>gram</item>
+        <item>milligram</item>
+        <item>pound</item>
+        <item>ounce</item>
+    </string-array>
+    
+		<string-array name="volume_spinner_choices">
+        <item>gallon</item>
+        <item>liter</item>
+        <item>milliliter</item>
+        <item>ounce</item>
+        <item>pint</item>
+        <item>cup</item>
+        <item>tablespoon</item>
+        <item>teaspoon</item>
+        <item>quart</item>
+    </string-array>
+</resources>
