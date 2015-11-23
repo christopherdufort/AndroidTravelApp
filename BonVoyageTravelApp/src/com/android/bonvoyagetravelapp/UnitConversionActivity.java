@@ -108,10 +108,10 @@ public class UnitConversionActivity extends Activity {
 		else
 			valueToConvert = Double.parseDouble(textValueToConvert.getText().toString());
 		
-		List domainData = new DataLoader().loadData();
+		List<?> domainData = new DataLoader().loadData();
 		
         ConversionTypeData ctd = null;
-        Iterator iter = domainData.iterator();
+        Iterator<?> iter = domainData.iterator();
         while (iter.hasNext()) 
         {
             ConversionType type = (ConversionType) iter.next();

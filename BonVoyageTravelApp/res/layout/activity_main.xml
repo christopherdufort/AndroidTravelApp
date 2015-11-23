@@ -18,7 +18,7 @@
 
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical" >
 
             <TableRow
@@ -44,7 +44,7 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:onClick="currentTripItinerary"
-                    android:padding="15px"
+                    android:padding="15dp"
                     android:src="@drawable/current_trip_itinerary_edited" />
 
                 <ImageButton
@@ -52,10 +52,10 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:onClick="today"
-                    android:paddingLeft="40px"
-                    android:paddingRight="15px"
-                    android:paddingTop="15px"
-                    android:paddingBottom="15px"
+                    android:paddingLeft="40dp"
+                    android:paddingRight="15dp"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
                     android:src="@drawable/today_edited" />
             </TableRow>
 
@@ -69,7 +69,7 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:onClick="tipCalculator"
-                    android:padding="15px"
+                    android:padding="15dp"
                     android:src="@drawable/tip_calculator_edited" />
 
                 <ImageButton
@@ -77,10 +77,10 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:onClick="distanceVolumeWeightConversion"
-                    android:paddingLeft="40px"
-                    android:paddingRight="15px"
-                    android:paddingTop="15px"
-                    android:paddingBottom="15px"
+                    android:paddingLeft="40dp"
+                    android:paddingRight="15dp"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
                     android:src="@drawable/conversion_edited" />
             </TableRow>
 
@@ -94,7 +94,7 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:onClick="nearMe"
-                    android:padding="15px"
+                    android:padding="15dp"
                     android:src="@drawable/whats_near_me_edited" />
 
                 <ImageButton
@@ -102,10 +102,10 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:onClick="weatherCheck"
-                    android:paddingLeft="40px"
-                    android:paddingRight="15px"
-                    android:paddingTop="15px"
-                    android:paddingBottom="15px"
+                    android:paddingLeft="40dp"
+                    android:paddingRight="15dp"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
                     android:src="@drawable/weather_check_edited" />
             </TableRow>
 
@@ -119,7 +119,7 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:onClick="currencyConversion"
-                    android:padding="15px"
+                    android:padding="15dp"
                     android:src="@drawable/currency_conversion_edited" />
 
                 <ImageButton
@@ -127,10 +127,10 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:onClick="budget"
-                    android:paddingLeft="40px"
-                    android:paddingRight="15px"
-                    android:paddingTop="15px"
-                    android:paddingBottom="15px"
+                    android:paddingLeft="40dp"
+                    android:paddingRight="15dp"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
                     android:src="@drawable/budget_edited" />
             </TableRow>
 
@@ -144,7 +144,7 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:onClick="localCustoms"
-                    android:padding="15px"
+                    android:padding="15dp"
                     android:src="@drawable/local_customs_edited" />
 
                 <ImageButton
@@ -152,10 +152,10 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:onClick="interests"
-                    android:paddingLeft="40px"
-                    android:paddingRight="15px"
-                    android:paddingTop="15px"
-                    android:paddingBottom="15px"
+                    android:paddingLeft="40dp"
+                    android:paddingRight="15dp"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
                     android:src="@drawable/points_of_interest_edited" />
             </TableRow>
 
@@ -170,7 +170,7 @@
                     android:layout_gravity="center"
                     android:background="@null"
                     android:onClick="manageTrips"
-                    android:padding="15px"
+                    android:padding="15dp"
                     android:src="@drawable/manage_trips_edited" />
             </TableRow>
 
@@ -184,7 +184,7 @@
                     android:layout_width="fill_parent"
                 	android:layout_height="fill_parent"
                 	android:textStyle="bold"
-                	android:textSize="80px"
+                	android:textSize="80sp"
                 	android:gravity="center"
                 	android:background="@drawable/text_background"/>
             </TableRow>
