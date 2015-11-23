@@ -127,7 +127,6 @@ public class DBHelper extends SQLiteOpenHelper {
 		 * raw SQL.
 		 */
 		createPopulateDB(database);
-
 	}
 
 	/**
@@ -162,12 +161,31 @@ public class DBHelper extends SQLiteOpenHelper {
 	 * 
 	 * method creates database table called in onCreate() and in onUpdate()
 	 */
+	@SuppressWarnings("deprecation")
 	public void createPopulateDB(SQLiteDatabase database) {
 		try {
 			database.execSQL(CREATE_TRIPS_TABLE);
 			database.execSQL(CREATE_LOCATIONS_TABLE);
 			database.execSQL(CREATE_BUDGETED_EXPENSE_TABLE);
 			database.execSQL(CREATE_ACTUAL_EXPENSE_TABLE);
+
+			createTrip(1, "Trip 1", "The first trip");
+			createLocation(1, "Ile-de-France", "A French city", "Paris", "FR");
+			createBudgetedExpense(1, new Date(2015, 11, 23), new Date(2015, 11, 23), 750.00,
+					"Plane trip to destination", "Travel");
+			createBudgetedExpense(1, new Date(2015, 11, 23), new Date(2015, 11, 26), 700.00, "2 star hotel",
+					"Accomodation");
+			createBudgetedExpense(1, new Date(2015, 11, 24), new Date(2015, 11, 26), 300.00, "All meals",
+					"Food and drink");
+			createBudgetedExpense(1, new Date(2015, 11, 24), new Date(2015, 11, 26), 50.00, "Gift for mom", "Gifts");
+			createBudgetedExpense(1, new Date(2015, 11, 24), new Date(2015, 11, 26), 250.00, "All entertainment",
+					"Entertainment");
+			createBudgetedExpense(1, new Date(2015, 11, 23), new Date(2015, 11, 27), 100.00, "All taxis",
+					"Local Transport");
+			createBudgetedExpense(1, new Date(2015, 11, 27), new Date(2015, 11, 27), 750.00, "Plane trip back home",
+					"Travel");
+			createActualExpense(1, new Date(2015, 11, 23), new Date(2015, 11, 23), 750.00, "Plane trip to destination",
+					"Travel", "Air Canada", "Montreal-Pierre Elliot Trudeau International Airport");
 		} catch (SQLException e) {
 			Log.e(DBHelper.class.getName(), "CREATE exception" + Log.getStackTraceString(e));
 			throw e;
@@ -385,6 +403,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_DESCRIPTION, description);
 		cv.put(COLUMN_CITY, city);
 		cv.put(COLUMN_COUNTRY_CODE, countryCode);
+		cv.put(COLUMN_UPDATE_DATE, getDateTime(new Date()));
 
 		String whereClause = COLUMN_ID + " = ?";
 		String[] whereArgs = { String.valueOf(id) };
@@ -472,7 +491,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *            Id of the trip to delete.
 	 * @return The number of rows deleted.
 	 */
-	public int delteTrip(int id) {
+	public int deleteTrip(int id) {
 		String whereClause = COLUMN_ID + " = ?";
 		String[] whereArgs = { String.valueOf(id) };
 		return getReadableDatabase().delete(TABLE_TRIPS, whereClause, whereArgs);
