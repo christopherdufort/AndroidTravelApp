@@ -22,11 +22,32 @@ import android.widget.TextView;
 public class UnitConversionActivity extends Activity {
 
 	private String unitChoice = "Distance"; //default
+	private String resultToShow = "";
+	
+	private TextView resultView;
+	private Spinner from;
+	private Spinner to;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.unit_conversion_activity);
+		
+		// Single handle to each view.
+		from = (Spinner) findViewById(R.id.distanceFromSpinner);
+		to = (Spinner) findViewById(R.id.distanceToSpinner);
+		resultView = (TextView) findViewById(R.id.resultShown);
+		
+		//If there is a bundle (previously destroyed instance of activity)
+		if(savedInstanceState != null){
+			unitChoice= savedInstanceState.getString("UNIT");
+			
+			populateSpinners();
+			
+			resultToShow = savedInstanceState.getString("RESULT");
+			resultView.setText(resultToShow);
+					
+		}
 	}
 
 	@Override
@@ -47,6 +68,20 @@ public class UnitConversionActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	/**
+	 * This method is called when the instance of the activity is destroyed.
+	 * Save UI state changes to the savedInstanceState.
+	 * This bundle will be passed to onCreate if the process is
+	 * killed and restarted(rotate screen).
+	 */
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+	  super.onSaveInstanceState(savedInstanceState);
+	  
+	  savedInstanceState.putString("UNIT", unitChoice);
+	  savedInstanceState.putString("RESULT", resultToShow);
+	}
+
 	
 	/**
 	 * Implement this through tabs and fragments instead :)
@@ -108,6 +143,7 @@ public class UnitConversionActivity extends Activity {
 		else
 			valueToConvert = Double.parseDouble(textValueToConvert.getText().toString());
 		
+		//This chunk of code is used to retrieve conversion from the JConvert API
 		List<?> domainData = new DataLoader().loadData();
 		
         ConversionTypeData ctd = null;
@@ -120,15 +156,14 @@ public class UnitConversionActivity extends Activity {
                 ctd = new ConversionTypeData(type);
                 break;
             }
-        } 
-        TextView resultShown = (TextView) findViewById(R.id.resultShown);
-        
-        Spinner from = (Spinner) findViewById(R.id.distanceFromSpinner);
+        } // End of chunk.
+              
         String fromUnit = from.getSelectedItem().toString();
         
-        Spinner to = (Spinner) findViewById(R.id.distanceToSpinner);
         String toUnit = to.getSelectedItem().toString();
         
-        resultShown.setText(Double.toString(ctd.convert(valueToConvert, fromUnit, toUnit)));
+        resultToShow = Double.toString(ctd.convert(valueToConvert, fromUnit, toUnit));
+        
+        resultView.setText(resultToShow);
 	}
 }
