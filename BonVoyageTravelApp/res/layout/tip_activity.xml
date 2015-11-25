@@ -20,7 +20,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/tip_title"
-            android:textSize="16sp"
+            android:textSize="30sp"
+            android:layout_gravity="center"
             android:textStyle="bold" />
     </TableRow>
 
@@ -34,31 +35,20 @@
             android:id="@+id/billTotalText"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:gravity="center"
+            android:gravity="start"
             android:text="@string/bill_total_text"
-            android:textSize="14sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <EditText
             android:id="@+id/billTotalAmount"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+            android:layout_height="fill_parent"
+            android:inputType="numberDecimal"
+            android:gravity="end">
         </EditText>
     </TableRow>
-    
-    <TableRow
-        android:id="@+id/billErrorRow"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/billErrorText"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:gravity="center"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-   </TableRow>
+ 
 
     <TableRow
         android:id="@+id/percentagesRow"
@@ -70,16 +60,17 @@
             android:id="@+id/percentagesText"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:gravity="center"
+            android:gravity="start"
             android:text="@string/tip_percentages"
-            android:textSize="14sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <RadioGroup
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal" 
-            android:id="@+id/radioGroup">
+            android:id="@+id/radioGroup"
+            android:gravity="end">
 
             <RadioButton
                 android:id="@+id/radio_ten"
@@ -115,9 +106,9 @@
             android:id="@+id/numberOfPeopleText"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:gravity="center"
+            android:gravity="start"
             android:text="@string/tip_people"
-            android:textSize="14sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <Spinner
@@ -126,7 +117,7 @@
             android:layout_height="wrap_content"
             android:entries="@array/spinner_choices"
             android:prompt="@string/spinner_prompt"
-            android:gravity="center" />
+            android:gravity="end"/>
     </TableRow>
 
     <TableRow
@@ -134,7 +125,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:padding="10sp" >
+        android:padding="30sp" >
 
         <Button
             android:id="@+id/calculateBtn"
@@ -155,18 +146,18 @@
             android:id="@+id/tipTotalText"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:gravity="center"
+            android:gravity="start"
             android:text="@string/tip_total_text"
-            android:textSize="14sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tipTotalAmount"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:gravity="center"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:gravity="end"
+            android:textSize="20sp"
+            android:text="@string/defaultPrice" />
 
     </TableRow>
 
@@ -180,18 +171,18 @@
             android:id="@+id/finalPriceText"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:gravity="center"
+            android:gravity="start"
             android:text="@string/final_price_text"
-            android:textSize="14sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/finalPriceAmount"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:gravity="center"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:gravity="end"
+            android:textSize="20sp"
+            android:text="@string/defaultPrice" />
 
     </TableRow>
 
@@ -205,18 +196,35 @@
             android:id="@+id/eachPersonText"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:gravity="center"
+            android:gravity="start"
             android:text="@string/each_person_text"
-            android:textSize="14sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/eachPersonAmount"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-             android:gravity="center"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:gravity="end"
+            android:textSize="20sp"
+            android:text="@string/defaultPrice" />
     </TableRow>
+    
+       
+    <TableRow
+        android:id="@+id/billErrorRow"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/billErrorText"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/red" />
+   </TableRow>
 
 </TableLayout>

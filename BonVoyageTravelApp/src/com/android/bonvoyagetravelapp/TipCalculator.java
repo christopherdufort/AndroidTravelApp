@@ -1,7 +1,10 @@
 package com.android.bonvoyagetravelapp;
 
+import java.text.DecimalFormat;
+
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -11,7 +14,16 @@ public class TipCalculator extends Activity {
 
 	// default
 	private double percentage = 10.0;
+
 	private TextView error;
+	private TextView tipTotal;
+	private TextView priceTotal;
+	private TextView eachPersonBill;
+
+	private double dividedPrice;
+	private double finalPrice;
+	private double tipTotalAmount;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +31,30 @@ public class TipCalculator extends Activity {
 		setContentView(R.layout.tip_activity);
 		
 		error = (TextView) findViewById(R.id.billErrorText);
+		tipTotal = (TextView) findViewById(R.id.tipTotalAmount);
+		priceTotal = (TextView) findViewById(R.id.finalPriceAmount);
+		eachPersonBill = (TextView) findViewById(R.id.eachPersonAmount);
+
+		if (savedInstanceState != null) {
+			tipTotalAmount = savedInstanceState.getDouble("tipTotal");
+			dividedPrice = savedInstanceState.getDouble("eachPersonBill");
+			finalPrice = savedInstanceState.getDouble("priceTotal");
+			percentage = savedInstanceState.getDouble("percentage");
+			
+			tipTotal.setText("" + tipTotalAmount);
+			priceTotal.setText("" + finalPrice);
+			eachPersonBill.setText("" + dividedPrice);
+		}
+	}
+
+	protected void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+
+		savedInstanceState.putDouble("eachPersonBill", dividedPrice);
+		savedInstanceState.putDouble("priceTotal", finalPrice);
+		savedInstanceState.putDouble("tipTotal", tipTotalAmount);
+		savedInstanceState.putDouble("percentage", percentage);
+
 	}
 
 	public void onRadioButtonClicked(View view) {
@@ -49,41 +85,21 @@ public class TipCalculator extends Activity {
 			Spinner people = (Spinner) findViewById(R.id.peopleSpinner);
 			double numberOfPeople = Double.parseDouble(people.getSelectedItem().toString());
 
-			double tipTotalAmount = calculateTipTotal(billAmount);
-			double finalPrice = calculateFinalPrice(billAmount, tipTotalAmount);
-			calculateEachPersonBill(finalPrice, numberOfPeople);
-			
+			// calculate the total of the tip
+			tipTotalAmount = (percentage * billAmount) / 100.0;
+			tipTotal.setText("$" + tipTotalAmount);
+
+			// calculate final price
+			finalPrice = billAmount + tipTotalAmount;
+			priceTotal.setText("$" + finalPrice);
+
+			// calculate each persons bill
+			dividedPrice = finalPrice / numberOfPeople;
+			eachPersonBill.setText("$" + Double.valueOf(new DecimalFormat("#.##").format(dividedPrice)));
+
 		} catch (NumberFormatException nfe) {
 			error.setText("Your bill amount must be a Number");
 		}
-	}
-
-	private void calculateEachPersonBill(double finalPrice, double numberOfPeople) {
-		TextView eachPersonBill = (TextView) findViewById(R.id.eachPersonAmount);
-
-		double dividedPrice = finalPrice / numberOfPeople;
-
-		eachPersonBill.setText("" + dividedPrice + "$");
-	}
-
-	private double calculateFinalPrice(double billAmount, double tipTotalAmount) {
-		TextView priceTotal = (TextView) findViewById(R.id.finalPriceAmount);
-
-		double finalPrice = billAmount + tipTotalAmount;
-
-		priceTotal.setText("" + finalPrice + "$");
-
-		return finalPrice;
-	}
-
-	private double calculateTipTotal(double billAmount) {
-		TextView tipTotal = (TextView) findViewById(R.id.tipTotalAmount);
-
-		double tipTotalAmount = (percentage * billAmount) / 100.0;
-
-		tipTotal.setText("" + tipTotalAmount + "$");
-
-		return tipTotalAmount;
 	}
 
 }

@@ -6,7 +6,6 @@
     <string name="menu_about">About</string>
 
     <!-- Start tipping calculator -->
-
     <string name="tip_title">Tip Calculator</string>
     <string name="bill_total_text">Bill Total:</string>
     <string name="tip_percentages">Tip Percentage:</string>
@@ -20,9 +19,10 @@
     <string name="tip_total_text">Tip total:</string>
     <string name="final_price_text">Final price:</string>
     <string name="each_person_text">Each person will pay:</string>
-
+    <string name="defaultPrice">0.0</string>
     <!-- End tipping calculator -->
-
+    
+    <!-- Start about activity -->
     <string name="nameDialogTitle">First time!</string>
     <string name="nameDialogInstruction">Please enter your name :)</string>
     <string name="okBtn">OK</string>
@@ -40,7 +40,8 @@
     <string name="title_activity_unit_conversion">Unit Conversion</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-
+	<!-- End about activity -->
+    
     <!-- Start Unit Conversion -->
     <string name="radio_distance">Distance</string>
     <string name="radio_mass">Mass</string>
