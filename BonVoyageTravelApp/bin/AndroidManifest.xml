@@ -28,6 +28,8 @@
         </activity>
         <activity android:name=".ComingSoon" >
         </activity>
+        <activity android:name=".WeatherCheckActivity" >
+        </activity>
 
         <!-- Android:name may need to be changed, "BonVoyage Android API Key" created Nov 22,2015 -->
         <meta-data
@@ -39,5 +41,9 @@
             android:label="@string/title_activity_unit_conversion" >
         </activity>
     </application>
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
 </manifest>

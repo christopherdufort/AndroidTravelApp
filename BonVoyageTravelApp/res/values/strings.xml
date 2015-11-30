@@ -57,4 +57,15 @@
     
     <string name="distance_spinner_prompt">Select a Unit of Measurement.</string>
     <!-- End Unit Conversion -->
+    
+    <!-- Start weather Check -->
+    <string name="weatherCheckTitle"><u>Weather Forecast</u></string>
+    <string name="general"><u>General Weather:</u></string>
+    <string name="description"><u>Detailed Description:</u></string>
+    <string name="temperature"><u>Temperature:</u></string>
+    <string name="min_temperature"><u>Minimum Temperature:</u></string>
+    <string name="max_temperature"><u>Maximum Temperature:</u></string>
+    <string name="humidity"><u>Humidity:</u></string>
+    <string name="pressure"><u>Pressure:</u></string> 
+    <!-- End weather Check -->
 </resources>

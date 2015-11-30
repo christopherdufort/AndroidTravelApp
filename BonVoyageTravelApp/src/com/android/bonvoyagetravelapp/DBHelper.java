@@ -67,7 +67,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	private static final String CREATE_BUDGETED_EXPENSES_TABLE = "create table " + TABLE_BUDGETED_EXPENSES + "( " + 
 			COLUMN_ID + " integer primary key autoincrement, " + 
-			COLUMN_TRIP_ID + "integer not null, " +
+			COLUMN_TRIP_ID + " integer not null, " +
 			COLUMN_LOCATION_ID + " integer not null, " + 
 			COLUMN_PLANNED_ARRIVAL_DATE + " text not null, " + 
 			COLUMN_PLANNED_DEPARTURE_DATE + " text not null, " + 
@@ -75,14 +75,14 @@ public class DBHelper extends SQLiteOpenHelper {
 			COLUMN_DESCRIPTION + " text not null, " + 
 			COLUMN_CATEGORY_ID + " integer not null, " + 
 			COLUMN_NAME_OF_SUPPLIER + "text not null, " + 
-			COLUMN_ADDRESS + "text not null, " + 
+			COLUMN_ADDRESS + " text not null, " + 
 			"foreign key (" + COLUMN_TRIP_ID + ") references " + TABLE_TRIPS + " (" + COLUMN_ID + ") on delete cascade, " +
 			"foreign key (" + COLUMN_LOCATION_ID + ") references " + TABLE_LOCATIONS + " (" + COLUMN_ID + "), " + 
 			"foreign key (" + COLUMN_CATEGORY_ID + ") references " + TABLE_CATEGORIES + " (" + COLUMN_ID + "));";
 
 	private static final String CREATE_ACTUAL_EXPENSES_TABLE = "create table " + TABLE_ACTUAL_EXPENSES + "( " + 
 			COLUMN_ID + " integer primary key autoincrement, " + 
-			COLUMN_BUDGETED_ID + "integer not null, " +
+			COLUMN_BUDGETED_ID + " integer not null, " +
 			COLUMN_ARRIVAL_DATE + " text not null, " + 
 			COLUMN_DEPARTURE_DATE + " text not null, " + 
 			COLUMN_AMOUNT + " real not null, " + 
@@ -90,8 +90,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			COLUMN_CATEGORY_ID + " integer not null, " + 
 			COLUMN_NAME_OF_SUPPLIER + " text not null, " + 
 			COLUMN_ADDRESS + " text not null, " + 
-			COLUMN_STARS + "integer not null, " +
-			"foreign key (" + COLUMN_BUDGETED_ID + ") references " + TABLE_BUDGETED_EXPENSES + " (" + COLUMN_ID + ") on delete cascade), " +
+			COLUMN_STARS + " integer not null, " +
+			"foreign key (" + COLUMN_BUDGETED_ID + ") references " + TABLE_BUDGETED_EXPENSES + " (" + COLUMN_ID + ") on delete cascade, " +
 			"foreign key (" + COLUMN_CATEGORY_ID + ") references " + TABLE_CATEGORIES + " (" + COLUMN_ID + "));";
 
 	// Static instance to share DBHelper
@@ -151,7 +151,9 @@ public class DBHelper extends SQLiteOpenHelper {
 		 * this is one of the few places where it is not an horrific idea to use
 		 * raw SQL.
 		 */
+		Log.d("debug", "running!!!!!!!!!!!!!!");
 		createPopulateDB(database);
+		
 	}
 
 	/**
@@ -189,33 +191,40 @@ public class DBHelper extends SQLiteOpenHelper {
 	 */
 	public void createPopulateDB(SQLiteDatabase database) {
 		try {
+
 			database.execSQL(CREATE_TRIPS_TABLE);
 			database.execSQL(CREATE_LOCATIONS_TABLE);
 			database.execSQL(CREATE_CATEGORIES_TABLE);
 			database.execSQL(CREATE_BUDGETED_EXPENSES_TABLE);
 			database.execSQL(CREATE_ACTUAL_EXPENSES_TABLE);
 
-			/*createTrip(1, "Trip 1", "The first trip");
-			createLocation("Ile-de-France", "A French city", "Paris", "FR");
+			createCategory("Accomodation");
+			createCategory("Food And Drink");
+			createCategory("Gifts");
+			createCategory("Transport");
+			createCategory("Entertainment");
+			
+			createTrip(1, "Trip 1", "The first trip");
+			createLocation("Paris", "FR", "Ile-de-France");
 			createBudgetedExpense(1, 1, LocalDateTime.of(2015, 11, 23, 12, 0), LocalDateTime.of(2015, 11, 23, 12, 0),
-					750.00, "Plane trip to destination", "Travel", "Air Canadan",
+					750.00, "Plane trip to destination", 4, "Air Canada",
 					"Montreal-Pierre Elliot Trudeau International Airport");
 			createBudgetedExpense(1, 1, LocalDateTime.of(2015, 11, 23, 12, 0), LocalDateTime.of(2015, 11, 26, 120, 0),
-					700.00, "2 star hotel", "Accomodation", "Some hotel", "Hotel's address");
+					700.00, "2 star hotel", 1, "Hotel Supplier", "Hotel's address");
 			createBudgetedExpense(1, 1, LocalDateTime.of(2015, 11, 24, 12, 0), LocalDateTime.of(2015, 11, 26, 12, 0),
-					300.00, "All meals", "Food and drink", "Some restaurant", "Some restaurant's address");
+					300.00, "All meals", 2, "Food And drink supplier", "Some restaurant's address");
 			createBudgetedExpense(1, 1, LocalDateTime.of(2015, 11, 24, 12, 0), LocalDateTime.of(2015, 11, 26, 12, 0),
-					50.00, "Gift for mom", "Gifts", "Go shopping", "Shopping here");
+					50.00, "Gift for mom", 3, "Gift supplier", "Shopping here");
 			createBudgetedExpense(1, 1, LocalDateTime.of(2015, 11, 24, 12, 0), LocalDateTime.of(2015, 11, 26, 12, 0),
-					250.00, "All entertainment", "Entertainment", "Museums and stuff", "Here's a museum");
+					250.00, "All entertainment", 5, "Entertainment Supplier", "Here's a museum");
 			createBudgetedExpense(1, 1, LocalDateTime.of(2015, 11, 23, 12, 0), LocalDateTime.of(2015, 11, 27, 12, 0),
-					100.00, "All taxis", "Local Transport", "A taxi company", "There is no address");
+					100.00, "All taxis", 4, "Local Transport Supplier", "There is no address");
 			createBudgetedExpense(1, 1, LocalDateTime.of(2015, 11, 27, 12, 0), LocalDateTime.of(2015, 11, 27, 12, 0),
-					750.00, "Plane trip back home", "Travel", "Air Canada",
+					750.00, "Plane trip back home", 4, "Air Canada",
 					"Montreal-Pierre Elliot Trudeau International Airport");
 			createActualExpense(1, LocalDateTime.of(2015, 11, 23, 12, 0), LocalDateTime.of(2015, 11, 23, 12, 0), 750.00,
-					"Plane trip to destination", "Travel", "Air Canada",
-					"Montreal-Pierre Elliot Trudeau International Airport");*/
+					"Plane trip to destination", 4, "Air Canada",
+					"Montreal-Pierre Elliot Trudeau International Airport", 5);
 		} catch (SQLException e) {
 			Log.e(DBHelper.class.getName(), "CREATE exception" + Log.getStackTraceString(e));
 			throw e;
@@ -378,6 +387,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	 * @return A cursor of all the locations.
 	 */
 	public Cursor getLocations() {
+		Log.d("debug", "in get locations!!");
 		return getReadableDatabase().query(TABLE_LOCATIONS, null, null, null, null, null, null);
 	}
 	
@@ -440,6 +450,15 @@ public class DBHelper extends SQLiteOpenHelper {
 		String whereClause = COLUMN_BUDGETED_ID + " = ?";
 		String[] whereArgs = { String.valueOf(budgetedId) };
 		return getReadableDatabase().query(TABLE_BUDGETED_EXPENSES, null, whereClause, whereArgs, null, null, null);
+	}
+	
+	public Cursor getLocationIdWithTripId(String tripId){
+		String whereClause = COLUMN_TRIP_ID + " = ?";
+		String[] whereArgs = { String.valueOf(tripId) };
+		String[] columns = {COLUMN_LOCATION_ID};
+		
+		return getReadableDatabase().query
+				(TABLE_BUDGETED_EXPENSES, columns, whereClause, whereArgs, null, null, null);
 	}
 	
 	/**
