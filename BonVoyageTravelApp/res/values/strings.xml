@@ -67,9 +67,18 @@
     <string name="max_temperature"><u>Maximum Temperature:</u></string>
     <string name="humidity"><u>Humidity:</u></string>
     <string name="pressure"><u>Pressure:</u></string> 
+    <string name="wind"><u>Wind Speed:</u></string>
     <!-- End weather Check -->
     
-    <!-- Start Currency Conversion -->
+    <!-- Start Manage Trips -->
+    <string name="title_activity_manage_trips">Manage Trips</string>
+    <string name="all_trips_for">All Trips For:</string>
+    <string name="sync_trips">Sync Trips</string>
+    <!-- End Manage Trips -->
+
+    <string name="title_activity_itinerary">Itinerary</string>
+    
+     <!-- Start Currency Conversion -->
     <string name="currency_title">Currency Conversion</string>
     <string name="equals">=</string>
     <!-- End Currency Conversion -->

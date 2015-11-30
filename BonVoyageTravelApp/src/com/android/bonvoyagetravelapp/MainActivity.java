@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 
 import android.app.Activity;
@@ -137,6 +138,11 @@ public class MainActivity extends Activity {
 		Intent intent = new Intent(this, ComingSoon.class);
 		startActivity(intent);
 	}
+	
+	public void weatherCheck(View view) {
+		Intent intent = new Intent(this, WeatherCheckActivity.class);
+		startActivity(intent);
+	}
 
 	public void nearMe(View view) {
 		launchComingSoon();
@@ -160,118 +166,9 @@ public class MainActivity extends Activity {
 	}
 
 	public void manageTrips(View view) {
-		launchComingSoon();
+		Intent intent = new Intent(this, ManageTripsActivity.class);
+		startActivity(intent);
 	}
 
-	@SuppressWarnings("unused")
-	public void weatherCheck(View view) {
-		//String tripId = prefs.getString("current", null);
-		String tripId = null;
 
-		if (tripId != null) {
-			// there is a current trip(last edited/viewed)
-			// zero indexed???
-			//TODO: ERROR FIX ME
-			
-			 Cursor locationIdCursor = dbh.getLocationIdWithTripId(tripId);
-			 int locationId = locationIdCursor.getInt(0);
-			 
-			 Cursor fullLocaltionCursor = dbh.getLocationById(locationId);
-			 String country = fullLocaltionCursor.getString(1);
-			 String code = fullLocaltionCursor.getString(2);
-			 
-			 launchWeatherAPI(0.0,0.0,country,code);
-			
-		} else {
-			// no current trip
-			// take weather with device location
-			LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-			String locationProvider = LocationManager.NETWORK_PROVIDER;
-			Location lastLocation = locationManager.getLastKnownLocation(locationProvider);
-			
-			Log.d("MainActivity", lastLocation + "");
-			Log.d("MainActivity", lastLocation.getLongitude() + "");
-			Log.d("MainActivity", lastLocation.getLatitude() + "");
-
-			launchWeatherAPI(lastLocation.getLatitude(), lastLocation.getLongitude(), null, null);
-		}
-	}
-
-	private void launchWeatherAPI(double lat, double lon, String country, String code) {
-		String url = "";
-		String appId = "e857fa3cafcae16ad142b30675ad2cff";
-
-		if (country != null) {
-			// from db
-			url = "http://api.openweathermap.org/data/2.5/weather?q=" + country + "," + code + "&appid=" + appId
-					+ "&units=metric";
-		} else {
-			// from device
-			url = "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=" + appId
-					+ "&units=metric";
-		}
-
-		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-
-		if (networkInfo != null && networkInfo.isConnected()) {
-			// calls preExecute()
-			new DownloadWeatherData().execute(url);
-
-		}
-	}
-
-	private class DownloadWeatherData extends AsyncTask<String, Void, String> {
-
-		protected void onPostExecute(String result) {
-			Intent intent = new Intent(context, WeatherCheckActivity.class);
-			intent.putExtra("download", result);
-			startActivity(intent);
-		}
-
-		@Override
-		protected String doInBackground(String... params) {
-
-			InputStream input;
-			HttpURLConnection conn;
-
-			try {
-				URL url = new URL(params[0]);
-				// create and open the connection
-				conn = (HttpURLConnection) url.openConnection();
-
-				conn.setRequestMethod("GET");
-
-				// specifies whether this connection allows receiving data
-				conn.setDoInput(true);
-
-				// Starts the query
-				conn.connect();
-
-				int responseCode = conn.getResponseCode();
-
-				if (responseCode != HttpURLConnection.HTTP_OK)
-					return "Server returned: " + responseCode + " aborting read.";
-
-				// get the stream for the data from the website
-				input = conn.getInputStream();
-
-				// read the stream
-				char[] buffer = new char[1000];
-				BufferedReader reader = new BufferedReader(new InputStreamReader(input, "UTF-8"));
-				reader.read(buffer);
-
-				// goes to onPOstExecute()
-				return new String(buffer);
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				// input.close();
-				// conn.disconnect();
-			}
-			return null;
-		}
-
-	} // end of private class
 }

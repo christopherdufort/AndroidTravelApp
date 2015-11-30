@@ -10,12 +10,13 @@
     tools:context="com.android.bonvoyagetravelapp.MainActivity" >
 
     <TextView
+        android:id="@+id/weatherTitle"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:gravity="start"
         android:padding="20sp"
         android:text="@string/weatherCheckTitle"
-        android:textSize="25sp"
+        android:textSize="20sp"
         android:textStyle="bold" />
 
     <LinearLayout
@@ -45,14 +46,14 @@
             android:layout_height="fill_parent"
             android:padding="20sp"
             android:text="@string/general"
-            android:textSize="15sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/generalDescriptionValue"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:padding="20sp"
-            android:textSize="15sp" />
+            android:textSize="20sp" />
     </LinearLayout>
     
     <LinearLayout
@@ -67,14 +68,14 @@
             android:layout_height="fill_parent"
             android:padding="20sp"
             android:text="@string/description"
-            android:textSize="15sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/detailedDescriptionValue"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:padding="20sp"
-            android:textSize="15sp" />
+            android:textSize="20sp" />
     </LinearLayout>
     
     <LinearLayout
@@ -89,14 +90,14 @@
             android:layout_height="fill_parent"
             android:padding="20sp"
             android:text="@string/temperature"
-            android:textSize="15sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/temperatureValue"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:padding="20sp"
-            android:textSize="15sp" />
+            android:textSize="20sp" />
     </LinearLayout>
     
     <LinearLayout
@@ -111,14 +112,14 @@
             android:layout_height="fill_parent"
             android:padding="20sp"
             android:text="@string/min_temperature"
-            android:textSize="15sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/temperatureMinValue"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:padding="20sp"
-            android:textSize="15sp" />
+            android:textSize="20sp" />
     </LinearLayout>
     
     <LinearLayout
@@ -133,14 +134,14 @@
             android:layout_height="fill_parent"
             android:padding="20sp"
             android:text="@string/max_temperature"
-            android:textSize="15sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/temperatureMaxValue"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:padding="20sp"
-            android:textSize="15sp" />
+            android:textSize="20sp" />
     </LinearLayout>
     
     <LinearLayout
@@ -155,14 +156,14 @@
             android:layout_height="fill_parent"
             android:padding="20sp"
             android:text="@string/humidity"
-            android:textSize="15sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/humidityValue"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:padding="20sp"
-            android:textSize="15sp" />
+            android:textSize="20sp" />
     </LinearLayout>
     
     <LinearLayout
@@ -177,14 +178,14 @@
             android:layout_height="fill_parent"
             android:padding="20sp"
             android:text="@string/pressure"
-            android:textSize="15sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/pressureValue"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:padding="20sp"
-            android:textSize="15sp" />
+            android:textSize="20sp" />
     </LinearLayout>
     
     <LinearLayout
@@ -198,15 +199,15 @@
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:padding="20sp"
-            android:text="@string/pressure"
-            android:textSize="15sp" />
+            android:text="@string/wind"
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/speedValue"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:padding="20sp"
-            android:textSize="15sp" />
+            android:textSize="20sp" />
     </LinearLayout>
 
 </LinearLayout>

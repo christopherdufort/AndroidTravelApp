@@ -1,7 +1,8 @@
 package com.android.bonvoyagetravelapp;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -119,6 +120,67 @@ public class DBHelper extends SQLiteOpenHelper {
 		return dbh;
 	} // getDBHelper()
 
+	//Android doesn't support JDK 8 so we can't use LocalDateTime
+	@SuppressWarnings("deprecation")
+	public void seedDB(SQLiteDatabase db) {
+		db.execSQL("INSERT INTO " + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY + ") VALUES('Accomodation')");
+		db.execSQL("INSERT INTO " + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY + ") VALUES('Food And Drink')");
+		db.execSQL("INSERT INTO " + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY + ") VALUES('Gifts')");
+		db.execSQL("INSERT INTO " + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY + ") VALUES('Transport')");
+		db.execSQL("INSERT INTO " + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY + ") VALUES('Entertainment')");
+
+		db.execSQL("INSERT INTO " + TABLE_TRIPS + "(" + COLUMN_TRIP_ID + ", " + COLUMN_NAME + ", " + COLUMN_DESCRIPTION
+				+ ", " + COLUMN_CREATED_ON + ") VALUES(1, 'Trip 1', 'The first trip', "
+				+ getDateTime(new Date()) + ")");
+		
+		Log.d("a date",getDateTime(new Date()));
+
+		db.execSQL("INSERT INTO " + TABLE_LOCATIONS + "(" + COLUMN_CITY + ", " + COLUMN_COUNTRY_CODE + ", "
+				+ COLUMN_PROVINCE + ") VALUES('Paris', 'FR', 'Ile-de-France')");
+
+		
+		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,1, 1,"
+				+ getDateTime(new Date(2015, 11, 23, 12, 0, 0)) + " , "
+				+ getDateTime(new Date(2015, 11, 23, 12, 0, 0))
+				+ ",750.00, 'Plane trip to destination', 4, 'Air Canada',	'Montreal-Pierre Elliot Trudeau International Airport')");
+
+		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,1, 1, "
+				+ getDateTime(new Date(2015, 11, 23, 12, 0, 0)) + " , "
+				+ getDateTime(new Date(2015, 11, 26, 120, 0, 0))
+				+ ",700.00, '2 star hotel', 1, 'Hotel Supplier',	'Hotels address')");
+
+		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,1, 1, "
+				+ getDateTime(new Date(2015, 11, 24, 12, 0, 0)) + " , "
+				+ getDateTime(new Date(2015, 11, 26, 12, 0, 0))
+				+ ",300.00, 'All meals', 2, 'Food And drink supplier', 'Some restaurant address')");
+
+		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,1, 1, "
+				+ getDateTime(new Date(2015, 11, 24, 12, 0, 0)) + " , "
+				+ getDateTime(new Date(2015, 11, 26, 12, 0, 0))
+				+ ",50.00, 'Gift for mom', 3, 'Gift supplier', 'Shopping here')");
+
+		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,1, 1, "
+				+ getDateTime(new Date(2015, 11, 24, 12, 0,0)) + " , "
+				+ getDateTime(new Date(2015, 11, 26, 12, 0,0))
+				+ ",250.00, 'All entertainment', 5, 'Entertainment Supplier', 'Here be a museum')");
+
+		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,1, 1, "
+				+ getDateTime(new Date(2015, 11, 23, 12, 0,0)) + " , "
+				+ getDateTime(new Date(2015, 11, 27, 12, 0,0))
+				+ ",100.00, 'All taxis', 4, 'Local Transport Supplier', 'There is no address')");
+
+		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,1, 1, "
+				+ getDateTime(new Date(2015, 11, 27, 12, 0,0)) + " , "
+				+ getDateTime(new Date(2015, 11, 27, 12, 0,0))
+				+ ",750.00, 'Plane trip back home', 4, 'Air Canada', 'Montreal-Pierre Elliot Trudeau International Airport')");
+
+		db.execSQL("INSERT INTO " + TABLE_ACTUAL_EXPENSES + " VALUES(null,1, "
+				+ getDateTime(new Date(2015, 11, 23, 12, 0,0)) + " , "
+				+ getDateTime(new Date(2015, 11, 23, 12, 0,0))
+				+ ",750.00, 'Plane trip to destination', 4, 'Air Canada', 'Montreal-Pierre Elliot Trudeau International Airport', 5)");
+
+	}
+
 	/**
 	 * onCreate()
 	 * 
@@ -135,7 +197,6 @@ public class DBHelper extends SQLiteOpenHelper {
 		 * this is one of the few places where it is not an horrific idea to use
 		 * raw SQL.
 		 */
-		Log.d("debug", "running!!!!!!!!!!!!!!");
 		createPopulateDB(database);
 
 	}
@@ -182,33 +243,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			database.execSQL(CREATE_BUDGETED_EXPENSES_TABLE);
 			database.execSQL(CREATE_ACTUAL_EXPENSES_TABLE);
 
-			createCategory("Accomodation");
-			createCategory("Food And Drink");
-			createCategory("Gifts");
-			createCategory("Transport");
-			createCategory("Entertainment");
+			seedDB(database);
 
-			createTrip(1, "Trip 1", "The first trip");
-			createLocation("Paris", "FR", "Ile-de-France");
-			createBudgetedExpense(1, 1, LocalDateTime.of(2015, 11, 23, 12, 0), LocalDateTime.of(2015, 11, 23, 12, 0),
-					750.00, "Plane trip to destination", 4, "Air Canada",
-					"Montreal-Pierre Elliot Trudeau International Airport");
-			createBudgetedExpense(1, 1, LocalDateTime.of(2015, 11, 23, 12, 0), LocalDateTime.of(2015, 11, 26, 120, 0),
-					700.00, "2 star hotel", 1, "Hotel Supplier", "Hotel's address");
-			createBudgetedExpense(1, 1, LocalDateTime.of(2015, 11, 24, 12, 0), LocalDateTime.of(2015, 11, 26, 12, 0),
-					300.00, "All meals", 2, "Food And drink supplier", "Some restaurant's address");
-			createBudgetedExpense(1, 1, LocalDateTime.of(2015, 11, 24, 12, 0), LocalDateTime.of(2015, 11, 26, 12, 0),
-					50.00, "Gift for mom", 3, "Gift supplier", "Shopping here");
-			createBudgetedExpense(1, 1, LocalDateTime.of(2015, 11, 24, 12, 0), LocalDateTime.of(2015, 11, 26, 12, 0),
-					250.00, "All entertainment", 5, "Entertainment Supplier", "Here's a museum");
-			createBudgetedExpense(1, 1, LocalDateTime.of(2015, 11, 23, 12, 0), LocalDateTime.of(2015, 11, 27, 12, 0),
-					100.00, "All taxis", 4, "Local Transport Supplier", "There is no address");
-			createBudgetedExpense(1, 1, LocalDateTime.of(2015, 11, 27, 12, 0), LocalDateTime.of(2015, 11, 27, 12, 0),
-					750.00, "Plane trip back home", 4, "Air Canada",
-					"Montreal-Pierre Elliot Trudeau International Airport");
-			createActualExpense(1, LocalDateTime.of(2015, 11, 23, 12, 0), LocalDateTime.of(2015, 11, 23, 12, 0), 750.00,
-					"Plane trip to destination", 4, "Air Canada",
-					"Montreal-Pierre Elliot Trudeau International Airport", 5);
 		} catch (SQLException e) {
 			Log.e(DBHelper.class.getName(), "CREATE exception" + Log.getStackTraceString(e));
 			throw e;
@@ -232,7 +268,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_TRIP_ID, tripId);
 		cv.put(COLUMN_NAME, name);
 		cv.put(COLUMN_DESCRIPTION, description);
-		cv.put(COLUMN_CREATED_ON, getDateTime(LocalDateTime.now()));
+		cv.put(COLUMN_CREATED_ON, getDateTime(new Date()));
 
 		long code = getWritableDatabase().insert(TABLE_TRIPS, null, cv);
 		return code;
@@ -299,8 +335,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *            Address of the budgeted expense.
 	 * @return Id of the newly inserted row or -1 if there was an error.
 	 */
-	public long createBudgetedExpense(int tripId, int locationId, LocalDateTime plannedArrivalDate,
-			LocalDateTime plannedDepartureDate, double amount, String description, int categoryId,
+	public long createBudgetedExpense(int tripId, int locationId, Date plannedArrivalDate,
+			Date plannedDepartureDate, double amount, String description, int categoryId,
 			String nameOfSupplier, String address) {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_TRIP_ID, tripId);
@@ -340,7 +376,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *            Rating of the supplier of the actual expense.
 	 * @return Id of the newly inserted row or -1 if there was an error.
 	 */
-	public long createActualExpense(int budgetedId, LocalDateTime arrivalDate, LocalDateTime departureDate,
+	public long createActualExpense(int budgetedId, Date arrivalDate, Date departureDate,
 			double amount, String description, int categoryId, String nameOfSupplier, String address, int stars) {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_BUDGETED_ID, budgetedId);
@@ -462,7 +498,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_NAME, name);
 		cv.put(COLUMN_DESCRIPTION, description);
-		cv.put(COLUMN_UPDATED_ON, getDateTime(LocalDateTime.now()));
+		cv.put(COLUMN_UPDATED_ON, getDateTime(new Date()));
 
 		String whereClause = COLUMN_ID + " = ?";
 		String[] whereArgs = { String.valueOf(id) };
@@ -518,7 +554,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *            Address of the budgeted expense.
 	 * @return The number of rows updated.
 	 */
-	public int updateBudgetedExpense(int id, LocalDateTime plannedArrivalDate, LocalDateTime plannedDepartureDate,
+	public int updateBudgetedExpense(int id, Date plannedArrivalDate, Date plannedDepartureDate,
 			double amount, String description, int categoryId, String nameOfSupplier, String address) {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_PLANNED_ARRIVAL_DATE, getDateTime(plannedArrivalDate));
@@ -559,7 +595,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *            Rating of the supplier of the actual expense.
 	 * @return The number of rows updated.
 	 */
-	public int updateActualExpense(int id, LocalDateTime arrivalDate, LocalDateTime departureDate, double amount,
+	public int updateActualExpense(int id, Date arrivalDate, Date departureDate, double amount,
 			String description, int categoryId, String nameOfSupplier, String address, int stars) {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_ARRIVAL_DATE, getDateTime(arrivalDate));
@@ -651,8 +687,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *            The date that you want to format into a string.
 	 * @return The formated string.
 	 */
-	private String getDateTime(LocalDateTime date) {
-		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		return dateFormat.format(date);
+	private String getDateTime(Date date) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+		return "'" + dateFormat.format(date) + "'";
 	}
 }
