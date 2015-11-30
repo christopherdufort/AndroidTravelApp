@@ -68,4 +68,9 @@
     <string name="humidity"><u>Humidity:</u></string>
     <string name="pressure"><u>Pressure:</u></string> 
     <!-- End weather Check -->
+    
+    <!-- Start Currency Conversion -->
+    <string name="currency_title">Currency Conversion</string>
+    <string name="equals">=</string>
+    <!-- End Currency Conversion -->
 </resources>

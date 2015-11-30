@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
 
 import android.app.Activity;
@@ -144,7 +143,8 @@ public class MainActivity extends Activity {
 	}
 
 	public void currencyConversion(View view) {
-		launchComingSoon();
+		Intent intent = new Intent(this,CurrencyConversion.class);
+		startActivity(intent);
 	}
 
 	public void budget(View view) {
@@ -166,7 +166,7 @@ public class MainActivity extends Activity {
 	@SuppressWarnings("unused")
 	public void weatherCheck(View view) {
 		//String tripId = prefs.getString("current", null);
-		String tripId = "1";
+		String tripId = null;
 
 		if (tripId != null) {
 			// there is a current trip(last edited/viewed)
@@ -188,6 +188,10 @@ public class MainActivity extends Activity {
 			LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 			String locationProvider = LocationManager.NETWORK_PROVIDER;
 			Location lastLocation = locationManager.getLastKnownLocation(locationProvider);
+			
+			Log.d("MainActivity", lastLocation + "");
+			Log.d("MainActivity", lastLocation.getLongitude() + "");
+			Log.d("MainActivity", lastLocation.getLatitude() + "");
 
 			launchWeatherAPI(lastLocation.getLatitude(), lastLocation.getLongitude(), null, null);
 		}

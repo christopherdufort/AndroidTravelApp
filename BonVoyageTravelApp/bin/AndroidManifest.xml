@@ -40,6 +40,9 @@
             android:name=".UnitConversionActivity"
             android:label="@string/title_activity_unit_conversion" >
         </activity>
+        
+        <activity android:name=".CurrencyConversion" >
+        </activity>
     </application>
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
