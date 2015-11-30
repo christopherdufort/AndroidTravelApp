@@ -47,52 +47,36 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	// Database creation raw SQL statement
 	// TODO: Choose a data type for the dates
-	private static final String CREATE_TRIPS_TABLE = "create table " + TABLE_TRIPS + "( " + 
-			COLUMN_ID + " integer primary key autoincrement, " + 
-			COLUMN_TRIP_ID + " integer not null, " + 
-			COLUMN_CREATED_ON + " text not null, " + 
-			COLUMN_UPDATED_ON + " text, " + 
-			COLUMN_NAME + " text not null, " + 
-			COLUMN_DESCRIPTION + " text);";
-	
-	private static final String CREATE_LOCATIONS_TABLE = "create table " + TABLE_LOCATIONS + "( " + 
-			COLUMN_ID + " integer primary key autoincrement, " + 
-			COLUMN_CITY + " text not null, " + 
-			COLUMN_COUNTRY_CODE + " text not null, " +
-			COLUMN_PROVINCE + " text);";
-	
-	private static final String CREATE_CATEGORIES_TABLE = "create table " + TABLE_CATEGORIES + "( "+
-			COLUMN_ID + " integer primary key autoincrement, " +
-			COLUMN_CATEGORY + " text not null);";
+	private static final String CREATE_TRIPS_TABLE = "create table " + TABLE_TRIPS + "( " + COLUMN_ID
+			+ " integer primary key autoincrement, " + COLUMN_TRIP_ID + " integer not null, " + COLUMN_CREATED_ON
+			+ " text not null, " + COLUMN_UPDATED_ON + " text, " + COLUMN_NAME + " text not null, " + COLUMN_DESCRIPTION
+			+ " text);";
 
-	private static final String CREATE_BUDGETED_EXPENSES_TABLE = "create table " + TABLE_BUDGETED_EXPENSES + "( " + 
-			COLUMN_ID + " integer primary key autoincrement, " + 
-			COLUMN_TRIP_ID + " integer not null, " +
-			COLUMN_LOCATION_ID + " integer not null, " + 
-			COLUMN_PLANNED_ARRIVAL_DATE + " text not null, " + 
-			COLUMN_PLANNED_DEPARTURE_DATE + " text not null, " + 
-			COLUMN_AMOUNT + " real not null, " + 
-			COLUMN_DESCRIPTION + " text not null, " + 
-			COLUMN_CATEGORY_ID + " integer not null, " + 
-			COLUMN_NAME_OF_SUPPLIER + "text not null, " + 
-			COLUMN_ADDRESS + " text not null, " + 
-			"foreign key (" + COLUMN_TRIP_ID + ") references " + TABLE_TRIPS + " (" + COLUMN_ID + ") on delete cascade, " +
-			"foreign key (" + COLUMN_LOCATION_ID + ") references " + TABLE_LOCATIONS + " (" + COLUMN_ID + "), " + 
-			"foreign key (" + COLUMN_CATEGORY_ID + ") references " + TABLE_CATEGORIES + " (" + COLUMN_ID + "));";
+	private static final String CREATE_LOCATIONS_TABLE = "create table " + TABLE_LOCATIONS + "( " + COLUMN_ID
+			+ " integer primary key autoincrement, " + COLUMN_CITY + " text not null, " + COLUMN_COUNTRY_CODE
+			+ " text not null, " + COLUMN_PROVINCE + " text);";
 
-	private static final String CREATE_ACTUAL_EXPENSES_TABLE = "create table " + TABLE_ACTUAL_EXPENSES + "( " + 
-			COLUMN_ID + " integer primary key autoincrement, " + 
-			COLUMN_BUDGETED_ID + " integer not null, " +
-			COLUMN_ARRIVAL_DATE + " text not null, " + 
-			COLUMN_DEPARTURE_DATE + " text not null, " + 
-			COLUMN_AMOUNT + " real not null, " + 
-			COLUMN_DESCRIPTION + " text not null, " + 
-			COLUMN_CATEGORY_ID + " integer not null, " + 
-			COLUMN_NAME_OF_SUPPLIER + " text not null, " + 
-			COLUMN_ADDRESS + " text not null, " + 
-			COLUMN_STARS + " integer not null, " +
-			"foreign key (" + COLUMN_BUDGETED_ID + ") references " + TABLE_BUDGETED_EXPENSES + " (" + COLUMN_ID + ") on delete cascade, " +
-			"foreign key (" + COLUMN_CATEGORY_ID + ") references " + TABLE_CATEGORIES + " (" + COLUMN_ID + "));";
+	private static final String CREATE_CATEGORIES_TABLE = "create table " + TABLE_CATEGORIES + "( " + COLUMN_ID
+			+ " integer primary key autoincrement, " + COLUMN_CATEGORY + " text not null);";
+
+	private static final String CREATE_BUDGETED_EXPENSES_TABLE = "create table " + TABLE_BUDGETED_EXPENSES + "( "
+			+ COLUMN_ID + " integer primary key autoincrement, " + COLUMN_TRIP_ID + " integer not null, "
+			+ COLUMN_LOCATION_ID + " integer not null, " + COLUMN_PLANNED_ARRIVAL_DATE + " text not null, "
+			+ COLUMN_PLANNED_DEPARTURE_DATE + " text not null, " + COLUMN_AMOUNT + " real not null, "
+			+ COLUMN_DESCRIPTION + " text not null, " + COLUMN_CATEGORY_ID + " integer not null, "
+			+ COLUMN_NAME_OF_SUPPLIER + "text not null, " + COLUMN_ADDRESS + " text not null, " + "foreign key ("
+			+ COLUMN_TRIP_ID + ") references " + TABLE_TRIPS + " (" + COLUMN_ID + ") on delete cascade, "
+			+ "foreign key (" + COLUMN_LOCATION_ID + ") references " + TABLE_LOCATIONS + " (" + COLUMN_ID + "), "
+			+ "foreign key (" + COLUMN_CATEGORY_ID + ") references " + TABLE_CATEGORIES + " (" + COLUMN_ID + "));";
+
+	private static final String CREATE_ACTUAL_EXPENSES_TABLE = "create table " + TABLE_ACTUAL_EXPENSES + "( "
+			+ COLUMN_ID + " integer primary key autoincrement, " + COLUMN_BUDGETED_ID + " integer not null, "
+			+ COLUMN_ARRIVAL_DATE + " text not null, " + COLUMN_DEPARTURE_DATE + " text not null, " + COLUMN_AMOUNT
+			+ " real not null, " + COLUMN_DESCRIPTION + " text not null, " + COLUMN_CATEGORY_ID + " integer not null, "
+			+ COLUMN_NAME_OF_SUPPLIER + " text not null, " + COLUMN_ADDRESS + " text not null, " + COLUMN_STARS
+			+ " integer not null, " + "foreign key (" + COLUMN_BUDGETED_ID + ") references " + TABLE_BUDGETED_EXPENSES
+			+ " (" + COLUMN_ID + ") on delete cascade, " + "foreign key (" + COLUMN_CATEGORY_ID + ") references "
+			+ TABLE_CATEGORIES + " (" + COLUMN_ID + "));";
 
 	// Static instance to share DBHelper
 	private static DBHelper dbh = null;
@@ -153,7 +137,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		 */
 		Log.d("debug", "running!!!!!!!!!!!!!!");
 		createPopulateDB(database);
-		
+
 	}
 
 	/**
@@ -203,7 +187,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			createCategory("Gifts");
 			createCategory("Transport");
 			createCategory("Entertainment");
-			
+
 			createTrip(1, "Trip 1", "The first trip");
 			createLocation("Paris", "FR", "Ile-de-France");
 			createBudgetedExpense(1, 1, LocalDateTime.of(2015, 11, 23, 12, 0), LocalDateTime.of(2015, 11, 23, 12, 0),
@@ -253,7 +237,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		long code = getWritableDatabase().insert(TABLE_TRIPS, null, cv);
 		return code;
 	}
-	
+
 	/**
 	 * Creates a new location. Only used when pulling down information from the
 	 * PHP server. Cannot create new locations within the app.
@@ -296,7 +280,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	 * Creates a new budgeted expense.
 	 * 
 	 * @param tripId
-	 * 			  Id of the trip this budgeted expense belongs to.
+	 *            Id of the trip this budgeted expense belongs to.
 	 * @param locationId
 	 *            Id of the location this budgeted expense takes place in.
 	 * @param plannedArrivalDate
@@ -310,13 +294,14 @@ public class DBHelper extends SQLiteOpenHelper {
 	 * @param categoryId
 	 *            Id of the category of the budgeted expense.
 	 * @param nameOfSupplier
-	 * 			  Name of the supplier of the budgeted expense.
+	 *            Name of the supplier of the budgeted expense.
 	 * @param address
-	 * 			  Address of the budgeted expense.
+	 *            Address of the budgeted expense.
 	 * @return Id of the newly inserted row or -1 if there was an error.
 	 */
-	public long createBudgetedExpense(int tripId, int locationId, LocalDateTime plannedArrivalDate, LocalDateTime plannedDepartureDate,
-			double amount, String description, int categoryId, String nameOfSupplier, String address) {
+	public long createBudgetedExpense(int tripId, int locationId, LocalDateTime plannedArrivalDate,
+			LocalDateTime plannedDepartureDate, double amount, String description, int categoryId,
+			String nameOfSupplier, String address) {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_TRIP_ID, tripId);
 		cv.put(COLUMN_LOCATION_ID, locationId);
@@ -355,8 +340,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *            Rating of the supplier of the actual expense.
 	 * @return Id of the newly inserted row or -1 if there was an error.
 	 */
-	public long createActualExpense(int budgetedId, LocalDateTime arrivalDate, LocalDateTime departureDate, double amount,
-			String description, int categoryId, String nameOfSupplier, String address, int stars) {
+	public long createActualExpense(int budgetedId, LocalDateTime arrivalDate, LocalDateTime departureDate,
+			double amount, String description, int categoryId, String nameOfSupplier, String address, int stars) {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_BUDGETED_ID, budgetedId);
 		cv.put(COLUMN_ARRIVAL_DATE, getDateTime(arrivalDate));
@@ -380,7 +365,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public Cursor getAllTrips() {
 		return getReadableDatabase().query(TABLE_TRIPS, null, null, null, null, null, null);
 	}
-	
+
 	/**
 	 * Gets all the locations.
 	 * 
@@ -390,7 +375,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		Log.d("debug", "in get locations!!");
 		return getReadableDatabase().query(TABLE_LOCATIONS, null, null, null, null, null, null);
 	}
-	
+
 	/**
 	 * Gets the location with the specified id.
 	 * 
@@ -403,16 +388,16 @@ public class DBHelper extends SQLiteOpenHelper {
 		String[] whereArgs = { String.valueOf(id) };
 		return getReadableDatabase().query(TABLE_LOCATIONS, null, whereClause, whereArgs, null, null, null);
 	}
-	
+
 	/**
 	 * Gets all the categories.
 	 * 
 	 * @return A Cursor of all the categories.
 	 */
-	public Cursor getCategories(){
+	public Cursor getCategories() {
 		return getReadableDatabase().query(TABLE_CATEGORIES, null, null, null, null, null, null, null);
 	}
-	
+
 	/**
 	 * Gets the category with the specified id.
 	 * 
@@ -430,7 +415,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	 * Gets all the budgeted expenses for a certain location.
 	 * 
 	 * @param tripId
-	 *           Id of the trip to get the budgeted expenses of.
+	 *            Id of the trip to get the budgeted expenses of.
 	 * @return A cursor of all the budgeted expenses for a certain trip.
 	 */
 	public Cursor getBudgetedExpenses(int tripId) {
@@ -451,16 +436,17 @@ public class DBHelper extends SQLiteOpenHelper {
 		String[] whereArgs = { String.valueOf(budgetedId) };
 		return getReadableDatabase().query(TABLE_BUDGETED_EXPENSES, null, whereClause, whereArgs, null, null, null);
 	}
-	
-	public Cursor getLocationIdWithTripId(String tripId){
+
+	public Cursor getLocationIdWithTripId(String tripId) {
 		String whereClause = COLUMN_TRIP_ID + " = ?";
 		String[] whereArgs = { String.valueOf(tripId) };
-		String[] columns = {COLUMN_LOCATION_ID};
-		
-		return getReadableDatabase().query
-				(TABLE_BUDGETED_EXPENSES, columns, whereClause, whereArgs, null, null, null);
+		String[] columns = { COLUMN_LOCATION_ID };
+
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cursor = db.query(TABLE_BUDGETED_EXPENSES, columns, whereClause, whereArgs, null, null, null);
+		return cursor;
 	}
-	
+
 	/**
 	 * Updates a trip.
 	 * 
@@ -494,7 +480,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *            City of the location.
 	 * @param countryCode
 	 *            Country code of the location.
-	 * @param province Province of the location
+	 * @param province
+	 *            Province of the location
 	 * @return The number of rows updated.
 	 */
 	public int updateLocation(int id, String city, String countryCode, String province) {
@@ -526,13 +513,13 @@ public class DBHelper extends SQLiteOpenHelper {
 	 * @param categoryId
 	 *            Id of the category of the budgeted expense.
 	 * @param nameOfSupplier
-	 * 			  Name of the supplier of the budgeted expense.
+	 *            Name of the supplier of the budgeted expense.
 	 * @param address
-	 * 			  Address of the budgeted expense.
+	 *            Address of the budgeted expense.
 	 * @return The number of rows updated.
 	 */
-	public int updateBudgetedExpense(int id, LocalDateTime plannedArrivalDate, LocalDateTime plannedDepartureDate, double amount,
-			String description, int categoryId, String nameOfSupplier, String address) {
+	public int updateBudgetedExpense(int id, LocalDateTime plannedArrivalDate, LocalDateTime plannedDepartureDate,
+			double amount, String description, int categoryId, String nameOfSupplier, String address) {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_PLANNED_ARRIVAL_DATE, getDateTime(plannedArrivalDate));
 		cv.put(COLUMN_PLANNED_DEPARTURE_DATE, getDateTime(plannedDepartureDate));
@@ -568,11 +555,12 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *            Name of the supplier of the actual expense.
 	 * @param address
 	 *            Address of the actual expense.
-	 * @param stars Rating of the supplier of the actual expense.
+	 * @param stars
+	 *            Rating of the supplier of the actual expense.
 	 * @return The number of rows updated.
 	 */
-	public int updateActualExpense(int id, LocalDateTime arrivalDate, LocalDateTime departureDate, double amount, String description,
-			int categoryId, String nameOfSupplier, String address, int stars) {
+	public int updateActualExpense(int id, LocalDateTime arrivalDate, LocalDateTime departureDate, double amount,
+			String description, int categoryId, String nameOfSupplier, String address, int stars) {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_ARRIVAL_DATE, getDateTime(arrivalDate));
 		cv.put(COLUMN_DEPARTURE_DATE, getDateTime(departureDate));
@@ -615,7 +603,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		String[] whereArgs = { String.valueOf(id) };
 		return getReadableDatabase().delete(TABLE_LOCATIONS, whereClause, whereArgs);
 	}
-	
+
 	/**
 	 * Deletes a category.
 	 * 

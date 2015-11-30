@@ -33,14 +33,14 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 
 	private SharedPreferences prefs;
-	//private DBHelper dbh;
+	private DBHelper dbh;
 	private Context context;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		//dbh = DBHelper.getDBHelper(this);
+		dbh = DBHelper.getDBHelper(this);
 		context = this;
 
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -165,20 +165,26 @@ public class MainActivity extends Activity {
 
 	@SuppressWarnings("unused")
 	public void weatherCheck(View view) {
-		Log.d("debug", "in method");
-		String tripId = null;
-		// String tripId = prefs.getString("current", null);
+		//String tripId = prefs.getString("current", null);
+		String tripId = "1";
 
 		if (tripId != null) {
-			Log.d("debug", "in if");
 			// there is a current trip(last edited/viewed)
-			//TODO ERROR WITH DB
-			//Cursor cursor = dbh.getLocations();
-			//Toast.makeText(this, "number of elements: " + dbh.getDatabaseName(), Toast.LENGTH_SHORT).show();
-		} else{
+			// zero indexed???
+			//TODO: ERROR FIX ME
+			
+			 Cursor locationIdCursor = dbh.getLocationIdWithTripId(tripId);
+			 int locationId = locationIdCursor.getInt(0);
+			 
+			 Cursor fullLocaltionCursor = dbh.getLocationById(locationId);
+			 String country = fullLocaltionCursor.getString(1);
+			 String code = fullLocaltionCursor.getString(2);
+			 
+			 launchWeatherAPI(0.0,0.0,country,code);
+			
+		} else {
 			// no current trip
 			// take weather with device location
-			Log.d("debug", "in else");
 			LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 			String locationProvider = LocationManager.NETWORK_PROVIDER;
 			Location lastLocation = locationManager.getLastKnownLocation(locationProvider);
@@ -193,18 +199,21 @@ public class MainActivity extends Activity {
 
 		if (country != null) {
 			// from db
+			url = "http://api.openweathermap.org/data/2.5/weather?q=" + country + "," + code + "&appid=" + appId
+					+ "&units=metric";
 		} else {
 			// from device
-			url = "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" 
-						+ lon + "&appid=" + appId + "&units=metric";
+			url = "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=" + appId
+					+ "&units=metric";
+		}
 
-			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
-			if (networkInfo != null && networkInfo.isConnected()) {
-				// calls preExecute()
-				new DownloadWeatherData().execute(url);
-			}
+		if (networkInfo != null && networkInfo.isConnected()) {
+			// calls preExecute()
+			new DownloadWeatherData().execute(url);
+
 		}
 	}
 
