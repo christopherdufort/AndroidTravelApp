@@ -6,8 +6,10 @@ import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +18,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 public class ItineraryActivity extends Activity {
 
@@ -23,17 +26,32 @@ public class ItineraryActivity extends Activity {
 	private ListView lv;
 	private DBHelper dbh;
 	private SimpleCursorAdapter sca;
+	private SharedPreferences prefs;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_itinerary);
 		dbh=DBHelper.getDBHelper(this);
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		
 		Intent intent = getIntent();
 		if(intent.hasExtra("TRIPID")){
 			tripId = intent.getExtras().getInt("TRIPID");
 		}
+		else{
+			tripId = prefs.getInt("CURRENTTRIP", -1);
+			TextView title = (TextView) findViewById(R.id.trip_itinerary_title);
+			//TODO replace with @String reference
+			title.setText("Current Trip Itinerary");
+		}
+		
+
+		
+		//store this id in shared prefs for current itinerary.
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putInt("CURRENTTRIP", tripId);
+		editor.commit();
 		
 		// Setup multiple unique click events available for tasks shown.
 		setUpListeners();
