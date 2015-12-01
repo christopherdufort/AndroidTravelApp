@@ -7,13 +7,11 @@
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="21" />
-    
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-    
-    
-    
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -48,7 +46,6 @@
             android:name=".UnitConversionActivity"
             android:label="@string/title_activity_unit_conversion" >
         </activity>
-        
         <activity
             android:name=".ManageTripsActivity"
             android:label="@string/title_activity_manage_trips" >
@@ -56,7 +53,11 @@
         <activity
             android:name=".ItineraryActivity"
             android:label="@string/title_activity_itinerary" >
-    	</activity>
-	</application>
+        </activity>
+        <activity
+            android:name=".ItineraryDetails"
+            android:label="@string/title_activity_itinerary_details" >
+        </activity>
+    </application>
 
 </manifest>

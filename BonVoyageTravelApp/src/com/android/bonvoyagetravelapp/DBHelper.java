@@ -11,6 +11,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.SimpleCursorAdapter;
 
 public class DBHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "itinerary.db";

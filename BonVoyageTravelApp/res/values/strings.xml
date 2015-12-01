@@ -14,14 +14,14 @@
     <string name="tip_twenty">20%</string>
     <string name="tip_people">Number of people to split the bill:</string>
     <string name="spinner_prompt">How many people will pay the bill?</string>
-
     <string name="calculate_button">Calculate Tip</string>
     <string name="tip_total_text">Tip total:</string>
     <string name="final_price_text">Final price:</string>
     <string name="each_person_text">Each person will pay:</string>
     <string name="defaultPrice">0.0</string>
     <!-- End tipping calculator -->
-    
+
+
     <!-- Start about activity -->
     <string name="nameDialogTitle">First time!</string>
     <string name="nameDialogInstruction">Please enter your name :)</string>
@@ -40,13 +40,13 @@
     <string name="title_activity_unit_conversion">Unit Conversion</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-	<!-- End about activity -->
-    
+    <!-- End about activity -->
+
+
     <!-- Start Unit Conversion -->
     <string name="radio_distance">Distance</string>
     <string name="radio_mass">Mass</string>
     <string name="radio_volume">Volume</string>
-    
     <string name="value">Value:</string>
     <string name="from">From:</string>
     <string name="convert">Convert</string>
@@ -54,10 +54,10 @@
     <string name="valueToConvertHint">Value you wish to convert</string>
     <string name="calculate">Calculate</string>
     <string name="result">Result:</string>
-    
     <string name="distance_spinner_prompt">Select a Unit of Measurement.</string>
     <!-- End Unit Conversion -->
-    
+
+
     <!-- Start weather Check -->
     <string name="weatherCheckTitle"><u>Weather Forecast</u></string>
     <string name="general"><u>General Weather:</u></string>
@@ -66,20 +66,30 @@
     <string name="min_temperature"><u>Minimum Temperature:</u></string>
     <string name="max_temperature"><u>Maximum Temperature:</u></string>
     <string name="humidity"><u>Humidity:</u></string>
-    <string name="pressure"><u>Pressure:</u></string> 
+    <string name="pressure"><u>Pressure:</u></string>
     <string name="wind"><u>Wind Speed:</u></string>
     <!-- End weather Check -->
-    
+
+
     <!-- Start Manage Trips -->
     <string name="title_activity_manage_trips">Manage Trips</string>
     <string name="all_trips_for">All Trips For:</string>
     <string name="sync_trips">Sync Trips</string>
     <!-- End Manage Trips -->
 
+
+    <!-- Start Itinerary -->
     <string name="title_activity_itinerary">Itinerary</string>
-    
-     <!-- Start Currency Conversion -->
+    <string name="create_itinerary">Add an new Itinerary</string>
+    <string name="trip_itinerary_for">Trip Itinerary For:</string>
+    <!-- End Itinerary -->
+
+
+    <!-- Start Currency Conversion -->
     <string name="currency_title">Currency Conversion</string>
     <string name="equals">=</string>
     <!-- End Currency Conversion -->
+    
+    <string name="title_activity_itinerary_details">Details of Itinerary</string>
+
 </resources>

@@ -70,8 +70,8 @@ public class ManageTripsActivity extends Activity {
 	private void setUpListeners() {
 		lv =(ListView) findViewById(R.id.listViewAllTrips);
 		
-		String[] from = { DBHelper.COLUMN_NAME};
-		int[] to = { R.id.text_view_trip};
+		String[] from = { DBHelper.COLUMN_NAME, DBHelper.COLUMN_DESCRIPTION};
+		int[] to = { R.id.text_view_trip_name, R.id.text_view_trip_description};
 		
 		Cursor cursor = dbh.getAllTrips();
 
@@ -85,10 +85,11 @@ public class ManageTripsActivity extends Activity {
 			public void onItemClick(AdapterView<?> parent,View view, int position, long id) {
 				Cursor cursortemp = (Cursor) parent.getItemAtPosition(position);
 
-				int idDB = cursortemp.getInt(0);
+				int tripId= cursortemp.getInt(0);
 				
-				//Intent intent = new Intent(this,ItineraryActivity.class);
-				//startActivity(intent);
+				Intent intent = new Intent(getApplicationContext(),ItineraryActivity.class);
+				intent.putExtra("TRIPID", tripId);
+				startActivity(intent);
 			}
 		});
 	}
