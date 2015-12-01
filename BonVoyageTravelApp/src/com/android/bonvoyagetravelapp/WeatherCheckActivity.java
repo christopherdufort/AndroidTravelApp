@@ -14,8 +14,10 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -51,13 +53,11 @@ public class WeatherCheckActivity extends Activity {
 	}
 
 	private void getWeather() {
-		int tripId = 1;
-		//int tripId = prefs.getInt("current", -1);
+		int tripId = prefs.getInt("current", -1);
+		//int tripId = 1;
 
 		if (tripId != -1) {
 			// there is a current trip(last edited/viewed)
-			// TODO: ERROR FIX ME
-
 			Cursor locationIdCursor = dbh.getLocationIdWithTripId("" + tripId);
 			locationIdCursor.moveToFirst();
 			int locationId = locationIdCursor.getInt(locationIdCursor.getColumnIndex(DBHelper.COLUMN_LOCATION_ID));
@@ -65,7 +65,8 @@ public class WeatherCheckActivity extends Activity {
 			Cursor fullLocaltionCursor = dbh.getLocationById(locationId);
 			fullLocaltionCursor.moveToFirst();
 			String country = fullLocaltionCursor.getString(fullLocaltionCursor.getColumnIndex(DBHelper.COLUMN_CITY));
-			String code = fullLocaltionCursor.getString(fullLocaltionCursor.getColumnIndex(DBHelper.COLUMN_COUNTRY_CODE));
+			String code = fullLocaltionCursor
+					.getString(fullLocaltionCursor.getColumnIndex(DBHelper.COLUMN_COUNTRY_CODE));
 
 			launchWeatherAPI(0.0, 0.0, country, code);
 
@@ -73,11 +74,37 @@ public class WeatherCheckActivity extends Activity {
 			// no current trip
 			// take weather with device location
 			LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
 			String locationProvider = LocationManager.NETWORK_PROVIDER;
 			Location lastLocation = locationManager.getLastKnownLocation(locationProvider);
 
-			launchWeatherAPI(lastLocation.getLatitude(), lastLocation.getLongitude(), null, null);
+			if (lastLocation != null)
+			{
+				Log.d("WORKS", "location is not null");
+				launchWeatherAPI(lastLocation.getLatitude(), lastLocation.getLongitude(), null, null);
+			}
+			else {
+				//the device might not have a last known location all the time
+				LocationListener listener = new myLocationListener();
+				locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
+			}
 		}
+	}
+
+	private class myLocationListener implements LocationListener
+	{
+		@Override
+		public void onLocationChanged(Location location) {
+			Log.d("WORKS", "From private class");
+			launchWeatherAPI(location.getLatitude(), location.getLongitude(), null, null);
+		}
+
+		@Override
+		public void onProviderDisabled(String provider) { /*nothing here*/ }
+		@Override
+		public void onProviderEnabled(String provider) { /*nothing here*/ }
+		@Override
+		public void onStatusChanged(String provider, int status, Bundle extras) { /*nothing here*/ }
 	}
 
 	private void launchWeatherAPI(double lat, double lon, String country, String code) {
@@ -108,7 +135,7 @@ public class WeatherCheckActivity extends Activity {
 		protected void onPostExecute(String result) {
 
 			if (result.equals("")) {
-				 ((TextView)findViewById(R.id.weatherTitle)).setText("Unable to Connect.");
+				((TextView) findViewById(R.id.weatherTitle)).setText("Unable to Connect.");
 			} else {
 				parseResults(result);
 				assignText();
@@ -161,7 +188,6 @@ public class WeatherCheckActivity extends Activity {
 					e.printStackTrace();
 				}
 			}
-			Log.d("debug of result", result);
 			return result;
 		}
 
@@ -170,7 +196,6 @@ public class WeatherCheckActivity extends Activity {
 	private void parseResults(String result) {
 
 		try {
-			Log.d("parsing", result);
 			JSONObject jsonObj = new JSONObject(result);
 
 			JSONObject sysObj = jsonObj.getJSONObject("sys");
