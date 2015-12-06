@@ -23,6 +23,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,10 +48,11 @@ public class MainActivity extends Activity {
 
 		// first time user
 		if (prefs.getString("name", null) == null) {
-			showAlertNameBox();
-		} else
+			showAlertSettingsBox("","","","","");
+		} else {
 			// second run, send saved name
 			showUserName(prefs.getString("name", ""));
+		}
 	}
 
 	private void showUserName(String name) {
@@ -60,36 +62,68 @@ public class MainActivity extends Activity {
 		nameView.setText("Hello " + name);
 	}
 
-	private void showAlertNameBox() {
+	private void showAlertSettingsBox(String name, String email, String password, String home, String destination) {
 
+		//inflate layout
+		LayoutInflater factory = LayoutInflater.from(this);
+		final View view = factory.inflate(R.layout.settings_form, null);
+
+		//build layout
 		AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
 		alertDialog.setTitle(R.string.nameDialogTitle);
 		alertDialog.setMessage(R.string.nameDialogInstruction);
+		alertDialog.setView(view);
 
-		final EditText input = new EditText(this);
-		alertDialog.setView(input);
+		//take all inputs and set text sent in
+		final EditText nameInput = (EditText) view.findViewById(R.id.nameInput);
+		nameInput.setText(name);
+		
+		final EditText emailInput = (EditText) view.findViewById(R.id.emailInput);
+		emailInput.setText(email);
+		
+		final EditText passwordInput = (EditText) view.findViewById(R.id.passwordInput);
+		passwordInput.setText(password);
+		
+		final EditText homeInput = (EditText) view.findViewById(R.id.homeInput);
+		homeInput.setText(home);
+		
+		final EditText destinationInput = (EditText) view.findViewById(R.id.destinationInput);
+		destinationInput.setText(destination);
 
+		//if user clicks on okay
 		alertDialog.setPositiveButton(R.string.okBtn, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 
-				// save it in prefs for next time and send input for now
-				String name = input.getText().toString();
+				//get input
+				String name = nameInput.getText().toString().trim();
+				String email = emailInput.getText().toString().trim();
+				String password = passwordInput.getText().toString().trim();
+				String home = homeInput.getText().toString().trim();
+				String destination = destinationInput.getText().toString().trim();
 
-				if (name.matches("[a-zA-z]+")) {
+				//if one is empty, ask again
+				if (name.equals("") || email.equals("") || password.equals("") || home.equals("")
+						|| destination.equals("")) {
+					// TOO MANY RESOURCES USED: will crash after some spamming
+					Toast.makeText(MainActivity.this, R.string.nameProblem, Toast.LENGTH_LONG).show();
+					showAlertSettingsBox("","","","","");
+				} else {
+					//save in shared prefs and display name
 					SharedPreferences.Editor editor = prefs.edit();
+
 					editor.putString("name", name);
+					editor.putString("email", email);
+					editor.putString("password", password);
+					editor.putString("home", home);
+					editor.putString("destination", destination);
+
 					editor.commit();
 					showUserName(name);
-				} else {
-					Toast.makeText(MainActivity.this, R.string.nameProblem, Toast.LENGTH_LONG).show();
-					// by default an alert box will close when button is clicked
-					// re-instanciating it to let the user enter name again
-					// TOO MANY RESOURCES USED: will crasha after some spamming
-					showAlertNameBox();
 				}
 			}
 		});
 
+		//show dialog constructed above
 		alertDialog.show();
 	}
 
@@ -116,6 +150,13 @@ public class MainActivity extends Activity {
 			return true;
 		}
 
+		if (id == R.id.menu_settings) {
+			showAlertSettingsBox(prefs.getString("name", ""),
+					prefs.getString("email", ""), prefs.getString("password", ""),
+					prefs.getString("home", ""), prefs.getString("destination", ""));
+			return true;
+		}
+
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -123,11 +164,12 @@ public class MainActivity extends Activity {
 		Intent intent = new Intent(this, AboutActivity.class);
 		startActivity(intent);
 	}
-	
-	public void currentTripItinerary(View view){
-		Intent intent = new Intent(this,ItineraryActivity.class);
+
+	public void currentTripItinerary(View view) {
+		Intent intent = new Intent(this, ItineraryActivity.class);
 		startActivity(intent);
 	}
+
 	public void tipCalculator(View view) {
 		Intent intent = new Intent(this, TipCalculator.class);
 		startActivity(intent);
@@ -138,22 +180,23 @@ public class MainActivity extends Activity {
 		startActivity(intent);
 	}
 
-	public void launchComingSoon() {
-		Intent intent = new Intent(this, ComingSoon.class);
-		startActivity(intent);
-	}
-	
 	public void weatherCheck(View view) {
 		Intent intent = new Intent(this, WeatherCheckActivity.class);
 		startActivity(intent);
 	}
 
-	public void nearMe(View view) {
-		launchComingSoon();
+	public void currencyConversion(View view) {
+		Intent intent = new Intent(this, CurrencyConversion.class);
+		startActivity(intent);
 	}
 
-	public void currencyConversion(View view) {
-		Intent intent = new Intent(this,CurrencyConversion.class);
+	public void manageTrips(View view) {
+		Intent intent = new Intent(this, ManageTripsActivity.class);
+		startActivity(intent);
+	}
+
+	public void launchComingSoon() {
+		Intent intent = new Intent(this, ComingSoon.class);
 		startActivity(intent);
 	}
 
@@ -169,10 +212,7 @@ public class MainActivity extends Activity {
 		launchComingSoon();
 	}
 
-	public void manageTrips(View view) {
-		Intent intent = new Intent(this, ManageTripsActivity.class);
-		startActivity(intent);
+	public void nearMe(View view) {
+		launchComingSoon();
 	}
-
-
 }

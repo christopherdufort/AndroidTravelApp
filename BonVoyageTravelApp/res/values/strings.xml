@@ -4,6 +4,7 @@
     <string name="app_name">BonVoyageTravelApp</string>
     <string name="menu_dawson">Dawson</string>
     <string name="menu_about">About</string>
+    <string name="menu_settings">Settings</string>
 
     <!-- Start tipping calculator -->
     <string name="tip_title">Tip Calculator</string>
@@ -23,16 +24,16 @@
 
 
     <!-- Start about activity -->
-    <string name="nameDialogTitle">First time!</string>
-    <string name="nameDialogInstruction">Please enter your name :)</string>
+    <string name="nameDialogTitle">Set your information!</string>
+    <string name="nameDialogInstruction">Please enter the necessary information to configure the application :)</string>
     <string name="okBtn">OK</string>
-    <string name="nameProblem">Your name must ONLY contain letters</string>
+    <string name="nameProblem">Every field must be filled in. They can be changed from the menu</string>
     <string name="aboutTitle">CREDITS</string>
     <string name="aboutSchoolText"><u>Institution:</u></string>
     <string name="aboutSchoolLink"><u>Dawson College</u></string>
     <string name="aboutCourseText"><u>Project\'s Course Number:</u></string>
     <string name="aboutCourseLink"><u>420-518-DW</u></string>
-    <string name="aboutAuthorsText"><u>Made By (Images lauch our wiki):</u></string>
+    <string name="aboutAuthorsText"><u>Made By (Images launch our wiki):</u></string>
     <string name="aboutAuthor1">Annie So</string>
     <string name="aboutAuthor2">Christopher Dufort</string>
     <string name="aboutAuthor3">Irina Patrocinio Frazao</string>
@@ -91,5 +92,11 @@
     <!-- End Currency Conversion -->
     
     <string name="title_activity_itinerary_details">Details of Itinerary</string>
+    
+    <string name="settings_name">Name:</string>
+    <string name="settings_email">Website Email:</string>
+    <string name="settings_password">Website Password:</string>
+    <string name="settings_home_country_code">Home Country Code:</string>
+    <string name="settings_destination_country_code">Destination Country Code: </string>
 
 </resources>

@@ -53,8 +53,7 @@ public class WeatherCheckActivity extends Activity {
 	}
 
 	private void getWeather() {
-		int tripId = prefs.getInt("current", -1);
-		//int tripId = 1;
+		int tripId = prefs.getInt("CURRENTTRIP", -1);
 
 		if (tripId != -1) {
 			// there is a current trip(last edited/viewed)
