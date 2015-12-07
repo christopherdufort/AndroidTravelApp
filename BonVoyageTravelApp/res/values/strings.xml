@@ -83,9 +83,27 @@
     <string name="title_activity_itinerary">Itinerary</string>
     <string name="create_itinerary">Add a new Itinerary</string>
     <string name="trip_itinerary_for">Trip Itinerary For:</string>
-    <string name="current_itinerary_title">Budgeted Expenses for current trip:</string>
+    <string name="current_itinerary_title">Current Trip Budgeted Expenses:</string>
+    <string name="manage_itinerary_title"> Manage Bugeted Expenses for trip:</string>
+    <string name="expense_name">Name</string>
+    <string name="expense_description">Description</string>
+    <string name="expense_amount">Budgeted Amount</string>
     <!-- End Itinerary -->
 
+	<!-- Start Budgeted Details -->
+	<string name="itinerary_details_title"> More Details on the budgeted Expense:</string>
+  	<string name="itinerary_details_associated_title"> The Associated Actual Expense:</string>
+ 	<string name="itinerary_location">Location:</string>
+ 	<string name="itinerary_arrival">Arrival Time:</string>
+ 	<string name="itinerary_departure">Departure Time:</string>
+ 	<string name="itinerary_amount">Amount:</string>
+ 	<string name="itinerary_description">Description:</string>
+ 	<string name="itinerary_category">Category:</string>
+ 	<string name="itinerary_supplier">Supplier:</string>
+ 	<string name="itinerary_address">Address:</string>
+ 	<string name="itinerary_stars">Number Of Stars:</string>
+ 	<string name="itinerary_edit_budgeted">Edit Budgeted Expense</string>
+ 	<!-- end budgeted details -->
 
     <!-- Start Currency Conversion -->
     <string name="currency_title">Currency Conversion</string>

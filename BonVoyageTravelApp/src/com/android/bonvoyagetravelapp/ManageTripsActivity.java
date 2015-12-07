@@ -2,8 +2,10 @@ package com.android.bonvoyagetravelapp;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,14 +14,18 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class ManageTripsActivity extends Activity {
 	
 	private static DBHelper dbh;
 	private ListView lv;
+	private TextView tv;
 	private SimpleCursorAdapter sca;
 	private Cursor cursor;
+	
+	private SharedPreferences prefs;
 
 	
 	@Override
@@ -28,6 +34,11 @@ public class ManageTripsActivity extends Activity {
 		setContentView(R.layout.activity_manage_trips);
 		dbh=DBHelper.getDBHelper(this);
 		
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		//Custom ownership feel show current users name.
+		tv = (TextView) findViewById(R.id.all_trips_name);	
+		tv.setText(prefs.getString("name", ""));
+
 		// Setup multiple unique click events available trips displayed.
 		setUpListeners();
 	}
@@ -86,9 +97,15 @@ public class ManageTripsActivity extends Activity {
 				Cursor cursortemp = (Cursor) parent.getItemAtPosition(position);
 
 				int tripId= cursortemp.getInt(0);
+				String tripName = cursortemp.getString(5);
+				
+				SharedPreferences.Editor editor = prefs.edit();
+				editor.putInt("CURRENTTRIP", tripId);
+				editor.putString("CURRENTTRIPNAME", tripName);
+				editor.commit();
 				
 				Intent intent = new Intent(getApplicationContext(),ItineraryActivity.class);
-				intent.putExtra("TRIPID", tripId);
+				intent.putExtra("MANAGE", true);
 				startActivity(intent);
 			}
 		});

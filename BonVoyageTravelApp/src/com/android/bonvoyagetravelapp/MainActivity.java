@@ -164,7 +164,7 @@ public class MainActivity extends Activity {
 		Intent intent = new Intent(this, AboutActivity.class);
 		startActivity(intent);
 	}
-
+	
 	public void currentTripItinerary(View view) {
 		Intent intent = new Intent(this, ItineraryActivity.class);
 		startActivity(intent);

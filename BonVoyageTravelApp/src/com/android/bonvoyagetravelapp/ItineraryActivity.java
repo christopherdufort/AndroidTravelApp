@@ -24,31 +24,49 @@ public class ItineraryActivity extends Activity {
 
 	private int tripId;
 	private ListView lv;
+	private TextView tv;
+	private TextView title;
 	private DBHelper dbh;
 	private SimpleCursorAdapter sca;
 	private SharedPreferences prefs;
+	private String tripName;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_itinerary);
 		dbh = DBHelper.getDBHelper(this);
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		
+		title = (TextView) findViewById(R.id.trip_itinerary_title);
 
 		tripId = prefs.getInt("CURRENTTRIP", -1);
+		tripName = prefs.getString("CURRENTTRIPNAME", "");
+		
+		if (savedInstanceState == null) {
+		    Bundle extras = getIntent().getExtras();
+		    if(extras != null) {
+		    	if (extras.containsKey("MANAGE"))
+		    		title.setText(R.string.manage_itinerary_title);
+		    }
+		}
 
 		if (tripId == -1) {
 			// if no trip was viewed, the current one is the first one in db
 			Cursor cursor = dbh.getAllTrips();
 			cursor.moveToFirst();
 			tripId = cursor.getInt(1);
+			tripName = cursor.getString(5);
 		}
 
+		tv = (TextView) findViewById(R.id.trip_name);
+		tv.setText(tripName);
+		
 		// store this id in shared prefs for current itinerary.
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.putInt("CURRENTTRIP", tripId);
-		editor.commit();;
+		editor.putString("CURRENTTRIPNAME", tripName);
+		editor.commit();
 
 		// Setup multiple unique click events available for tasks shown.
 		setUpListeners();
@@ -62,9 +80,9 @@ public class ItineraryActivity extends Activity {
 	private void setUpListeners() {
 		lv = (ListView) findViewById(R.id.listViewAllItinerary);
 
-		String[] from = {DBHelper.COLUMN_AMOUNT, DBHelper.COLUMN_DESCRIPTION}; 
+		String[] from = { DBHelper.COLUMN_NAME_OF_SUPPLIER, DBHelper.COLUMN_DESCRIPTION, DBHelper.COLUMN_AMOUNT  }; 
 																								
-		int[] to = { R.id.itinerary_amount, R.id.itinerary_description};
+		int[] to = {  R.id.itinerary_supplier,R.id.itinerary_description, R.id.itinerary_amount};
 
 		Cursor cursor = dbh.getBudgetedExpenses(tripId);
 		sca = new SimpleCursorAdapter(this, R.layout.activity_itinerary_list, cursor, from, to, 0);

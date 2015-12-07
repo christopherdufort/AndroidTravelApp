@@ -1,7 +1,8 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -10,7 +11,398 @@
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:layout_height="fill_parent"
+        android:padding="15sp"
+        android:text="@string/itinerary_details_title"
+        android:textSize="25sp"
+        android:textStyle="bold" />
 
-</RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:padding="15sp"
+            android:text="@string/itinerary_category"
+            android:textSize="15sp"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/itinerary_category"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:padding="15sp"
+            android:textSize="15sp" >
+        </TextView>
+    </LinearLayout>
+
+    <!--
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:padding="15sp"
+            android:text="@string/itinerary_location"
+            android:textSize="15sp"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/itinerary_location"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:padding="15sp"
+            android:textSize="15sp" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:padding="15sp"
+            android:text="@string/itinerary_description"
+            android:textSize="15sp"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/itinerary_description"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:padding="15sp"
+            android:textSize="15sp" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:padding="15sp"
+            android:text="@string/itinerary_supplier"
+            android:textSize="15sp"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/itinerary_supplier"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:padding="15sp"
+            android:textSize="15sp" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:padding="15sp"
+            android:text="@string/itinerary_address"
+            android:textSize="15sp"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/itinerary_address"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:padding="15sp"
+            android:textSize="15sp" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:padding="15sp"
+            android:text="@string/itinerary_amount"
+            android:textSize="15sp"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/itinerary_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:padding="15sp"
+            android:textSize="15sp" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:padding="15sp"
+            android:text="@string/itinerary_arrival"
+            android:textSize="15sp"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/itinerary_arrival"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:padding="15sp"
+            android:textSize="15sp" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal"
+        android:padding="20sp" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:padding="15sp"
+            android:text="@string/itinerary_departure"
+            android:textSize="15sp"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/itinerary_departure"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:padding="15sp"
+            android:textSize="15sp" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal"
+        android:padding="20sp" >
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_gravity="start"
+            android:onClick="editBudgeted"
+            android:text="@string/itinerary_edit_budgeted" >
+        </Button>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/container_actual"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:orientation="horizontal"
+            android:padding="20sp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:padding="15sp"
+                android:text="@string/itinerary_details_associated_title"
+                android:textSize="25sp"
+                android:textStyle="bold" >
+            </TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:padding="15sp"
+                android:text="@string/itinerary_description"
+                android:textSize="15sp"
+                android:textStyle="bold" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/itinerary_actual_description"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:padding="15sp"
+                android:textSize="15sp" >
+            </TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:padding="15sp"
+                android:text="@string/itinerary_supplier"
+                android:textSize="15sp"
+                android:textStyle="bold" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/itinerary_actual_supplier"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:padding="15sp"
+                android:textSize="15sp" >
+            </TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:padding="15sp"
+                android:text="@string/itinerary_address"
+                android:textSize="15sp"
+                android:textStyle="bold" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/itinerary_actual_address"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:padding="15sp"
+                android:textSize="15sp" >
+            </TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:padding="15sp"
+                android:text="@string/itinerary_amount"
+                android:textSize="15sp"
+                android:textStyle="bold" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/itinerary_actual_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:padding="15sp"
+                android:textSize="15sp" >
+            </TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:padding="15sp"
+                android:text="@string/itinerary_arrival"
+                android:textSize="15sp"
+                android:textStyle="bold" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/itinerary_actual_arrival"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:padding="15sp"
+                android:textSize="15sp" >
+            </TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:orientation="horizontal"
+            android:padding="20sp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:padding="15sp"
+                android:text="@string/itinerary_departure"
+                android:textSize="15sp"
+                android:textStyle="bold" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/itinerary_actual_departure"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:padding="15sp"
+                android:textSize="15sp" >
+            </TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:orientation="horizontal"
+            android:padding="20sp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:padding="15sp"
+                android:text="@string/itinerary_stars"
+                android:textSize="15sp"
+                android:textStyle="bold" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/itinerary_stars"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:padding="15sp"
+                android:textSize="15sp" >
+            </TextView>
+        </LinearLayout>
+    </LinearLayout>
+    -->
+
+</LinearLayout>

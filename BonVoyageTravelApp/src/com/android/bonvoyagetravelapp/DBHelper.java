@@ -66,7 +66,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			+ COLUMN_LOCATION_ID + " integer not null, " + COLUMN_PLANNED_ARRIVAL_DATE + " text not null, "
 			+ COLUMN_PLANNED_DEPARTURE_DATE + " text not null, " + COLUMN_AMOUNT + " real not null, "
 			+ COLUMN_DESCRIPTION + " text not null, " + COLUMN_CATEGORY_ID + " integer not null, "
-			+ COLUMN_NAME_OF_SUPPLIER + "text not null, " + COLUMN_ADDRESS + " text not null, " + "foreign key ("
+			+ COLUMN_NAME_OF_SUPPLIER + " text not null, " + COLUMN_ADDRESS + " text not null, " + "foreign key ("
 			+ COLUMN_TRIP_ID + ") references " + TABLE_TRIPS + " (" + COLUMN_ID + ") on delete cascade, "
 			+ "foreign key (" + COLUMN_LOCATION_ID + ") references " + TABLE_LOCATIONS + " (" + COLUMN_ID + "), "
 			+ "foreign key (" + COLUMN_CATEGORY_ID + ") references " + TABLE_CATEGORIES + " (" + COLUMN_ID + "));";
@@ -130,12 +130,9 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL("INSERT INTO " + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY + ") VALUES('Transport')");
 		db.execSQL("INSERT INTO " + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY + ") VALUES('Entertainment')");
 
+		//Trip 1
 		db.execSQL("INSERT INTO " + TABLE_TRIPS + "(" + COLUMN_TRIP_ID + ", " + COLUMN_NAME + ", " + COLUMN_DESCRIPTION
 				+ ", " + COLUMN_CREATED_ON + ") VALUES(1, 'Trip 1', 'The first trip', "
-				+ getDateTime(new Date()) + ")");
-		
-		db.execSQL("INSERT INTO " + TABLE_TRIPS + "(" + COLUMN_TRIP_ID + ", " + COLUMN_NAME + ", " + COLUMN_DESCRIPTION
-				+ ", " + COLUMN_CREATED_ON + ") VALUES(2, 'Trip 2', 'The second trip', "
 				+ getDateTime(new Date()) + ")");
 
 		db.execSQL("INSERT INTO " + TABLE_LOCATIONS + "(" + COLUMN_CITY + ", " + COLUMN_COUNTRY_CODE + ", "
@@ -180,6 +177,25 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ getDateTime(new Date(2015, 11, 23, 12, 0,0)) + " , "
 				+ getDateTime(new Date(2015, 11, 23, 12, 0,0))
 				+ ",750.00, 'Plane trip to destination', 4, 'Air Canada', 'Montreal-Pierre Elliot Trudeau International Airport', 5)");
+		
+		//Trip 2
+		
+		db.execSQL("INSERT INTO " + TABLE_TRIPS + "(" + COLUMN_TRIP_ID + ", " + COLUMN_NAME + ", " + COLUMN_DESCRIPTION
+				+ ", " + COLUMN_CREATED_ON + ") VALUES(2, 'Trip 2', 'The second trip', "
+				+ getDateTime(new Date()) + ")");
+		
+		db.execSQL("INSERT INTO " + TABLE_LOCATIONS + "(" + COLUMN_CITY + ", " + COLUMN_COUNTRY_CODE + ", "
+				+ COLUMN_PROVINCE + ") VALUES('Atlanta', 'US', 'Georgia')");
+		
+		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,2, 2,"
+				+ getDateTime(new Date(2015, 12, 24, 12, 0, 0)) + " , "
+				+ getDateTime(new Date(2015, 12, 24, 12, 0, 0))
+				+ ",300.00, 'One way plane trip', 4, 'Delta', 'Mirabel Airport')");
+
+		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,2, 2, "
+				+ getDateTime(new Date(2015, 12, 24, 15, 0, 0)) + " , "
+				+ getDateTime(new Date(2995, 12, 26, 120, 0, 0))
+				+ ",1000.00, '5 star hotel', 1, 'Hilton',	'123 main street')");
 
 	}
 
