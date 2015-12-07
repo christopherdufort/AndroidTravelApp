@@ -168,6 +168,7 @@ public class MainActivity extends Activity {
 	
 	public void currentTripItinerary(View view) {
 		Intent intent = new Intent(this, ItineraryActivity.class);
+		intent.putExtra("CURRENT", true);
 		startActivity(intent);
 	}
 	public void today(View view){
@@ -176,6 +177,11 @@ public class MainActivity extends Activity {
 		startActivity(intent);
 	}
 
+	public void manageTrips(View view) {
+		Intent intent = new Intent(this, ManageTripsActivity.class);
+		startActivity(intent);
+	}
+	
 	public void tipCalculator(View view) {
 		Intent intent = new Intent(this, TipCalculator.class);
 		startActivity(intent);
@@ -196,10 +202,6 @@ public class MainActivity extends Activity {
 		startActivity(intent);
 	}
 
-	public void manageTrips(View view) {
-		Intent intent = new Intent(this, ManageTripsActivity.class);
-		startActivity(intent);
-	}
 
 	public void launchComingSoon() {
 		Intent intent = new Intent(this, ComingSoon.class);

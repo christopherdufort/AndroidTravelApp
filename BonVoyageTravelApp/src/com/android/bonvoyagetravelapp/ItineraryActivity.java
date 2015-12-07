@@ -34,6 +34,8 @@ public class ItineraryActivity extends Activity {
 	private SharedPreferences prefs;
 	private String tripName;
 	private boolean today;
+	private Cursor cursor;
+	private Bundle extras;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,47 +49,40 @@ public class ItineraryActivity extends Activity {
 		tripId = prefs.getInt("CURRENTTRIP", -1);
 		tripName = prefs.getString("CURRENTTRIPNAME", "");
 
-		Bundle extras = getIntent().getExtras();
+		extras = getIntent().getExtras();
 		if (extras != null) {
 			if (extras.containsKey("MANAGE")) {
 				title.setText(R.string.manage_itinerary_title);
+				cursor = dbh.getBudgetedExpenses(tripId);
 			}
-			if (extras.containsKey("TODAY")) {
+			else if (extras.containsKey("TODAY")) {
+				Log.d("today", "in today");
 				title.setText(R.string.today_itinerary_title);
-				today = true;
+				tripName = "today";
+				cursor = dbh.getBudgetedExpenses(new Date());
+				Log.d("today", "length: " + cursor.getCount() );
+				cursor.moveToFirst();
 			}
-		}
-
-		if (tripId == -1 && today == false) {
-			//current
-			// if no trip was viewed, the current one is the first one in db
-			Cursor cursor = dbh.getAllTrips();
-			cursor.moveToFirst();
-			tripId = cursor.getInt(1);
-			tripName = cursor.getString(5);
-
-		} 
-		else if (today == false) {
-			//CURRENT TRIP
-			// store this id in shared prefs for current itinerary.
-			SharedPreferences.Editor editor = prefs.edit();
-			editor.putInt("CURRENTTRIP", tripId);
-			editor.putString("CURRENTTRIPNAME", tripName);
-			editor.commit();
-		}
-		else 
-		{
-			//Today
-			Log.d("debug", "in saved instance sstate not equal to null");
-			tripName = "today";
-			Cursor cursor = dbh.getBudgetedExpenses(new Date());
-			cursor.moveToFirst();
+			else if (extras.containsKey("CURRENT"))
+			{
+				if (tripId == -1){
+					cursor = dbh.getAllTrips();
+					cursor.moveToFirst();
+					tripId = cursor.getInt(1);
+					tripName = cursor.getString(5);
+					cursor = dbh.getBudgetedExpenses(tripId);
+				}else{
+					cursor = dbh.getBudgetedExpenses(tripId);
+					SharedPreferences.Editor editor = prefs.edit();
+					editor.putInt("CURRENTTRIP", tripId);
+					editor.putString("CURRENTTRIPNAME", tripName);
+					editor.commit();
+				}
+			}
 		}
 
 		tv = (TextView) findViewById(R.id.trip_name);
 		tv.setText(tripName);
-
-
 
 		// Setup multiple unique click events available for tasks shown.
 		setUpListeners();
@@ -112,14 +107,6 @@ public class ItineraryActivity extends Activity {
 		String[] from = { DBHelper.COLUMN_NAME_OF_SUPPLIER, DBHelper.COLUMN_DESCRIPTION, DBHelper.COLUMN_AMOUNT };
 
 		int[] to = { R.id.itinerary_supplier, R.id.itinerary_description, R.id.itinerary_amount };
-
-		// TODO make all these cursors fields and shared var
-		Cursor cursor;
-		if (today != true) {
-			cursor = dbh.getBudgetedExpenses(tripId);
-		} else {
-			cursor = dbh.getBudgetedExpenses(new Date());
-		}
 
 		sca = new SimpleCursorAdapter(this, R.layout.activity_itinerary_list, cursor, from, to, 0);
 
@@ -185,7 +172,13 @@ public class ItineraryActivity extends Activity {
 	}
 
 	protected void refreshView() {
-		Cursor newCursor = dbh.getBudgetedExpenses(tripId);
+		Cursor newCursor;
+		
+		if(extras.containsKey("TODAY"))
+			newCursor = dbh.getBudgetedExpenses(new Date());
+		else
+			newCursor = dbh.getBudgetedExpenses(tripId);
+		
 		sca.changeCursor(newCursor);
 		sca.notifyDataSetChanged();
 
