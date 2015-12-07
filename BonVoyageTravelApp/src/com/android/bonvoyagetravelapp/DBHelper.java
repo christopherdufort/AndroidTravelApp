@@ -188,6 +188,11 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ COLUMN_PROVINCE + ") VALUES('Atlanta', 'US', 'Georgia')");
 		
 		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,2, 2,"
+				+ getDateTime(new Date()) + " , "
+				+ getDateTime(new Date())
+				+ ",150.00, 'Todays buss trip!', 4, 'Delta', 'Grey Hound Buss')");
+		
+		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,2, 2,"
 				+ getDateTime(new Date(2015, 12, 24, 12, 0, 0)) + " , "
 				+ getDateTime(new Date(2015, 12, 24, 12, 0, 0))
 				+ ",300.00, 'One way plane trip', 4, 'Delta', 'Mirabel Airport')");
@@ -476,6 +481,52 @@ public class DBHelper extends SQLiteOpenHelper {
 		String whereClause = COLUMN_TRIP_ID + " = ?";
 		String[] whereArgs = { String.valueOf(tripId) };
 		return getReadableDatabase().query(TABLE_BUDGETED_EXPENSES, null, whereClause, whereArgs, null, null, null);
+	}
+	
+	/**
+	 * Gets all the budgeted expenses for a specified day.
+	 * 
+	 * @since 2015-12-06
+	 * @param date
+	 *            day of the itinerary to get the budgeted expenses of.
+	 * @return A cursor of all the budgeted expenses for a certain day.
+	 */
+	public Cursor getBudgetedExpenses(Date date) {
+		String whereClause = COLUMN_PLANNED_ARRIVAL_DATE + " BETWEEN ? AND ?";
+		String[] whereArgs = { String.valueOf(new Date(date.getYear(), date.getMonth(), date.getDay(), 00, 00, 0)) , String.valueOf(new Date(date.getYear(), date.getMonth(), date.getDay(), 23, 59, 99)) };
+		return getReadableDatabase().query(TABLE_BUDGETED_EXPENSES, null, whereClause, whereArgs, null, null, null);
+	}
+	
+	/**
+	 * 
+	 * Gets all the budgeted expenses fields for a given budgeted id.
+	 * Used for displaying details.
+	 * 
+	 * @since 2015-12-06
+	 * @param budgetedId
+	 *            Id of the budgeted expense for which to retrieve all rows.
+	 * @return A cursor of all the budgeted fields for a certain id.
+	 */
+	public Cursor getBudgetedDetails(int budgetedId) {
+		String whereClause = COLUMN_ID + " = ?";
+		String[] whereArgs = { String.valueOf(budgetedId) };
+		return getReadableDatabase().query(TABLE_BUDGETED_EXPENSES, null, whereClause, whereArgs, null, null, null);
+	}
+	
+	/**
+	 * 
+	 * Gets all the actual expenses fields for a given actual id.
+	 * Used for displaying details.
+	 * 
+	 * @since 2015-12-06
+	 * @param actualId
+	 *            Id of the actual expense for which to retrieve all rows.
+	 * @return A cursor of all the actual fields for a certain id.
+	 */
+	public Cursor getActualDetails(int actualId) {
+		String whereClause = COLUMN_ID + " = ?";
+		String[] whereArgs = { String.valueOf(actualId) };
+		return getReadableDatabase().query(TABLE_ACTUAL_EXPENSES, null, whereClause, whereArgs, null, null, null);
 	}
 
 	/**

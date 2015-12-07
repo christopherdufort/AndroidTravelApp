@@ -85,6 +85,7 @@
     <string name="trip_itinerary_for">Trip Itinerary For:</string>
     <string name="current_itinerary_title">Current Trip Budgeted Expenses:</string>
     <string name="manage_itinerary_title"> Manage Bugeted Expenses for trip:</string>
+    <string name="today_itinerary_title"> Bugeted Expenses for today!:</string>
     <string name="expense_name">Name</string>
     <string name="expense_description">Description</string>
     <string name="expense_amount">Budgeted Amount</string>
@@ -92,6 +93,7 @@
 
 	<!-- Start Budgeted Details -->
 	<string name="itinerary_details_title"> More Details on the budgeted Expense:</string>
+	<string name="itinerary_today_title"> Todays Agenda:</string>
   	<string name="itinerary_details_associated_title"> The Associated Actual Expense:</string>
  	<string name="itinerary_location">Location:</string>
  	<string name="itinerary_arrival">Arrival Time:</string>
@@ -103,6 +105,7 @@
  	<string name="itinerary_address">Address:</string>
  	<string name="itinerary_stars">Number Of Stars:</string>
  	<string name="itinerary_edit_budgeted">Edit Budgeted Expense</string>
+ 	<string name="itinerary_edit_save">Save Changes</string>
  	<!-- end budgeted details -->
 
     <!-- Start Currency Conversion -->

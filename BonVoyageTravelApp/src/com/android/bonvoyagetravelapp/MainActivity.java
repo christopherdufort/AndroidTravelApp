@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.Date;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -167,6 +168,11 @@ public class MainActivity extends Activity {
 	
 	public void currentTripItinerary(View view) {
 		Intent intent = new Intent(this, ItineraryActivity.class);
+		startActivity(intent);
+	}
+	public void today(View view){
+		Intent intent = new Intent(this, ItineraryActivity.class);
+		intent.putExtra("TODAY", true);
 		startActivity(intent);
 	}
 

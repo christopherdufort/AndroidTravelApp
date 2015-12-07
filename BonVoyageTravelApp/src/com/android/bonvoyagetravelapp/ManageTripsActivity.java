@@ -1,9 +1,24 @@
 package com.android.bonvoyagetravelapp;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -122,23 +137,86 @@ public class ManageTripsActivity extends Activity {
 		Toast toast = Toast.makeText(this, "Syncing with server", Toast.LENGTH_SHORT);
 		toast.show();
 	}
+	private void launchSyncAPI() {
+		String url = "";
+		String appId = "e857fa3cafcae16ad142b30675ad2cff";
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.manage_trips, menu);
-		return true;
-	}
+		url = "travel-bonvoyage.rhcloud.com/apiTrips";
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
+		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+		if (networkInfo != null && networkInfo.isConnected()) {
+			new DownloadTripsData().execute(url);
 		}
-		return super.onOptionsItemSelected(item);
 	}
+
+	private class DownloadTripsData extends AsyncTask<String, Void, String> {
+
+		@Override
+		protected void onPostExecute(String result) {
+
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+
+			InputStream input = null;
+			HttpURLConnection conn = null;
+			String result = null;
+
+			try {
+				URL url = new URL(params[0]);
+				// create and open the connection
+				conn = (HttpURLConnection) url.openConnection();
+
+				conn.setRequestMethod("GET");
+
+				// specifies whether this connection allows receiving data
+				conn.setDoInput(true);
+
+				// Starts the query
+				conn.connect();
+
+				int responseCode = conn.getResponseCode();
+
+				if (responseCode != HttpURLConnection.HTTP_OK)
+					return "";
+
+				// get the stream for the data from the website
+				input = conn.getInputStream();
+
+				// read the stream
+				char[] buffer = new char[500];
+				BufferedReader reader = new BufferedReader(new InputStreamReader(input, "UTF-8"));
+				reader.read(buffer);
+
+				// goes to onPOstExecute()
+				result = new String(buffer);
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				conn.disconnect();
+				try {
+					input.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			return result;
+		}
+
+	} // end of DownloadTripsData
+
+	private void parseResults(String result) {
+
+		try {
+			JSONObject jsonObj = new JSONObject(result);
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+	} //end of parseResults
 }
