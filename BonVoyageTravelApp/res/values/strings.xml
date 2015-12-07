@@ -81,8 +81,9 @@
 
     <!-- Start Itinerary -->
     <string name="title_activity_itinerary">Itinerary</string>
-    <string name="create_itinerary">Add an new Itinerary</string>
+    <string name="create_itinerary">Add a new Itinerary</string>
     <string name="trip_itinerary_for">Trip Itinerary For:</string>
+    <string name="current_itinerary_title">Budgeted Expenses for current trip:</string>
     <!-- End Itinerary -->
 
 
@@ -93,10 +94,12 @@
     
     <string name="title_activity_itinerary_details">Details of Itinerary</string>
     
+    <!-- Start Settings -->
     <string name="settings_name">Name:</string>
     <string name="settings_email">Website Email:</string>
     <string name="settings_password">Website Password:</string>
     <string name="settings_home_country_code">Home Country Code:</string>
     <string name="settings_destination_country_code">Destination Country Code: </string>
+    <!-- End Settings-->
 
 </resources>

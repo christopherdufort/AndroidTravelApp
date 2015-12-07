@@ -21,21 +21,15 @@
 	        android:layout_weight="1"
 	        android:layout_height="wrap_content"
 	       	android:textSize="40sp"
-	        android:text="@string/trip_itinerary_for" />
-        
-        <TextView
-	        android:layout_width="0dp"
-	        android:layout_weight="1"
-	        android:layout_height="wrap_content"
-	        android:textSize="50sp"
-	        android:text="" />    
+	        android:text="@string/current_itinerary_title" />
+
     </LinearLayout>
     
     <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:onClick="syncTrips"
+        android:onClick="createItinerary"
         android:text="@string/create_itinerary" >
     </Button>
     

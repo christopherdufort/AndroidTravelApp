@@ -134,11 +134,12 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ ", " + COLUMN_CREATED_ON + ") VALUES(1, 'Trip 1', 'The first trip', "
 				+ getDateTime(new Date()) + ")");
 		
-		Log.d("a date",getDateTime(new Date()));
+		db.execSQL("INSERT INTO " + TABLE_TRIPS + "(" + COLUMN_TRIP_ID + ", " + COLUMN_NAME + ", " + COLUMN_DESCRIPTION
+				+ ", " + COLUMN_CREATED_ON + ") VALUES(2, 'Trip 2', 'The second trip', "
+				+ getDateTime(new Date()) + ")");
 
 		db.execSQL("INSERT INTO " + TABLE_LOCATIONS + "(" + COLUMN_CITY + ", " + COLUMN_COUNTRY_CODE + ", "
 				+ COLUMN_PROVINCE + ") VALUES('Paris', 'FR', 'Ile-de-France')");
-
 		
 		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,1, 1,"
 				+ getDateTime(new Date(2015, 11, 23, 12, 0, 0)) + " , "

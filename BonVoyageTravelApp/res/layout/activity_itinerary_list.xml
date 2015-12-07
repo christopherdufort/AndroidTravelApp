@@ -2,38 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal" >
-    
-<!--     <TextView
-        android:id="@+id/itinerary_location"
-        android:layout_width="0dp"
-	    android:layout_weight="1"
-        android:layout_height="match_parent" 
-        android:textSize="25sp" >
-    </TextView> -->
-    
-    <TextView
-        android:id="@+id/itinerary_depart"
-       	android:layout_width="0dp"
-	    android:layout_weight="1"
-        android:layout_height="match_parent" 
-        android:textSize="25sp" >
-    </TextView>
-    
-    <TextView
-        android:id="@+id/itinerary_arrival"
-       	android:layout_width="0dp"
-	    android:layout_weight="1"
-        android:layout_height="match_parent" 
-        android:textSize="25sp" >
-    </TextView>
+    android:orientation="horizontal"
+    android:weightSum="2" >
     
     <TextView
         android:id="@+id/itinerary_amount"
        	android:layout_width="0dp"
 	    android:layout_weight="1"
         android:layout_height="match_parent" 
-        android:textSize="25sp" >
+        android:textSize="25sp"
+        android:padding="15sp" >
     </TextView>
     
     <TextView
@@ -41,31 +19,8 @@
        	android:layout_width="0dp"
 	    android:layout_weight="1"
         android:layout_height="match_parent" 
-        android:textSize="25sp" >
+        android:textSize="25sp"
+        android:padding="15sp" >
     </TextView>
-    
-<!--     <TextView
-        android:id="@+id/itinerary_cateory"
-       	android:layout_width="0dp"
-	    android:layout_weight="1"
-        android:layout_height="match_parent" 
-        android:textSize="25sp" >
-    </TextView> -->
-    
-    <TextView
-        android:id="@+id/itinerary_address"
-       	android:layout_width="0dp"
-	    android:layout_weight="1"
-        android:layout_height="match_parent" 
-        android:textSize="25sp" >
-    </TextView>
-    
-    <TextView
-        android:id="@+id/itinerary_supplier"
-       	android:layout_width="0dp"
-	    android:layout_weight="1"
-        android:layout_height="match_parent" 
-        android:textSize="25sp" >
-    </TextView>
-    
+   
 </LinearLayout>
