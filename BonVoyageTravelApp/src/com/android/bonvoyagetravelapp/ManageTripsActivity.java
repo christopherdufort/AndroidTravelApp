@@ -136,12 +136,10 @@ public class ManageTripsActivity extends Activity {
 	public void syncTrips(View view) {
 		Toast toast = Toast.makeText(this, "Syncing with server", Toast.LENGTH_SHORT);
 		toast.show();
+		launchSyncAPITrips();
 	}
-	private void launchSyncAPI() {
-		String url = "";
-		String appId = "e857fa3cafcae16ad142b30675ad2cff";
-
-		url = "travel-bonvoyage.rhcloud.com/apiTrips";
+	private void launchSyncAPITrips() {
+		String url = "travel-bonvoyage.rhcloud.com/apiTrips?email=" + prefs.getString("email", "") + "&password="+ prefs.getString("password", "");
 
 		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -152,11 +150,6 @@ public class ManageTripsActivity extends Activity {
 	}
 
 	private class DownloadTripsData extends AsyncTask<String, Void, String> {
-
-		@Override
-		protected void onPostExecute(String result) {
-
-		}
 
 		@Override
 		protected String doInBackground(String... params) {
@@ -176,6 +169,7 @@ public class ManageTripsActivity extends Activity {
 				conn.setDoInput(true);
 
 				// Starts the query
+				// Actually sends request
 				conn.connect();
 
 				int responseCode = conn.getResponseCode();
@@ -187,7 +181,7 @@ public class ManageTripsActivity extends Activity {
 				input = conn.getInputStream();
 
 				// read the stream
-				char[] buffer = new char[500];
+				char[] buffer = new char[32000];
 				BufferedReader reader = new BufferedReader(new InputStreamReader(input, "UTF-8"));
 				reader.read(buffer);
 
@@ -206,17 +200,45 @@ public class ManageTripsActivity extends Activity {
 			}
 			return result;
 		}
+		
+		@Override
+		protected void onPostExecute(String result) {
+			if (result.equals("")) {
+				//cant connect make a toast
+			} else {
+				parseResults(result);
+			}
+		}
 
 	} // end of DownloadTripsData
 
 	private void parseResults(String result) {
-
 		try {
 			JSONObject jsonObj = new JSONObject(result);
+
+			Log.d("json", jsonObj.toString());
+			
+			/*JSONObject sysObj = jsonObj.getJSONObject("sys");
+			country = sysObj.getString("country");
+
+			nameOfArea = jsonObj.getString("name");
+
+			JSONArray array = jsonObj.getJSONArray("weather");
+			descriptionForecast = array.getJSONObject(0).getString("description");
+			mainForecast = array.getJSONObject(0).getString("main");
+
+			JSONObject weatherObj = jsonObj.getJSONObject("wind");
+			windSpeed = "" + weatherObj.getDouble("speed");
+
+			JSONObject mainObj = jsonObj.getJSONObject("main");
+			humidity = "" + mainObj.getInt("humidity");
+			pressure = "" + mainObj.getInt("pressure");
+			temp = "" + mainObj.getDouble("temp");
+			minTemp = "" + mainObj.getDouble("temp_min");
+			maxTemp = "" + mainObj.getDouble("temp_max");*/
 
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-
 	} //end of parseResults
 }
