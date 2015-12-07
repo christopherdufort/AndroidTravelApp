@@ -96,11 +96,10 @@ public class ItineraryActivity extends Activity {
 
 				// first column is id getInt gets column data as int
 				int itineraryId = cursortemp.getInt(0);
-				String description = cursortemp.getString(6);
 
 				// See custom method below
 				// TODO replace by @string resource
-				showAlert("Deleting Notice", "Are you sure you want to delete " + description, itineraryId);
+				showAlert("Deleting Notice",  itineraryId);
 
 				// Return true to consume the click event.
 				return true;
@@ -108,11 +107,11 @@ public class ItineraryActivity extends Activity {
 		});
 	}
 
-	protected void showAlert(String title, String message, final int itineraryId) {
+	protected void showAlert(String title,  final int itineraryId ) {
 		// Build up a dialog box.
 		Builder builder = new Builder(this);
 		builder.setTitle(title);
-		builder.setMessage(message);
+		builder.setMessage("Are you sure you want to delete this expense?" );
 		builder.setCancelable(true);
 		// Two possible buttons.
 		builder.setNegativeButton("No", null); // Do nothing
@@ -120,9 +119,9 @@ public class ItineraryActivity extends Activity {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dbh.deleteBudgetedExpense(itineraryId);
-
-				//DELETE HERE
-
+				
+				refreshView();
+				
 				dialog.dismiss();
 				refreshView();
 			}
@@ -133,7 +132,9 @@ public class ItineraryActivity extends Activity {
 	}
 
 	protected void refreshView() {
-		// TODO Auto-generated method stub
+		Cursor newCursor = dbh.getBudgetedExpenses(tripId);
+		sca.changeCursor(newCursor);
+		sca.notifyDataSetChanged();
 
 	}
 }
