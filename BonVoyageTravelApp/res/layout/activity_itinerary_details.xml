@@ -9,7 +9,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.android.bonvoyagetravelapp.ItineraryDetails" >
 
-	<ScrollView
+    <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
@@ -158,7 +158,6 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
-                    android:inputType="number"
                     android:padding="15sp"
                     android:text="@string/itinerary_amount"
                     android:textSize="15sp"
@@ -169,6 +168,7 @@
                     android:id="@+id/itinerary_amount"
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
+                    android:inputType="number"
                     android:padding="15sp"
                     android:textSize="15sp" >
                 </EditText>
@@ -183,19 +183,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
                     android:padding="15sp"
-                    android:text="@string/itinerary_arrival"
+                    android:text="@string/itinerary_arrival_date"
                     android:textSize="15sp"
                     android:textStyle="bold" >
                 </TextView>
 
-                <EditText
-                    android:id="@+id/itinerary_arrival"
+                <TextView
+                    android:id="@+id/itinerary_arrival_date"
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
-                    android:inputType="text"
+                    android:clickable="true"
+                    android:onClick="setDate"
                     android:padding="15sp"
                     android:textSize="15sp" >
-                </EditText>
+                </TextView>
             </LinearLayout>
 
             <LinearLayout
@@ -206,20 +207,71 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
-                    android:text="@string/itinerary_departure"
                     android:padding="15sp"
+                    android:text="@string/itinerary_arrival_time"
                     android:textSize="15sp"
                     android:textStyle="bold" >
                 </TextView>
 
-                <EditText
-                    android:id="@+id/itinerary_departure"
+                <TextView
+                    android:id="@+id/itinerary_arrival_time"
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
-                    android:inputType="text"
+                    android:clickable="true"
+                    android:onClick="setTime"
                     android:padding="15sp"
                     android:textSize="15sp" >
-                </EditText>
+                </TextView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:padding="15sp"
+                    android:text="@string/itinerary_departure_date"
+                    android:textSize="15sp"
+                    android:textStyle="bold" >
+                </TextView>
+
+                <TextView
+                    android:id="@+id/itinerary_departure_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:clickable="true"
+                    android:onClick="setDate"
+                    android:padding="15sp"
+                    android:textSize="15sp" >
+                </TextView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:padding="15sp"
+                    android:text="@string/itinerary_departure_time"
+                    android:textSize="15sp"
+                    android:textStyle="bold" >
+                </TextView>
+
+                <TextView
+                    android:id="@+id/itinerary_departure_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:clickable="true"
+                    android:onClick="setTime"
+                    android:padding="15sp"
+                    android:textSize="15sp" >
+                </TextView>
             </LinearLayout>
 
             <LinearLayout
@@ -237,7 +289,8 @@
                 </Button>
             </LinearLayout>
 
-<!-- */***********************************************************************/*   -->            
+            <!-- */***********************************************************************/* -->
+
             <LinearLayout
                 android:id="@+id/container_actual"
                 android:layout_width="fill_parent"
@@ -277,9 +330,9 @@
                         android:id="@+id/itinerary_actual_description"
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
+                        android:inputType="text"
                         android:padding="15sp"
-                        android:textSize="15sp"
-                        android:inputType="text" >
+                        android:textSize="15sp" >
                     </EditText>
                 </LinearLayout>
 
@@ -301,9 +354,9 @@
                         android:id="@+id/itinerary_actual_supplier"
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
+                        android:inputType="text"
                         android:padding="15sp"
-                        android:textSize="15sp"
-                        android:inputType="text" >
+                        android:textSize="15sp" >
                     </EditText>
                 </LinearLayout>
 
@@ -325,9 +378,9 @@
                         android:id="@+id/itinerary_actual_address"
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
+                        android:inputType="text"
                         android:padding="15sp"
-                        android:textSize="15sp"
-                        android:inputType="text" >
+                        android:textSize="15sp" >
                     </EditText>
                 </LinearLayout>
 
@@ -349,9 +402,9 @@
                         android:id="@+id/itinerary_actual_amount"
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
+                        android:inputType="text"
                         android:padding="15sp"
-                        android:textSize="15sp" 
-                        android:inputType="text">
+                        android:textSize="15sp" >
                     </EditText>
                 </LinearLayout>
 
@@ -364,19 +417,18 @@
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
                         android:padding="15sp"
-                        android:text="@string/itinerary_arrival"
+                        android:text="@string/itinerary_arrival_date"
                         android:textSize="15sp"
                         android:textStyle="bold" >
                     </TextView>
 
-                    <EditText
-                        android:id="@+id/itinerary_actual_arrival"
+                    <TextView
+                        android:id="@+id/itinerary_actual_arrival_date"
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
                         android:padding="15sp"
-                        android:textSize="15sp"
-                        android:inputType="text" >
-                    </EditText>
+                        android:textSize="15sp" >
+                    </TextView>
                 </LinearLayout>
 
                 <LinearLayout
@@ -388,60 +440,58 @@
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
                         android:padding="15sp"
-                        android:text="@string/itinerary_departure"
+                        android:text="@string/itinerary_departure_date"
                         android:textSize="15sp"
                         android:textStyle="bold" >
                     </TextView>
 
-                    <EditText
-                        android:id="@+id/itinerary_actual_departure"
+                    <TextView
+                        android:id="@+id/itinerary_actual_departure_date"
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
                         android:padding="15sp"
-                        android:textSize="15sp"
-                        android:inputType="text" >
-                    </EditText>
+                        android:textSize="15sp" >
+                    </TextView>
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal" >
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
+                        android:padding="15sp"
                         android:text="@string/itinerary_stars"
-                        android:padding="15sp"
                         android:textSize="15sp"
                         android:textStyle="bold" >
                     </TextView>
 
-		            <RatingBar
-			   			 android:id="@+id/ratingBar1"
-			    		 android:layout_width="wrap_content"
-			    		 android:layout_height="wrap_content"
-	    				 android:layout_weight="1" />
-		            
-		        </LinearLayout>
-		            
-		        <LinearLayout
-	                android:layout_width="fill_parent"
-	                android:layout_height="wrap_content"
-	                android:orientation="horizontal" >
-		            
-		            <Button
-                    android:id="@+id/itinerary_edit_actual_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:layout_gravity="start"
-                    android:onClick="editActual"
-                    android:text="@string/itinerary_edit_budgeted" >
-                	</Button>
-          	
-		       </LinearLayout>
-		       
-			</LinearLayout> 
-		</LinearLayout> 
+                    <RatingBar
+                        android:id="@+id/ratingBar1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:numStars="5"
+                        android:stepSize="1" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <Button
+                        android:id="@+id/itinerary_edit_actual_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_gravity="start"
+                        android:onClick="editActual"
+                        android:text="@string/itinerary_edit_budgeted" >
+                    </Button>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
     </ScrollView>
+
 </LinearLayout>

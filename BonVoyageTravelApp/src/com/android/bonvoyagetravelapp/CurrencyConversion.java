@@ -57,23 +57,24 @@ public class CurrencyConversion extends Activity {
 			prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
 			String homeCountryCode;
-			if (prefs.getString("homeCountryCode", null) == null) {
+			if (prefs.getString("home", null) == null) {
 				// TODO If there is no home country code set, ask for one.
 				homeCountryCode = "CA";
 			} else {
-				homeCountryCode = prefs.getString("homeCountryCode", null);
+				homeCountryCode = prefs.getString("home", null);
 			}
 
 			homeCurrency = (Currency.getInstance(new Locale("", homeCountryCode))).getCurrencyCode();
 
 			String conversionCountryCode;
+			// TODO I thought the conversion currency was based on the location the current trip
 			// If there is no current trip, set the conversion country code to
 			// France so the conversion currency will be Euros.
-			if (prefs.getInt("current", -1) == -1) {
+			if (prefs.getString("destination", null) == null) {
 				conversionCountryCode = "FR";
 			} else {
 				// TODO Get country code from current trip
-				conversionCountryCode = "FR";
+				conversionCountryCode = prefs.getString("destination", null);
 			}
 
 			conversionCurrency = (Currency.getInstance(new Locale("", conversionCountryCode))).getCurrencyCode();

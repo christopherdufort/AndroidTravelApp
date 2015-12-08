@@ -1,7 +1,8 @@
 package com.android.bonvoyagetravelapp;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 import android.content.ContentValues;
@@ -11,7 +12,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.SimpleCursorAdapter;
 
 public class DBHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "itinerary.db";
@@ -51,8 +51,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	// TODO: Choose a data type for the dates
 	private static final String CREATE_TRIPS_TABLE = "create table " + TABLE_TRIPS + "( " + COLUMN_ID
 			+ " integer primary key autoincrement, " + COLUMN_TRIP_ID + " integer not null, " + COLUMN_CREATED_ON
-			+ " text not null, " + COLUMN_UPDATED_ON + " text, " + COLUMN_NAME + " text not null, " + COLUMN_DESCRIPTION
-			+ " text);";
+			+ " integer not null, " + COLUMN_UPDATED_ON + " integer, " + COLUMN_NAME + " text not null, "
+			+ COLUMN_DESCRIPTION + " text);";
 
 	private static final String CREATE_LOCATIONS_TABLE = "create table " + TABLE_LOCATIONS + "( " + COLUMN_ID
 			+ " integer primary key autoincrement, " + COLUMN_CITY + " text not null, " + COLUMN_COUNTRY_CODE
@@ -63,8 +63,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	private static final String CREATE_BUDGETED_EXPENSES_TABLE = "create table " + TABLE_BUDGETED_EXPENSES + "( "
 			+ COLUMN_ID + " integer primary key autoincrement, " + COLUMN_TRIP_ID + " integer not null, "
-			+ COLUMN_LOCATION_ID + " integer not null, " + COLUMN_PLANNED_ARRIVAL_DATE + " text not null, "
-			+ COLUMN_PLANNED_DEPARTURE_DATE + " text not null, " + COLUMN_AMOUNT + " real not null, "
+			+ COLUMN_LOCATION_ID + " integer not null, " + COLUMN_PLANNED_ARRIVAL_DATE + " integer not null, "
+			+ COLUMN_PLANNED_DEPARTURE_DATE + " integer not null, " + COLUMN_AMOUNT + " real not null, "
 			+ COLUMN_DESCRIPTION + " text not null, " + COLUMN_CATEGORY_ID + " integer not null, "
 			+ COLUMN_NAME_OF_SUPPLIER + " text not null, " + COLUMN_ADDRESS + " text not null, " + "foreign key ("
 			+ COLUMN_TRIP_ID + ") references " + TABLE_TRIPS + " (" + COLUMN_ID + ") on delete cascade, "
@@ -73,12 +73,12 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	private static final String CREATE_ACTUAL_EXPENSES_TABLE = "create table " + TABLE_ACTUAL_EXPENSES + "( "
 			+ COLUMN_ID + " integer primary key autoincrement, " + COLUMN_BUDGETED_ID + " integer not null, "
-			+ COLUMN_ARRIVAL_DATE + " text not null, " + COLUMN_DEPARTURE_DATE + " text not null, " + COLUMN_AMOUNT
-			+ " real not null, " + COLUMN_DESCRIPTION + " text not null, " + COLUMN_CATEGORY_ID + " integer not null, "
-			+ COLUMN_NAME_OF_SUPPLIER + " text not null, " + COLUMN_ADDRESS + " text not null, " + COLUMN_STARS
-			+ " integer not null, " + "foreign key (" + COLUMN_BUDGETED_ID + ") references " + TABLE_BUDGETED_EXPENSES
-			+ " (" + COLUMN_ID + ") on delete cascade, " + "foreign key (" + COLUMN_CATEGORY_ID + ") references "
-			+ TABLE_CATEGORIES + " (" + COLUMN_ID + "));";
+			+ COLUMN_ARRIVAL_DATE + " integer not null, " + COLUMN_DEPARTURE_DATE + " integer not null, "
+			+ COLUMN_AMOUNT + " real not null, " + COLUMN_DESCRIPTION + " text not null, " + COLUMN_CATEGORY_ID
+			+ " integer not null, " + COLUMN_NAME_OF_SUPPLIER + " text not null, " + COLUMN_ADDRESS + " text not null, "
+			+ COLUMN_STARS + " integer not null, " + "foreign key (" + COLUMN_BUDGETED_ID + ") references "
+			+ TABLE_BUDGETED_EXPENSES + " (" + COLUMN_ID + ") on delete cascade, " + "foreign key ("
+			+ COLUMN_CATEGORY_ID + ") references " + TABLE_CATEGORIES + " (" + COLUMN_ID + "));";
 
 	// Static instance to share DBHelper
 	private static DBHelper dbh = null;
@@ -121,7 +121,11 @@ public class DBHelper extends SQLiteOpenHelper {
 		return dbh;
 	} // getDBHelper()
 
-	//Android doesn't support JDK 8 so we can't use LocalDateTime
+	// GregorianCalendar's months start at 0.
+	// GregorianCalendar's use 0 to represent noon and midnight and work on a 12
+	// hour clock.
+	// If calendar.get(Calendar.AM_PM) == Calendar.AM, it is AM.
+	// If calendar.get(Calendar.AM_PM) == Calendar.PM, it is PM.
 	@SuppressWarnings("deprecation")
 	public void seedDB(SQLiteDatabase db) {
 		db.execSQL("INSERT INTO " + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY + ") VALUES('Accomodation')");
@@ -130,76 +134,75 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL("INSERT INTO " + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY + ") VALUES('Transport')");
 		db.execSQL("INSERT INTO " + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY + ") VALUES('Entertainment')");
 
-		//Trip 1
+		// Trip 1
 		db.execSQL("INSERT INTO " + TABLE_TRIPS + "(" + COLUMN_TRIP_ID + ", " + COLUMN_NAME + ", " + COLUMN_DESCRIPTION
 				+ ", " + COLUMN_CREATED_ON + ") VALUES(1, 'Trip 1', 'The first trip', "
-				+ getDateTime(new Date()) + ")");
+				+ getDateTime(new GregorianCalendar()) + ")");
 
 		db.execSQL("INSERT INTO " + TABLE_LOCATIONS + "(" + COLUMN_CITY + ", " + COLUMN_COUNTRY_CODE + ", "
 				+ COLUMN_PROVINCE + ") VALUES('Paris', 'FR', 'Ile-de-France')");
-		
+
 		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,1, 1,"
-				+ getDateTime(new Date(2015, 11, 23, 12, 0, 0)) + " , "
-				+ getDateTime(new Date(2015, 11, 23, 12, 0, 0))
+				+ getDateTime(new GregorianCalendar(2015, 11, 23, 12, 0, 0)) + " , "
+				+ getDateTime(new GregorianCalendar(2015, 11, 23, 12, 0, 0))
 				+ ",750.00, 'Plane trip to destination', 4, 'Air Canada',	'Montreal-Pierre Elliot Trudeau International Airport')");
 
 		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,1, 1, "
-				+ getDateTime(new Date(2015, 11, 23, 12, 0, 0)) + " , "
-				+ getDateTime(new Date(2015, 11, 26, 120, 0, 0))
+				+ getDateTime(new GregorianCalendar(2015, 11, 23, 12, 0, 0)) + " , "
+				+ getDateTime(new GregorianCalendar(2015, 11, 26, 120, 0, 0))
 				+ ",700.00, '2 star hotel', 1, 'Hotel Supplier',	'Hotels address')");
 
 		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,1, 1, "
-				+ getDateTime(new Date(2015, 11, 24, 12, 0, 0)) + " , "
-				+ getDateTime(new Date(2015, 11, 26, 12, 0, 0))
+				+ getDateTime(new GregorianCalendar(2015, 11, 24, 12, 0, 0)) + " , "
+				+ getDateTime(new GregorianCalendar(2015, 11, 26, 12, 0, 0))
 				+ ",300.00, 'All meals', 2, 'Food And drink supplier', 'Some restaurant address')");
 
 		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,1, 1, "
-				+ getDateTime(new Date(2015, 11, 24, 12, 0, 0)) + " , "
-				+ getDateTime(new Date(2015, 11, 26, 12, 0, 0))
+				+ getDateTime(new GregorianCalendar(2015, 11, 24, 12, 0, 0)) + " , "
+				+ getDateTime(new GregorianCalendar(2015, 11, 26, 12, 0, 0))
 				+ ",50.00, 'Gift for mom', 3, 'Gift supplier', 'Shopping here')");
 
 		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,1, 1, "
-				+ getDateTime(new Date(2015, 11, 24, 12, 0,0)) + " , "
-				+ getDateTime(new Date(2015, 11, 26, 12, 0,0))
+				+ getDateTime(new GregorianCalendar(2015, 11, 24, 12, 0, 0)) + " , "
+				+ getDateTime(new GregorianCalendar(2015, 11, 26, 12, 0, 0))
 				+ ",250.00, 'All entertainment', 5, 'Entertainment Supplier', 'Here be a museum')");
 
 		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,1, 1, "
-				+ getDateTime(new Date(2015, 11, 23, 12, 0,0)) + " , "
-				+ getDateTime(new Date(2015, 11, 27, 12, 0,0))
+				+ getDateTime(new GregorianCalendar(2015, 11, 23, 12, 0, 0)) + " , "
+				+ getDateTime(new GregorianCalendar(2015, 11, 27, 12, 0, 0))
 				+ ",100.00, 'All taxis', 4, 'Local Transport Supplier', 'There is no address')");
 
 		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,1, 1, "
-				+ getDateTime(new Date(2015, 11, 27, 12, 0,0)) + " , "
-				+ getDateTime(new Date(2015, 11, 27, 12, 0,0))
+				+ getDateTime(new GregorianCalendar(2015, 11, 27, 12, 0, 0)) + " , "
+				+ getDateTime(new GregorianCalendar(2015, 11, 27, 12, 0, 0))
 				+ ",750.00, 'Plane trip back home', 4, 'Air Canada', 'Montreal-Pierre Elliot Trudeau International Airport')");
 
 		db.execSQL("INSERT INTO " + TABLE_ACTUAL_EXPENSES + " VALUES(null,1, "
-				+ getDateTime(new Date(2015, 11, 23, 12, 0,0)) + " , "
-				+ getDateTime(new Date(2015, 11, 23, 12, 0,0))
+				+ getDateTime(new GregorianCalendar(2015, 11, 23, 12, 0, 0)) + " , "
+				+ getDateTime(new GregorianCalendar(2015, 11, 23, 12, 0, 0))
 				+ ",750.00, 'Plane trip to destination', 4, 'Air Canada', 'Montreal-Pierre Elliot Trudeau International Airport', 5)");
-		
-		//Trip 2
-		
+
+		// Trip 2
+
 		db.execSQL("INSERT INTO " + TABLE_TRIPS + "(" + COLUMN_TRIP_ID + ", " + COLUMN_NAME + ", " + COLUMN_DESCRIPTION
 				+ ", " + COLUMN_CREATED_ON + ") VALUES(2, 'Trip 2', 'The second trip', "
-				+ getDateTime(new Date()) + ")");
-		
+				+ getDateTime(new GregorianCalendar()) + ")");
+
 		db.execSQL("INSERT INTO " + TABLE_LOCATIONS + "(" + COLUMN_CITY + ", " + COLUMN_COUNTRY_CODE + ", "
 				+ COLUMN_PROVINCE + ") VALUES('Atlanta', 'US', 'Georgia')");
-		
+
 		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,2, 2,"
-				+ getDateTime(new Date()) + " , "
-				+ getDateTime(new Date())
+				+ getDateTime(new GregorianCalendar()) + " , " + getDateTime(new GregorianCalendar())
 				+ ",150.00, 'Todays buss trip!', 4, 'Delta', 'Grey Hound Buss')");
-		
+
 		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,2, 2,"
-				+ getDateTime(new Date(2015, 12, 24, 12, 0, 0)) + " , "
-				+ getDateTime(new Date(2015, 12, 24, 12, 0, 0))
+				+ getDateTime(new GregorianCalendar(2015, 12, 24, 12, 0, 0)) + " , "
+				+ getDateTime(new GregorianCalendar(2015, 12, 24, 12, 0, 0))
 				+ ",300.00, 'One way plane trip', 4, 'Delta', 'Mirabel Airport')");
 
 		db.execSQL("INSERT INTO " + TABLE_BUDGETED_EXPENSES + " VALUES(null,2, 2, "
-				+ getDateTime(new Date(2015, 12, 24, 15, 0, 0)) + " , "
-				+ getDateTime(new Date(2995, 12, 26, 120, 0, 0))
+				+ getDateTime(new GregorianCalendar(2015, 12, 24, 15, 0, 0)) + " , "
+				+ getDateTime(new GregorianCalendar(2995, 12, 26, 120, 0, 0))
 				+ ",1000.00, '5 star hotel', 1, 'Hilton',	'123 main street')");
 
 	}
@@ -291,7 +294,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_TRIP_ID, tripId);
 		cv.put(COLUMN_NAME, name);
 		cv.put(COLUMN_DESCRIPTION, description);
-		cv.put(COLUMN_CREATED_ON, getDateTime(new Date()));
+		cv.put(COLUMN_CREATED_ON, getDateTime(new GregorianCalendar()));
 
 		long code = getWritableDatabase().insert(TABLE_TRIPS, null, cv);
 		return code;
@@ -358,9 +361,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *            Address of the budgeted expense.
 	 * @return Id of the newly inserted row or -1 if there was an error.
 	 */
-	public long createBudgetedExpense(int tripId, int locationId, Date plannedArrivalDate,
-			Date plannedDepartureDate, double amount, String description, int categoryId,
-			String nameOfSupplier, String address) {
+	public long createBudgetedExpense(int tripId, int locationId, GregorianCalendar plannedArrivalDate, GregorianCalendar plannedDepartureDate,
+			double amount, String description, int categoryId, String nameOfSupplier, String address) {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_TRIP_ID, tripId);
 		cv.put(COLUMN_LOCATION_ID, locationId);
@@ -399,8 +401,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *            Rating of the supplier of the actual expense.
 	 * @return Id of the newly inserted row or -1 if there was an error.
 	 */
-	public long createActualExpense(int budgetedId, Date arrivalDate, Date departureDate,
-			double amount, String description, int categoryId, String nameOfSupplier, String address, int stars) {
+	public long createActualExpense(int budgetedId, GregorianCalendar arrivalDate, GregorianCalendar departureDate, double amount,
+			String description, int categoryId, String nameOfSupplier, String address, int stars) {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_BUDGETED_ID, budgetedId);
 		cv.put(COLUMN_ARRIVAL_DATE, getDateTime(arrivalDate));
@@ -482,7 +484,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		String[] whereArgs = { String.valueOf(tripId) };
 		return getReadableDatabase().query(TABLE_BUDGETED_EXPENSES, null, whereClause, whereArgs, null, null, null);
 	}
-	
+
 	/**
 	 * Gets all the budgeted expenses for a specified day.
 	 * 
@@ -491,16 +493,20 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *            day of the itinerary to get the budgeted expenses of.
 	 * @return A cursor of all the budgeted expenses for a certain day.
 	 */
-	public Cursor getBudgetedExpenses(Date date) {
+	public Cursor getBudgetedExpenses(GregorianCalendar date) {
 		String whereClause = COLUMN_PLANNED_ARRIVAL_DATE + " BETWEEN ? AND ?";
-		String[] whereArgs = { String.valueOf(new Date(date.getYear(), date.getMonth(), date.getDay(), 00, 00, 0)) , String.valueOf(new Date(date.getYear(), date.getMonth(), date.getDay(), 23, 59, 99)) };
+		GregorianCalendar startDate = new GregorianCalendar(date.get(Calendar.YEAR), date.get(Calendar.MONTH),
+				date.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+		GregorianCalendar endDate = new GregorianCalendar(date.get(Calendar.YEAR), date.get(Calendar.MONTH),
+				date.get(Calendar.DAY_OF_MONTH), 23, 59, 59);
+		String[] whereArgs = { String.valueOf(getDateTime(startDate)), String.valueOf(getDateTime(endDate)) };
 		return getReadableDatabase().query(TABLE_BUDGETED_EXPENSES, null, whereClause, whereArgs, null, null, null);
 	}
-	
+
 	/**
 	 * 
-	 * Gets all the budgeted expenses fields for a given budgeted id.
-	 * Used for displaying details.
+	 * Gets all the budgeted expenses fields for a given budgeted id. Used for
+	 * displaying details.
 	 * 
 	 * @since 2015-12-06
 	 * @param budgetedId
@@ -512,11 +518,11 @@ public class DBHelper extends SQLiteOpenHelper {
 		String[] whereArgs = { String.valueOf(budgetedId) };
 		return getReadableDatabase().query(TABLE_BUDGETED_EXPENSES, null, whereClause, whereArgs, null, null, null);
 	}
-	
+
 	/**
 	 * 
-	 * Gets all the actual expenses fields for a given actual id.
-	 * Used for displaying details.
+	 * Gets all the actual expenses fields for a given actual id. Used for
+	 * displaying details.
 	 * 
 	 * @since 2015-12-06
 	 * @param actualId
@@ -567,7 +573,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_NAME, name);
 		cv.put(COLUMN_DESCRIPTION, description);
-		cv.put(COLUMN_UPDATED_ON, getDateTime(new Date()));
+		cv.put(COLUMN_UPDATED_ON, getDateTime(new GregorianCalendar()));
 
 		String whereClause = COLUMN_ID + " = ?";
 		String[] whereArgs = { String.valueOf(id) };
@@ -623,8 +629,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *            Address of the budgeted expense.
 	 * @return The number of rows updated.
 	 */
-	public int updateBudgetedExpense(int id, Date plannedArrivalDate, Date plannedDepartureDate,
-			double amount, String description, int categoryId, String nameOfSupplier, String address) {
+	public int updateBudgetedExpense(int id, GregorianCalendar plannedArrivalDate, GregorianCalendar plannedDepartureDate, double amount,
+			String description, int categoryId, String nameOfSupplier, String address) {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_PLANNED_ARRIVAL_DATE, getDateTime(plannedArrivalDate));
 		cv.put(COLUMN_PLANNED_DEPARTURE_DATE, getDateTime(plannedDepartureDate));
@@ -664,8 +670,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *            Rating of the supplier of the actual expense.
 	 * @return The number of rows updated.
 	 */
-	public int updateActualExpense(int id, Date arrivalDate, Date departureDate, double amount,
-			String description, int categoryId, String nameOfSupplier, String address, int stars) {
+	public int updateActualExpense(int id, GregorianCalendar arrivalDate, GregorianCalendar departureDate, double amount, String description,
+			int categoryId, String nameOfSupplier, String address, int stars) {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_ARRIVAL_DATE, getDateTime(arrivalDate));
 		cv.put(COLUMN_DEPARTURE_DATE, getDateTime(departureDate));
@@ -753,11 +759,10 @@ public class DBHelper extends SQLiteOpenHelper {
 	 * into an SQLite database.
 	 * 
 	 * @param date
-	 *            The date that you want to format into a string.
-	 * @return The formated string.
+	 *            The date that you want to format into a unix time.
+	 * @return The unix time.
 	 */
-	private String getDateTime(Date date) {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-		return "'" + dateFormat.format(date) + "'";
+	private long getDateTime(GregorianCalendar date) {
+		return date.getTimeInMillis() / 1000;
 	}
 }

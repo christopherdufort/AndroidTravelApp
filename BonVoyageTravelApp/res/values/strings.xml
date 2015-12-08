@@ -96,8 +96,10 @@
 	<string name="itinerary_today_title"> Todays Agenda:</string>
   	<string name="itinerary_details_associated_title"> The Associated Actual Expense:</string>
  	<string name="itinerary_location">Location:</string>
- 	<string name="itinerary_arrival">Arrival Time:</string>
- 	<string name="itinerary_departure">Departure Time:</string>
+ 	<string name="itinerary_arrival_date">Arrival Date:</string>
+ 	<string name="itinerary_arrival_time">Arrival Time:</string>
+ 	<string name="itinerary_departure_date">Departure Date:</string>
+ 	<string name="itinerary_departure_time">Departure Time:</string>
  	<string name="itinerary_amount">Amount:</string>
  	<string name="itinerary_description">Description:</string>
  	<string name="itinerary_category">Category:</string>
