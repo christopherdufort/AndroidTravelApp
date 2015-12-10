@@ -82,6 +82,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	// Static instance to share DBHelper
 	private static DBHelper dbh = null;
+	private SQLiteDatabase db;
 
 	/**
 	 * Constructor
@@ -224,6 +225,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		 * raw SQL.
 		 */
 		createPopulateDB(database);
+		seedDB(database);
 
 	}
 
@@ -269,12 +271,32 @@ public class DBHelper extends SQLiteOpenHelper {
 			database.execSQL(CREATE_BUDGETED_EXPENSES_TABLE);
 			database.execSQL(CREATE_ACTUAL_EXPENSES_TABLE);
 
-			seedDB(database);
+			//seedDB(database);
 
 		} catch (SQLException e) {
 			Log.e(DBHelper.class.getName(), "CREATE exception" + Log.getStackTraceString(e));
 			throw e;
 		}
+	}
+	
+	/**
+	 * @since 2015-12-09
+	 * Added to remove all tables before a resync
+	 * probably redundant with on upgrade.
+	 * @param database
+	 */
+	public void recreateAllTables(){
+		try {
+			getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_TRIPS);
+			getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_LOCATIONS);
+			getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORIES);
+			getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_BUDGETED_EXPENSES);
+			getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_ACTUAL_EXPENSES);
+		} catch (SQLException e) {
+			Log.e(DBHelper.class.getName(), "DROP exception" + Log.getStackTraceString(e));
+			throw e;
+		}
+		createPopulateDB(getWritableDatabase());
 	}
 
 	// TODO: Note sure what trip id is

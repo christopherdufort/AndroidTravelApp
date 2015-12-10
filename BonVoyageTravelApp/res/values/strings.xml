@@ -76,6 +76,8 @@
     <string name="title_activity_manage_trips">Manage Trips</string>
     <string name="all_trips_for">All Trips For:</string>
     <string name="sync_trips">Sync Trips</string>
+    <string name="trip_name">Name</string>
+    <string name="trip_description">Description</string>
     <!-- End Manage Trips -->
 
 

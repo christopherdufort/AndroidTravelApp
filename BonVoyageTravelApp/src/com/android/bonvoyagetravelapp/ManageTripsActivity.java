@@ -12,6 +12,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.GregorianCalendar;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -198,8 +199,8 @@ public class ManageTripsActivity extends Activity {
 		// onPreExecute log some info make sure url and data are good
 		// runs in calling thread (in UI thread)
 		protected void onPreExecute() {
-			Log.d("HttpsURLPOST", "url " + urlString);
-			Log.d("HttpsURLPOST", "json " + jsonStr);
+			Log.d("onPreExecute", "url " + urlString);
+			Log.d("onPreExecute", "json " + jsonStr);
 		}
 		
 		/**
@@ -226,6 +227,8 @@ public class ManageTripsActivity extends Activity {
 			Log.d("Results", result);
 			Toast toast = Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG);
 			toast.show();
+			
+			updateView();
 		
 			
 		}
@@ -297,8 +300,13 @@ public class ManageTripsActivity extends Activity {
 			 */
 			if (response != HttpURLConnection.HTTP_OK) {
 				Log.d("HttpsURLPOST", "Server returned: " + response + " aborting read.");
+				if (response == HttpURLConnection.HTTP_UNAUTHORIZED)
+					return "Server returned: " + response + " invalid credentials - aborting read.";
+				else
 				return "Server returned: " + response + " aborting read.";
 			}
+			Log.d("downloadData", "Downloading new data tables dropped and recreated");	
+			dbh.recreateAllTables();
 			is = conn.getInputStream();
 			contentAsString = readIt(is);
 			return contentAsString;
@@ -340,7 +348,6 @@ public class ManageTripsActivity extends Activity {
 	 */
 	private String readIt(InputStream stream) throws IOException, UnsupportedEncodingException, JSONException 
 	{
-		String email = "error";
 		StringBuilder responseStrBuilder = new StringBuilder();
 		String buffer = "";
 		BufferedReader reader = null;
@@ -349,35 +356,91 @@ public class ManageTripsActivity extends Activity {
 
 		String line = null;  
 		while ((line = reader.readLine()) != null) {  
-			// could use string builder   sb.append(line + "\n");
+			// could use string builder 
 			Log.d("RequestResponse", line);
 			// the \n is for display, if I'm parsing the JSON I don't want it
-			buffer += line + "\n";
 			responseStrBuilder.append(line);
 			JSONObject jsonObject = new JSONObject(responseStrBuilder.toString());
 
 			//email = jsonObject.get("email").toString();
-			JSONArray trips = jsonObject.getJSONArray("trips");
+			JSONArray tripsArray = jsonObject.getJSONArray("trips");
+			JSONArray budgetedArray = jsonObject.getJSONArray("budgeted");
+			JSONArray locationsArray = jsonObject.getJSONArray("locations");
+			JSONArray categoriesArray = jsonObject.getJSONArray("categories");
+			JSONArray actualArray = jsonObject.getJSONArray("actualExpenses");
 			
-			syncLocalDb(trips);
-			//JSONObject trips = jsonObject.getJSONObject("trips");
-			email=trips.getJSONObject(0).getString("description");
+			syncLocalDb(tripsArray, budgetedArray,locationsArray,categoriesArray,actualArray);
+			
 		}  
-		return email;
-		//return  buffer;
+		return "Successfull Sync";
 		
 	} // readIt()
 
-	private void syncLocalDb(JSONArray trips) throws JSONException {
+	private void syncLocalDb(JSONArray tripsArray, JSONArray budgetedArray, JSONArray locationsArray, JSONArray categoriesArray, JSONArray actualArray) throws JSONException {
 		
-		String description = trips.getJSONObject(0).getString("description");
-		String name = trips.getJSONObject(0).getString("name");
+		for (int l = 0 ; l< locationsArray.length(); l++){
+			String city = locationsArray.getJSONObject(l).getString("city");
+			String country_code = locationsArray.getJSONObject(l).getString("country_code");
+			String province = locationsArray.getJSONObject(l).getString("province");
+			dbh.createLocation(city, country_code, province);
 		
-		long id = dbh.createTrip(-1, name, description);
+		}
 		
-		Log.d("InsertedTripId", id+"");
-	
 		
-	}
+		for (int c = 0 ; c< categoriesArray.length(); c++){
+			String category = categoriesArray.getJSONObject(c).getString("category");
+			dbh.createCategory(category);	
+		}
+		
 
+		int insertedBudgetedId = -1;
+		int budgeted_id = -1;
+		//Insert all trips
+		for (int i=0; i< tripsArray.length(); i++){
+			int tripId = tripsArray.getJSONObject(i).getInt("id");
+			String description = tripsArray.getJSONObject(i).getString("description");
+			String name = tripsArray.getJSONObject(i).getString("name");
+			
+			int insertedTripId = (int) dbh.createTrip(tripId, name, description);
+			Log.d("InsertedTripId", insertedTripId+"");
+			
+			//Insert all budgeted
+			for (int b=0; b < budgetedArray.length(); b++){
+				budgeted_id = budgetedArray.getJSONObject(b).getInt("id");
+				int trip_id = budgetedArray.getJSONObject(b).getInt("trip_id");
+				int location_id = budgetedArray.getJSONObject(b).getInt("location_id");
+				int category_id = budgetedArray.getJSONObject(b).getInt("category_id");
+				//FIXME convert these strings into Gregorian.
+				//String planned_arrival_date = budgetedArray.getJSONObject(b).getString("planned_arrival_date");
+				//String planned_departure_date = budgetedArray.getJSONObject(b).getString("lanned_departure_date");
+				double amount = budgetedArray.getJSONObject(b).getDouble("amount");
+				String budgetedDescription = budgetedArray.getJSONObject(b).getString("description");
+				String name_of_supplier = budgetedArray.getJSONObject(b).getString("name_of_supplier");
+				String address = budgetedArray.getJSONObject(b).getString("address");
+				if (trip_id == tripId){
+					insertedBudgetedId = (int) dbh.createBudgetedExpense(insertedTripId, location_id, new GregorianCalendar(), new GregorianCalendar(), amount, budgetedDescription, category_id, name_of_supplier, address);
+					Log.d("InsertedBudgetedId", insertedBudgetedId+"");
+				}
+				
+				//Insert associated actual
+				
+				for (int a = 0; a<actualArray.length(); a++){
+					if (budgeted_id == actualArray.getJSONObject(a).getInt("budgeted_id")){
+						int actualCategory_id = actualArray.getJSONObject(a).getInt("category_id");
+						//FIXME convert these strings into Gregorian.
+						//String arrival_date = actualArray.getJSONObject(a).getString("arrival_date");
+						//String departure_date = actualArray.getJSONObject(a).getString("arrival_date");
+						double actualAmount = actualArray.getJSONObject(a).getDouble("amount");
+						String actualDescription = actualArray.getJSONObject(a).getString("description");
+						String actualName_of_supplier = actualArray.getJSONObject(a).getString("name_of_supplier");
+						String actualAddress = actualArray.getJSONObject(a).getString("address");
+						int stars = actualArray.getJSONObject(a).getInt("stars");
+									
+						dbh.createActualExpense(insertedBudgetedId, new GregorianCalendar(), new GregorianCalendar(), actualAmount, actualDescription, actualCategory_id, actualName_of_supplier, actualAddress, stars);
+					}
+				}	
+			}
+			
+		}
+	}
 }
