@@ -7,9 +7,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,6 +42,7 @@ import android.widget.Toast;
 
 public class ManageTripsActivity extends Activity {
 
+	private String urlString, jsonStr;
 	private static DBHelper dbh;
 	private ListView lv;
 	private TextView tv;
@@ -45,12 +50,14 @@ public class ManageTripsActivity extends Activity {
 	private Cursor cursor;
 
 	private SharedPreferences prefs;
+	private Context context;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_manage_trips);
 		dbh = DBHelper.getDBHelper(this);
+		context = getApplicationContext();
 
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		// Custom ownership feel show current users name.
@@ -148,152 +155,229 @@ public class ManageTripsActivity extends Activity {
 	}
 
 	private void launchSyncAPITrips() {
-		String url = "http://travel-bonvoyage.rhcloud.com/apiTrips";
-		String jsonData = "{\"email\":\"" + prefs.getString("email", "") + "\",\"password\":\""
-				+ prefs.getString("password", "") + "\"}";
-
+		urlString = "https://travel-bonvoyage.rhcloud.com/apiTrips";
+		
+		String email = prefs.getString("email", "");
+		String password = prefs.getString("password", "");
+		
+		JSONObject jsonData  = new JSONObject();
+		
+		try{
+			jsonData.put("email", email);
+			jsonData.put("password", password);
+		}catch (JSONException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		}
+		
+		jsonStr = jsonData.toString();
+		
+		//first check to see if we can get on the network
 		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-
 		if (networkInfo != null && networkInfo.isConnected()) {
-			new DownloadTripsData().execute(url, jsonData);
+			// invoke the AsyncTask to do the dirty work.
+			new DownloadTripsData().execute(urlString, jsonStr);
+		}
+		else{
+			Toast toast = Toast.makeText(this, "No network connection available.", Toast.LENGTH_SHORT);
+			toast.show();
 		}
 	}
-
+	
+	/**
+	 * Uses AsyncTask to create a task away from the main UI thread. This task
+	 * takes a URL string and uses it to create an HttpsUrlConnection. Once the
+	 * connection has been established, the AsyncTask downloads the contents of
+	 * the webpage via an an InputStream. The InputStream is converted into a
+	 * string, which is displayed in the UI by the AsyncTask's onPostExecute
+	 * method.
+	 */
 	private class DownloadTripsData extends AsyncTask<String, Void, String> {
 
+		// onPreExecute log some info make sure url and data are good
+		// runs in calling thread (in UI thread)
+		protected void onPreExecute() {
+			Log.d("HttpsURLPOST", "url " + urlString);
+			Log.d("HttpsURLPOST", "json " + jsonStr);
+		}
+		
+		/**
+		 * runs in background (not in UI thread)
+		 */
 		@Override
 		protected String doInBackground(String... params) {
-			Log.d("debug", "IM IN A BACKGROUND");
-			InputStream input = null;
-			OutputStream output;
-			HttpURLConnection conn = null;
-			String result = "";
-
-			try {
-				byte[] jsonBytes = params[1].getBytes("UTF-8");
-				Integer jsonBytesLength = jsonBytes.length;
-
-				URL url = new URL(params[0]);
-				// create and open the connection
-				conn = (HttpURLConnection) url.openConnection();
-
-				if (conn == null)
-					Log.d("debug", "connection is null");
-				conn.setRequestMethod("POST");
-				//conn.setRequestMethod("GET");
-
-				// specifies whether this connection allows receiving data
-				conn.setDoInput(true);
-				conn.setDoOutput(true);
-
-				conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-				
-				
-				//output = new BufferedOutputStream(conn.getOutputStream());
-				
-				//Create JSONObject here
-				JSONObject jsonParam = new JSONObject();
-				jsonParam.put("email", prefs.getString("email", ""));
-				jsonParam.put("password", prefs.getString("password", ""));
-
-				String str = jsonParam.toString();
-				byte[] data=str.getBytes("UTF-8");
-				conn.addRequestProperty("Content-Length", jsonParam.toString());
-				Log.d("debug", "I DIDID WRITE YET");
-				DataOutputStream printout = new DataOutputStream(conn.getOutputStream ());
-				printout.write(data);
-				printout.flush();
-				printout.close();
-				//output.write();
-				//output.flush();
-				//output.close();
-				//conn.connect();
-				Log.d("debug", ""+ conn.getResponseCode());
-				if (conn.getResponseCode() != HttpURLConnection.HTTP_OK)
-				{
-					Log.d("debug", "IM OUT OF HERE");
-					Log.d("debug", ""+ conn.getResponseCode());
-					return "";
-				}
-
-				// get the stream for the data from the website
-				input = conn.getInputStream();
-				
-				if (input == null)
-					Log.d("debug", "input is null");
-				else
-					Log.d("debug", "input is NOT null");
-
-				// read the stream
-				BufferedReader reader = new BufferedReader(new InputStreamReader(input, "UTF-8"));
-				
-				
-				String line = "";  
-				while ((line = reader.readLine()) != null) {  
-					result += line;
-				}
-				Log.d("debug", result);
+			try{
+				return downloadData(params);
 			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally {
-				try {
-					if (input != null)
-						input.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (conn!= null)
-					conn.disconnect();
+				return "Unable to retrieve web page. URL may be invalid. " + e.getMessage();
+			}catch (JSONException e){
+				return "Returned JSON object/array or json parse is malformed. " + e.getMessage();
 			}
-			return result;
 		}
-
+		
+		/**
+		 * onPostExecute displays the results of the AsyncTask.
+		 * runs in calling thread (in UI thread)
+		 */
 		@Override
 		protected void onPostExecute(String result) {
-			if (result.equals("")) {
-				// cant connect make a toast
-			} else {
-				parseResults(result);
+			
+			Log.d("Results", result);
+			Toast toast = Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG);
+			toast.show();
+		
+			
+		}
+	} // End AsyncTask DownloadTripsData()
+	
+	/**
+	 * Given a URL, establishes an HttpUrlConnection and retrieves the web page
+	 * content as a InputStream, which it returns as a string.
+	 *
+	 * @param params
+	 * @return
+	 * @throws IOException
+	 * @throws JSONException 
+	 */
+	private String downloadData(String... params)throws IOException, JSONException {
+		InputStream is = null;
+		OutputStream out;
+		String contentAsString ="";
+		int response;
+		URL url;
+		//Website api support Https - ssl
+		HttpsURLConnection conn = null;
+		
+		byte[] bytes = params[1].getBytes("UTF-8");
+		Integer bytesLeng = bytes.length;
+		
+		try {			
+			url =  new URL(params[0]);
+		} catch (MalformedURLException e) {
+			Log.d("HttpsURLPOST", e.getMessage());
+			return "ERROR call the developer: " + e.getMessage();
+		}
+		try {
+			// create and open the connection
+			conn = (HttpsURLConnection) url.openConnection();
+
+			// output = true, uploading POST data
+			// input = true, downloading response to POST
+			conn.setDoOutput(true);
+			conn.setDoInput(true);
+			conn.setRequestMethod("POST");
+
+			// conn.setFixedLengthStreamingMode(params[1].getBytes().length);
+			// send body unknown length
+			// conn.setChunkedStreamingMode(0);
+			conn.setReadTimeout(10000);
+			conn.setConnectTimeout(15000 /* milliseconds */);
+
+			conn.setRequestProperty("Content-Type", 
+					"application/json; charset=UTF-8");
+			// set length of POST data to send
+			conn.addRequestProperty("Content-Length", bytesLeng.toString());
+
+			//send the POST out
+			out = new BufferedOutputStream(conn.getOutputStream());
+
+			out.write(bytes);
+			out.flush();
+			out.close();
+
+			// logCertsInfo(conn);
+
+			// now get response
+			response = conn.getResponseCode();
+
+			/*	
+			 *  check the status code HTTP_OK = 200 anything else we didn't get what
+			 *  we want in the data.
+			 */
+			if (response != HttpURLConnection.HTTP_OK) {
+				Log.d("HttpsURLPOST", "Server returned: " + response + " aborting read.");
+				return "Server returned: " + response + " aborting read.";
+			}
+			is = conn.getInputStream();
+			contentAsString = readIt(is);
+			return contentAsString;
+
+		} finally {
+			// Make sure that the Reader is closed after the app is finished using it.
+			if (is != null) {
+				try {
+					is.close();  
+				} catch (IOException ignore) { 
+					/* ignore */	
+				}
+			}	
+			//* Make sure the connection is closed after the app is finished using it.
+			if (conn != null){
+				try {
+					conn.disconnect();
+				} catch (IllegalStateException ignore ) { 
+					/* ignore  */ 
+				}
 			}
 		}
+	}
+	
 
-	} // end of DownloadTripsData
+	/**
+	 * 
+	 * Reads stream from HTTP connection and converts it to a String. See
+	 * stackoverflow or a good explanation of why I did it this way.
+	 * http://stackoverflow
+	 * .com/questions/3459127/should-i-buffer-the-inputstream
+	 * -or-the-inputstreamreader
+	 * 
+	 * @param stream
+	 * @return
+	 * @throws IOException
+	 * @throws UnsupportedEncodingException
+	 * @throws JSONException 
+	 */
+	private String readIt(InputStream stream) throws IOException, UnsupportedEncodingException, JSONException 
+	{
+		String email = "error";
+		StringBuilder responseStrBuilder = new StringBuilder();
+		String buffer = "";
+		BufferedReader reader = null;
+		
+		reader = new BufferedReader(new InputStreamReader(stream,"UTF-8"));  
 
-	private void parseResults(String result) {
-		try {
-			JSONObject jsonObj = new JSONObject(result);
+		String line = null;  
+		while ((line = reader.readLine()) != null) {  
+			// could use string builder   sb.append(line + "\n");
+			Log.d("RequestResponse", line);
+			// the \n is for display, if I'm parsing the JSON I don't want it
+			buffer += line + "\n";
+			responseStrBuilder.append(line);
+			JSONObject jsonObject = new JSONObject(responseStrBuilder.toString());
 
-			Log.d("json", jsonObj.toString());
+			//email = jsonObject.get("email").toString();
+			JSONArray trips = jsonObject.getJSONArray("trips");
+			
+			syncLocalDb(trips);
+			//JSONObject trips = jsonObject.getJSONObject("trips");
+			email=trips.getJSONObject(0).getString("description");
+		}  
+		return email;
+		//return  buffer;
+		
+	} // readIt()
 
-			/*
-			 * JSONObject sysObj = jsonObj.getJSONObject("sys"); country =
-			 * sysObj.getString("country");
-			 * 
-			 * nameOfArea = jsonObj.getString("name");
-			 * 
-			 * JSONArray array = jsonObj.getJSONArray("weather");
-			 * descriptionForecast =
-			 * array.getJSONObject(0).getString("description"); mainForecast =
-			 * array.getJSONObject(0).getString("main");
-			 * 
-			 * JSONObject weatherObj = jsonObj.getJSONObject("wind"); windSpeed
-			 * = "" + weatherObj.getDouble("speed");
-			 * 
-			 * JSONObject mainObj = jsonObj.getJSONObject("main"); humidity = ""
-			 * + mainObj.getInt("humidity"); pressure = "" +
-			 * mainObj.getInt("pressure"); temp = "" +
-			 * mainObj.getDouble("temp"); minTemp = "" +
-			 * mainObj.getDouble("temp_min"); maxTemp = "" +
-			 * mainObj.getDouble("temp_max");
-			 */
+	private void syncLocalDb(JSONArray trips) throws JSONException {
+		
+		String description = trips.getJSONObject(0).getString("description");
+		String name = trips.getJSONObject(0).getString("name");
+		
+		long id = dbh.createTrip(-1, name, description);
+		
+		Log.d("InsertedTripId", id+"");
+	
+		
+	}
 
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-	} // end of parseResults
 }
