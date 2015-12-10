@@ -98,6 +98,7 @@ public class ItineraryActivity extends Activity {
 
 		Intent intent = new Intent(getApplicationContext(), ItineraryDetails.class);
 		intent.putExtra("ITINERARYID", -1);
+		intent.putExtra("tripId", tripId);
 		startActivity(intent);
 	}
 

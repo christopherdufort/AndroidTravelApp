@@ -56,7 +56,8 @@
         </activity>
         <activity
             android:name=".ItineraryDetails"
-            android:label="@string/title_activity_itinerary_details" >
+            android:label="@string/title_activity_itinerary_details"
+            android:windowSoftInputMode="adjustResize" >
         </activity>
     </application>
 

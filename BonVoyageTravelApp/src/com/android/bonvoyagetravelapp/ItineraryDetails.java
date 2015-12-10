@@ -1,6 +1,8 @@
 package com.android.bonvoyagetravelapp;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -13,12 +15,14 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RatingBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -26,16 +30,22 @@ import android.widget.Toast;
 public class ItineraryDetails extends Activity {
 
 	private DBHelper dbh;
-	private int budgetedId;
+	private int tripId, budgetedId, actualId;
 	private Cursor cursor;
-	private EditText category, location, description, supplier, address, amount;
+	private ArrayList<Integer> categoryIds, locationIds;
+	private ArrayList<String> categoryNames, locationNames;
+	private Spinner category, location;
+	private EditText description, supplier, address, amount;
 	private TextView arrivalDate, arrivalTime, departureDate, departureTime;
-	private boolean editing;
-	private Button editButton;
-	private TextView tv;
-	private int locationId;
-	private int categoryID;
+	private LinearLayout actualExpense;
+	private EditText actualDescription, actualSupplier, actualAddress, actualAmount;
+	private TextView actualArrivalDate, actualArrivalTime, actualDepartureDate, actualDepartureTime;
+	private RatingBar stars;
+	private Button editBudgetedButton, saveBudgetedButton, createBudgetedButton, deleteBudgetedButton;
+	private Button editActualButton, saveActualButton, createActualButton, deleteActualButton, createNewActualButton;
+	private TextView title;
 	private GregorianCalendar arrivalDateTime, departureDateTime;
+	private GregorianCalendar actualArrivalDateTime, actualDepartureDateTime;
 	private int currentSettingId;
 	private GregorianCalendar currentDateTime;
 
@@ -43,17 +53,17 @@ public class ItineraryDetails extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_itinerary_details);
+
+		// Get a handle to the DBHelper.
 		dbh = DBHelper.getDBHelper(this);
-		tv = (TextView) findViewById(R.id.itinerary_title);
 
-		Intent intent = getIntent();
-		budgetedId = intent.getIntExtra("ITINERARYID", -1);
-
-		editButton = (Button) findViewById(R.id.itinerary_edit_btn);
+		// Get a handle to the common elements
+		title = (TextView) findViewById(R.id.itinerary_title);
 
 		// TODO move this all off into another method async preferable
-		category = (EditText) findViewById(R.id.itinerary_category);
-		location = (EditText) findViewById(R.id.itinerary_location);
+		// Get a handle to all the fields associated with a budgeted expense.
+		category = (Spinner) findViewById(R.id.itinerary_category);
+		location = (Spinner) findViewById(R.id.itinerary_location);
 		description = (EditText) findViewById(R.id.itinerary_description);
 		supplier = (EditText) findViewById(R.id.itinerary_supplier);
 		address = (EditText) findViewById(R.id.itinerary_address);
@@ -62,159 +72,344 @@ public class ItineraryDetails extends Activity {
 		arrivalTime = (TextView) findViewById(R.id.itinerary_arrival_time);
 		departureDate = (TextView) findViewById(R.id.itinerary_departure_date);
 		departureTime = (TextView) findViewById(R.id.itinerary_departure_time);
+		editBudgetedButton = (Button) findViewById(R.id.itinerary_edit_budgeted_btn);
+		saveBudgetedButton = (Button) findViewById(R.id.itinerary_save_budgeted_btn);
+		createBudgetedButton = (Button) findViewById(R.id.itinerary_create_budgeted_btn);
+		deleteBudgetedButton = (Button) findViewById(R.id.itinerary_delete_budgeted_btn);
+
+		// Get a handle to the button to create a new actual expense.
+		createNewActualButton = (Button) findViewById(R.id.create_actual_btn);
+
+		// Get a handle to the linear layout containing all fields associated
+		// with an actual expense.
+		actualExpense = (LinearLayout) findViewById(R.id.container_actual);
+
+		// Get a handle to all the fields associated with an actual expense.
+		actualDescription = (EditText) findViewById(R.id.itinerary_actual_description);
+		actualSupplier = (EditText) findViewById(R.id.itinerary_actual_supplier);
+		actualAddress = (EditText) findViewById(R.id.itinerary_actual_address);
+		actualAmount = (EditText) findViewById(R.id.itinerary_actual_amount);
+		actualArrivalDate = (TextView) findViewById(R.id.itinerary_actual_arrival_date);
+		actualArrivalTime = (TextView) findViewById(R.id.itinerary_actual_arrival_time);
+		actualDepartureDate = (TextView) findViewById(R.id.itinerary_actual_departure_date);
+		actualDepartureTime = (TextView) findViewById(R.id.itinerary_actual_departure_time);
+		stars = (RatingBar) findViewById(R.id.stars);
+		editActualButton = (Button) findViewById(R.id.itinerary_edit_actual_btn);
+		saveActualButton = (Button) findViewById(R.id.itinerary_save_actual_btn);
+		createActualButton = (Button) findViewById(R.id.itinerary_create_actual_btn);
+		deleteActualButton = (Button) findViewById(R.id.itinerary_delete_actual_btn);
+
+		Intent intent = getIntent();
+		budgetedId = intent.getIntExtra("ITINERARYID", -1);
+		tripId = intent.getIntExtra("tripId", -1);
+
+		// Fill the spinners with the correct values
+		cursor = dbh.getCategories();
+		categoryIds = new ArrayList<Integer>();
+		categoryNames = new ArrayList<String>();
+		if (cursor.getCount() != 0) {
+			while (cursor.moveToNext()) {
+				categoryIds.add(cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_ID)));
+				categoryNames.add(cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_CATEGORY)));
+			}
+
+			ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this,
+					android.R.layout.simple_spinner_dropdown_item, categoryNames);
+			category.setAdapter(spinnerArrayAdapter);
+		}
+
+		cursor = dbh.getLocations();
+		locationIds = new ArrayList<Integer>();
+		locationNames = new ArrayList<String>();
+		Log.d("locations", cursor.getCount() + "");
+		if (cursor.getCount() != 0) {
+			while (cursor.moveToNext()) {
+				locationIds.add(cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_ID)));
+				locationNames.add(cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_CITY)) + ", "
+						+ cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_COUNTRY_CODE)));
+			}
+
+			ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this,
+					android.R.layout.simple_spinner_dropdown_item, locationNames);
+			location.setAdapter(spinnerArrayAdapter);
+		}
+
+		for (String s : locationNames) {
+			Log.d("locations", s);
+		}
 
 		if (budgetedId != -1) {
-			tv.setText(R.string.itinerary_details_title);
-			editing = false;
+			createBudgetedButton.setVisibility(Button.GONE);
+			title.setText(R.string.itinerary_details_title);
 			// TODO remember to close cursor in a pause
 			cursor = dbh.getBudgetedDetails(budgetedId);
 			cursor.moveToFirst();
-			// budgeted table ColumnIndex
-			// id 0
-			// trip id 1
-			// location id 2
-			// arrival 3
-			// departure 4
-			// amount 5
-			// description 6
-			// category 7
-			// supplier 8
-			// address 9
 
 			arrivalDateTime = new GregorianCalendar();
-			arrivalDateTime.setTimeInMillis(cursor.getLong(3) * 1000);
+			arrivalDateTime.setTimeInMillis(
+					cursor.getLong(cursor.getColumnIndex(DBHelper.COLUMN_PLANNED_ARRIVAL_DATE)) * 1000);
 			arrivalDate.setText(formatDate(arrivalDateTime));
 			arrivalTime.setText(formatTime(arrivalDateTime));
 
 			departureDateTime = new GregorianCalendar();
-			departureDateTime.setTimeInMillis(cursor.getLong(4) * 1000);
+			departureDateTime.setTimeInMillis(
+					cursor.getLong(cursor.getColumnIndex(DBHelper.COLUMN_PLANNED_DEPARTURE_DATE)) * 1000);
 			departureDate.setText(formatDate(departureDateTime));
 			departureTime.setText(formatTime(departureDateTime));
 
-			amount.setText(cursor.getString(5));
-			description.setText(cursor.getString(6));
+			amount.setText(Double.valueOf(
+					new DecimalFormat("#.00").format(cursor.getDouble(cursor.getColumnIndex(DBHelper.COLUMN_AMOUNT))))
+					.toString());
+			description.setText(cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_DESCRIPTION)));
 
-			supplier.setText(cursor.getString(8));
-			address.setText(cursor.getString(9));
+			supplier.setText(cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_NAME_OF_SUPPLIER)));
+			address.setText(cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_ADDRESS)));
 
-			locationId = cursor.getInt(2); // foreign key
-			categoryID = cursor.getInt(7); // foreign key
+			category.setSelection(
+					categoryIds.indexOf(cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_CATEGORY_ID))));
 
-			cursor = dbh.getLocationById(locationId);
+			cursor = dbh.getLocationById(cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_LOCATION_ID)));
 			cursor.moveToFirst();
 
-			location.setText(cursor.getString(1) + ", " + cursor.getString(2));
+			location.setSelection(locationNames.indexOf(cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_CITY))
+					+ ", " + cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_COUNTRY_CODE))));
 
-			cursor = dbh.getCategoryById(categoryID);
-			cursor.moveToFirst();
+			editingBudgetedFields(false);
 
-			category.setText(cursor.getString(1));
+			// Get the actual expense associated with the budgeted expense.
+			cursor = dbh.getActualExpenses(budgetedId);
 
-			lockAllFields();
+			// If there is an actual expense associated with the budgeted
+			// expense, show it. If not add a button to create one.
+			if (cursor.getCount() != 0) {
+				createNewActualButton.setVisibility(Button.GONE);
+				createActualButton.setVisibility(Button.GONE);
+				actualExpense.setVisibility(LinearLayout.VISIBLE);
+
+				cursor.moveToFirst();
+
+				actualId = cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_ID));
+
+				actualDescription.setText(cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_DESCRIPTION)));
+				actualSupplier.setText(cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_NAME_OF_SUPPLIER)));
+				actualAddress.setText(cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_ADDRESS)));
+				actualAmount
+						.setText(Double
+								.valueOf(new DecimalFormat("#.00")
+										.format(cursor.getDouble(cursor.getColumnIndex(DBHelper.COLUMN_AMOUNT))))
+						.toString());
+
+				actualArrivalDateTime = new GregorianCalendar();
+				actualArrivalDateTime
+						.setTimeInMillis(cursor.getLong(cursor.getColumnIndex(DBHelper.COLUMN_ARRIVAL_DATE)) * 1000);
+				actualArrivalDate.setText(formatDate(actualArrivalDateTime));
+				actualArrivalTime.setText(formatTime(actualArrivalDateTime));
+
+				actualDepartureDateTime = new GregorianCalendar();
+				actualDepartureDateTime
+						.setTimeInMillis(cursor.getLong(cursor.getColumnIndex(DBHelper.COLUMN_DEPARTURE_DATE)) * 1000);
+				actualDepartureDate.setText(formatDate(actualDepartureDateTime));
+				actualDepartureTime.setText(formatTime(actualDepartureDateTime));
+
+				stars.setRating(cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_STARS)));
+
+				editingActualFields(false);
+			} else {
+				createNewActualButton.setVisibility(Button.VISIBLE);
+				actualExpense.setVisibility(LinearLayout.GONE);
+			}
 		} else {
-			tv.setText(R.string.itinerary_today_title);
-			editButton.setText(R.string.itinerary_edit_save);
-			editing = true;
-		}
+			createNewActualButton.setVisibility(Button.GONE);
+			actualExpense.setVisibility(LinearLayout.GONE);
 
+			title.setText(R.string.itinerary_today_title);
+
+			arrivalDateTime = new GregorianCalendar();
+			arrivalDate.setText(formatDate(arrivalDateTime));
+			arrivalTime.setText(formatTime(arrivalDateTime));
+
+			departureDateTime = new GregorianCalendar();
+			departureDate.setText(formatDate(departureDateTime));
+			departureTime.setText(formatTime(departureDateTime));
+
+			editingBudgetedFields(true);
+			saveBudgetedButton.setVisibility(Button.GONE);
+		}
 	}
 
-	// TODO do this in a loop or something its really ugly
-	private void lockAllFields() {
-
+	private void editingBudgetedFields(boolean editing) {
 		if (editing) {
-			Toast toast = Toast.makeText(this, "Editing in progress", Toast.LENGTH_SHORT);
-			toast.show();
-			category.setFocusableInTouchMode(true);
-			category.setFocusable(true);
-			category.setClickable(true);
-			location.setFocusableInTouchMode(true);
-			location.setFocusable(true);
-			location.setClickable(true);
-			description.setFocusableInTouchMode(true);
-			description.setFocusable(true);
-			description.setClickable(true);
-			supplier.setFocusableInTouchMode(true);
-			supplier.setFocusable(true);
-			supplier.setClickable(true);
-			address.setFocusableInTouchMode(true);
-			address.setFocusable(true);
-			address.setClickable(true);
-			amount.setFocusableInTouchMode(true);
-			amount.setFocusable(true);
-			amount.setClickable(true);
-			arrivalDate.setClickable(true);
-			arrivalTime.setClickable(true);
-			departureDate.setClickable(true);
-			departureTime.setClickable(true);
+			Toast.makeText(this, "Editing in progress", Toast.LENGTH_SHORT).show();
+			editBudgetedButton.setVisibility(Button.GONE);
+			deleteBudgetedButton.setVisibility(Button.GONE);
+			saveBudgetedButton.setVisibility(Button.VISIBLE);
 		} else {
-			Toast toast = Toast.makeText(this, "Editing disabled", Toast.LENGTH_SHORT);
-			toast.show();
-			category.setFocusable(false);
-			category.setClickable(false);
-			location.setFocusable(false);
-			location.setClickable(false);
-			description.setFocusable(false);
-			description.setClickable(false);
-			supplier.setFocusable(false);
-			supplier.setClickable(false);
-			address.setFocusable(false);
-			address.setClickable(false);
-			amount.setFocusable(false);
-			amount.setClickable(false);
-			arrivalDate.setClickable(false);
-			arrivalTime.setClickable(false);
-			departureDate.setClickable(false);
-			departureTime.setClickable(false);
+			Toast.makeText(this, "Editing disabled", Toast.LENGTH_SHORT).show();
+			editBudgetedButton.setVisibility(Button.VISIBLE);
+			deleteBudgetedButton.setVisibility(Button.VISIBLE);
+			saveBudgetedButton.setVisibility(Button.GONE);
 		}
+
+		category.setEnabled(editing);
+		location.setEnabled(editing);
+		description.setFocusableInTouchMode(editing);
+		description.setFocusable(editing);
+		description.setClickable(editing);
+		supplier.setFocusableInTouchMode(editing);
+		supplier.setFocusable(editing);
+		supplier.setClickable(editing);
+		address.setFocusableInTouchMode(editing);
+		address.setFocusable(editing);
+		address.setClickable(editing);
+		amount.setFocusableInTouchMode(editing);
+		amount.setFocusable(editing);
+		amount.setClickable(editing);
+		arrivalDate.setClickable(editing);
+		arrivalTime.setClickable(editing);
+		departureDate.setClickable(editing);
+		departureTime.setClickable(editing);
 	}
 
-	// TODO find better solution?
+	private void editingActualFields(boolean editing) {
+		if (editing) {
+			Toast.makeText(this, "Editing in progress", Toast.LENGTH_SHORT).show();
+			editActualButton.setVisibility(Button.GONE);
+			deleteActualButton.setVisibility(Button.GONE);
+			saveActualButton.setVisibility(Button.VISIBLE);
+		} else {
+			Toast.makeText(this, "Editing disabled", Toast.LENGTH_SHORT).show();
+			editActualButton.setVisibility(Button.VISIBLE);
+			deleteActualButton.setVisibility(Button.VISIBLE);
+			saveActualButton.setVisibility(Button.GONE);
+		}
+
+		actualDescription.setFocusableInTouchMode(editing);
+		actualDescription.setFocusable(editing);
+		actualDescription.setClickable(editing);
+		actualSupplier.setFocusableInTouchMode(editing);
+		actualSupplier.setFocusable(editing);
+		actualSupplier.setClickable(editing);
+		actualAddress.setFocusableInTouchMode(editing);
+		actualAddress.setFocusable(editing);
+		actualAddress.setClickable(editing);
+		actualAmount.setFocusableInTouchMode(editing);
+		actualAmount.setFocusable(editing);
+		actualAmount.setClickable(editing);
+		actualArrivalDate.setClickable(editing);
+		actualArrivalTime.setClickable(editing);
+		actualDepartureDate.setClickable(editing);
+		actualDepartureTime.setClickable(editing);
+		stars.setIsIndicator(!editing);
+	}
+
 	public void editBudgeted(View view) {
-
-		if (editing) {
-			editing = false;
-			editButton.setText(R.string.itinerary_edit_budgeted);
-			lockAllFields();
-			updateDb();
-		} else {
-			editing = true;
-			editButton.setText(R.string.itinerary_edit_save);
-			lockAllFields();
-		}
-
+		editingBudgetedFields(true);
 	}
 
-	private void updateDb() {
-		// FIXME transfer string into date arrival.getText(),
-		// departure.getText()
-		// TODO probably another way does not need tostring
-		dbh.updateBudgetedExpense(budgetedId, arrivalDateTime, departureDateTime,
-				Double.parseDouble(amount.getText().toString()), description.getText().toString(), categoryID,
-				supplier.getText().toString(), address.getText().toString());
+	// TODO Make sure every field has values.
+	public void saveBudgeted(View view) {
+		editingBudgetedFields(false);
+		dbh.updateBudgetedExpense(budgetedId, locationIds.get(location.getSelectedItemPosition()), arrivalDateTime,
+				departureDateTime, Double.parseDouble(amount.getText().toString()), description.getText().toString(),
+				categoryIds.get(category.getSelectedItemPosition()), supplier.getText().toString(),
+				address.getText().toString());
+		amount.setText(Double.valueOf(new DecimalFormat("#.00").format(Double.parseDouble(amount.getText().toString())))
+				.toString());
+	}
 
+	// TODO Make sure every field has values.
+	public void createBudgeted(View view) {
+		createBudgetedButton.setVisibility(Button.GONE);
+		title.setText(R.string.itinerary_details_title);
+		createNewActualButton.setVisibility(Button.VISIBLE);
+		editingBudgetedFields(false);
+
+		budgetedId = (int) dbh.createBudgetedExpense(tripId, locationIds.get(location.getSelectedItemPosition()),
+				arrivalDateTime, departureDateTime, Double.parseDouble(amount.getText().toString()),
+				description.getText().toString(), categoryIds.get(category.getSelectedItemPosition()),
+				supplier.getText().toString(), address.getText().toString());
+		amount.setText(Double.valueOf(new DecimalFormat("#.00").format(Double.parseDouble(amount.getText().toString())))
+				.toString());
+	}
+	
+	public void deleteBudgeted(View view){
+		dbh.deleteBudgetedExpense(budgetedId);
+		finish();
+	}
+
+	public void editActual(View view) {
+		editingActualFields(true);
+	}
+
+	// TODO Make sure every field has values
+	public void saveActual(View view) {
+		editingActualFields(false);
+		dbh.updateActualExpense(actualId, actualArrivalDateTime, actualDepartureDateTime,
+				Double.parseDouble(actualAmount.getText().toString()), actualDescription.getText().toString(),
+				categoryIds.get(category.getSelectedItemPosition()), actualSupplier.getText().toString(),
+				actualAddress.getText().toString(), (int) (stars.getRating()));
+		actualAmount.setText(
+				Double.valueOf(new DecimalFormat("#.00").format(Double.parseDouble(actualAmount.getText().toString())))
+						.toString());
+	}
+	
+	public void showActual(View view){
+		createNewActualButton.setVisibility(Button.GONE);
+		actualExpense.setVisibility(LinearLayout.VISIBLE);
+		
+		actualDescription.setText("");
+		actualSupplier.setText("");
+		actualAddress.setText("");
+		actualAmount.setText("");
+		stars.setRating(0);
+		
+		actualArrivalDateTime = new GregorianCalendar();
+		actualArrivalDate.setText(formatDate(actualArrivalDateTime));
+		actualArrivalTime.setText(formatTime(actualArrivalDateTime));
+
+		actualDepartureDateTime = new GregorianCalendar();
+		actualDepartureDate.setText(formatDate(actualDepartureDateTime));
+		actualDepartureTime.setText(formatTime(actualDepartureDateTime));
+		
+		editingActualFields(true);
+		saveActualButton.setVisibility(Button.GONE);
+		createActualButton.setVisibility(Button.VISIBLE);
+	}
+
+	// TODO Make sure every field has values
+	public void createActual(View view) {
+		createActualButton.setVisibility(Button.GONE);
+		editingActualFields(false);
+
+		actualId = (int) dbh.createActualExpense(budgetedId, actualArrivalDateTime, actualDepartureDateTime,
+				Double.parseDouble(actualAmount.getText().toString()), actualDescription.getText().toString(),
+				categoryIds.get(category.getSelectedItemPosition()), actualSupplier.getText().toString(),
+				actualAddress.getText().toString(), (int) (stars.getRating()));
+		actualAmount.setText(
+				Double.valueOf(new DecimalFormat("#.00").format(Double.parseDouble(actualAmount.getText().toString())))
+						.toString());
+	}
+	
+	public void deleteActual(View view){
+		createNewActualButton.setVisibility(Button.VISIBLE);
+		actualExpense.setVisibility(LinearLayout.GONE);
+		dbh.deleteActualExpense(actualId);
 	}
 
 	public void setDate(View view) {
 		currentSettingId = view.getId();
+
 		if (currentSettingId == arrivalDate.getId())
 			currentDateTime = arrivalDateTime;
-		else
+		else if (currentSettingId == departureDate.getId())
 			currentDateTime = departureDateTime;
+		else if (currentSettingId == actualArrivalDate.getId())
+			currentDateTime = actualArrivalDateTime;
+		else
+			currentDateTime = actualDepartureDateTime;
 
 		DatePickerDialog datePicker = new DatePickerDialog(this, handleSetDate, currentDateTime.get(Calendar.YEAR),
 				currentDateTime.get(Calendar.MONTH), currentDateTime.get(Calendar.DAY_OF_MONTH));
-
-		if (currentSettingId == arrivalDate.getId())
-			datePicker.getDatePicker()
-					.setMaxDate(new GregorianCalendar(departureDateTime.get(Calendar.YEAR),
-							departureDateTime.get(Calendar.MONTH), departureDateTime.get(Calendar.DAY_OF_MONTH), 23, 59,
-							59).getTimeInMillis());
-		else
-			datePicker.getDatePicker()
-					.setMinDate(new GregorianCalendar(arrivalDateTime.get(Calendar.YEAR),
-							arrivalDateTime.get(Calendar.MONTH), arrivalDateTime.get(Calendar.DAY_OF_MONTH), 0, 0, 0)
-									.getTimeInMillis());
 
 		datePicker.show();
 	}
@@ -222,80 +417,145 @@ public class ItineraryDetails extends Activity {
 	private OnDateSetListener handleSetDate = new OnDateSetListener() {
 		@Override
 		public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-			// TODO Auto-generated method stub
-			TextView currentSetView;
+			TextView currentSetView, correspondingDateView, correspondingTimeView;
+			GregorianCalendar correspondingDateTime;
+
 			if (currentSettingId == arrivalDate.getId()) {
 				currentSetView = arrivalDate;
 				currentDateTime = arrivalDateTime;
-			} else {
+				correspondingDateView = departureDate;
+				correspondingTimeView = departureTime;
+				correspondingDateTime = departureDateTime;
+			} else if (currentSettingId == departureDate.getId()) {
 				currentSetView = departureDate;
 				currentDateTime = departureDateTime;
+				correspondingDateView = arrivalDate;
+				correspondingTimeView = arrivalTime;
+				correspondingDateTime = arrivalDateTime;
+			} else if (currentSettingId == actualArrivalDate.getId()) {
+				currentSetView = actualArrivalDate;
+				currentDateTime = actualArrivalDateTime;
+				correspondingDateView = actualDepartureDate;
+				correspondingTimeView = actualDepartureTime;
+				correspondingDateTime = actualDepartureDateTime;
+			} else {
+				currentSetView = actualDepartureDate;
+				currentDateTime = actualDepartureDateTime;
+				correspondingDateView = actualArrivalDate;
+				correspondingTimeView = actualArrivalTime;
+				correspondingDateTime = actualArrivalDateTime;
 			}
 
 			currentDateTime.set(Calendar.YEAR, year);
 			currentDateTime.set(Calendar.MONTH, monthOfYear);
 			currentDateTime.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
 			currentSetView.setText(formatDate(currentDateTime));
+
+			if (currentSettingId == arrivalDate.getId() || currentSettingId == actualArrivalDate.getId()) {
+				// If the field being set is an arrival date, check if the new
+				// arrival date and time is after the current departure date and
+				// time. If it is, update the departure date and departure time
+				// to match the arrival date date time.
+				if (currentDateTime.compareTo(correspondingDateTime) > 0)
+					updateDateTime(currentDateTime, correspondingDateTime, correspondingDateView,
+							correspondingTimeView);
+			} else {
+				// If the field being set is a departure date, check if the new
+				// departure date and time is before the current departure date
+				// and time. If it is, update the departure date and departure
+				// time to match the departure date and time.
+				if (currentDateTime.compareTo(correspondingDateTime) < 0)
+					updateDateTime(currentDateTime, correspondingDateTime, correspondingDateView,
+							correspondingTimeView);
+			}
 		}
 	};
 
 	public void setTime(View view) {
 		currentSettingId = view.getId();
+
 		if (currentSettingId == arrivalTime.getId())
 			currentDateTime = arrivalDateTime;
-		else
+		else if (currentSettingId == departureTime.getId())
 			currentDateTime = departureDateTime;
+		else if (currentSettingId == actualArrivalTime.getId())
+			currentDateTime = actualArrivalDateTime;
+		else
+			currentDateTime = actualDepartureDateTime;
 
-		TimePickerDialog timePicker = new TimePickerDialog(this, handleSetTime, currentDateTime.get(Calendar.HOUR_OF_DAY),
-				currentDateTime.get(Calendar.MINUTE), false);
+		TimePickerDialog timePicker = new TimePickerDialog(this, handleSetTime,
+				currentDateTime.get(Calendar.HOUR_OF_DAY), currentDateTime.get(Calendar.MINUTE), false);
 		timePicker.show();
 	}
 
 	private OnTimeSetListener handleSetTime = new OnTimeSetListener() {
-
 		@Override
 		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+			TextView currentSetView, correspondingDateView, correspondingTimeView;
+			GregorianCalendar correspondingDateTime;
+
 			if (currentSettingId == arrivalTime.getId()) {
-				// Save the old value of hour and minute in case the newly set
-				// hour and minute makes the arrival date time after the
-				// departure date time.
-				int oldHour = arrivalDateTime.get(Calendar.HOUR_OF_DAY);
-				int oldMinute = arrivalDateTime.get(Calendar.MINUTE);
+				currentSetView = arrivalTime;
+				currentDateTime = arrivalDateTime;
+				correspondingDateView = departureDate;
+				correspondingTimeView = departureTime;
+				correspondingDateTime = departureDateTime;
+			} else if (currentSettingId == departureTime.getId()) {
+				currentSetView = departureTime;
+				currentDateTime = departureDateTime;
+				correspondingDateView = arrivalDate;
+				correspondingTimeView = arrivalTime;
+				correspondingDateTime = arrivalDateTime;
+			} else if (currentSettingId == actualArrivalTime.getId()) {
+				currentSetView = actualArrivalTime;
+				currentDateTime = actualArrivalDateTime;
+				correspondingDateView = actualDepartureDate;
+				correspondingTimeView = actualDepartureTime;
+				correspondingDateTime = actualDepartureDateTime;
+			} else {
+				currentSetView = actualDepartureTime;
+				currentDateTime = actualDepartureDateTime;
+				correspondingDateView = actualArrivalDate;
+				correspondingTimeView = actualArrivalTime;
+				correspondingDateTime = actualArrivalDateTime;
+			}
 
-				arrivalDateTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
-				arrivalDateTime.set(Calendar.MINUTE, minute);
+			currentDateTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
+			currentDateTime.set(Calendar.MINUTE, minute);
 
-				if (arrivalDateTime.compareTo(departureDateTime) > 0) {
-					arrivalDateTime.set(Calendar.HOUR_OF_DAY, oldHour);
-					arrivalDateTime.set(Calendar.MINUTE, oldMinute);
+			currentSetView.setText(formatDate(currentDateTime));
 
-					// TODO: Show some kind of error message saying the set time
-					// made the arrival date time after the departure date time
-				}else{
-					arrivalTime.setText(formatTime(arrivalDateTime));
-				}
-			} else{
-				// Save the old value of hour and minute in case the newly set
-				// hour and minute makes the arrival date time after the
-				// departure date time.
-				int oldHour = departureDateTime.get(Calendar.HOUR_OF_DAY);
-				int oldMinute = departureDateTime.get(Calendar.MINUTE);
-
-				departureDateTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
-				departureDateTime.set(Calendar.MINUTE, minute);
-
-				if (departureDateTime.compareTo(arrivalDateTime) < 0) {
-					departureDateTime.set(Calendar.HOUR_OF_DAY, oldHour);
-					departureDateTime.set(Calendar.MINUTE, oldMinute);
-
-					// TODO: Show some kind of error message saying the set time
-					// made the arrival date time after the departure date time
-				}else{
-					departureTime.setText(formatTime(departureDateTime));
-				}
+			if (currentSettingId == arrivalTime.getId() || currentSettingId == actualArrivalTime.getId()) {
+				// If the field being set is an arrival date, check if the new
+				// arrival date and time is after the current departure date and
+				// time. If it is, update the departure date and departure time
+				// to match the arrival date date time.
+				if (currentDateTime.compareTo(correspondingDateTime) > 0)
+					updateDateTime(currentDateTime, correspondingDateTime, correspondingDateView,
+							correspondingTimeView);
+			} else {
+				// If the field being set is a departure date, check if the new
+				// departure date and time is before the current departure date
+				// and time. If it is, update the departure date and departure
+				// time to match the departure date and time.
+				if (currentDateTime.compareTo(correspondingDateTime) < 0)
+					updateDateTime(currentDateTime, correspondingDateTime, correspondingDateView,
+							correspondingTimeView);
 			}
 		}
 	};
+
+	private void updateDateTime(GregorianCalendar currentDateTime, GregorianCalendar correspondingDateTime,
+			TextView correspondingDateView, TextView correspondingTimeView) {
+		correspondingDateTime.set(Calendar.YEAR, currentDateTime.get(Calendar.YEAR));
+		correspondingDateTime.set(Calendar.MONTH, currentDateTime.get(Calendar.MONTH));
+		correspondingDateTime.set(Calendar.DAY_OF_MONTH, currentDateTime.get(Calendar.DAY_OF_MONTH));
+		correspondingDateTime.set(Calendar.HOUR_OF_DAY, currentDateTime.get(Calendar.HOUR_OF_DAY));
+		correspondingDateTime.set(Calendar.MINUTE, currentDateTime.get(Calendar.MINUTE));
+		correspondingDateView.setText(formatDate(correspondingDateTime));
+		correspondingTimeView.setText(formatTime(correspondingDateTime));
+	}
 
 	private String formatDate(GregorianCalendar date) {
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-M-d");

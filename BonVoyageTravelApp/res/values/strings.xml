@@ -93,38 +93,46 @@
     <string name="expense_amount">Budgeted Amount</string>
     <!-- End Itinerary -->
 
-	<!-- Start Budgeted Details -->
-	<string name="itinerary_details_title"> More Details on the budgeted Expense:</string>
-	<string name="itinerary_today_title"> Todays Agenda:</string>
-  	<string name="itinerary_details_associated_title"> The Associated Actual Expense:</string>
- 	<string name="itinerary_location">Location:</string>
- 	<string name="itinerary_arrival_date">Arrival Date:</string>
- 	<string name="itinerary_arrival_time">Arrival Time:</string>
- 	<string name="itinerary_departure_date">Departure Date:</string>
- 	<string name="itinerary_departure_time">Departure Time:</string>
- 	<string name="itinerary_amount">Amount:</string>
- 	<string name="itinerary_description">Description:</string>
- 	<string name="itinerary_category">Category:</string>
- 	<string name="itinerary_supplier">Supplier:</string>
- 	<string name="itinerary_address">Address:</string>
- 	<string name="itinerary_stars">Number Of Stars:</string>
- 	<string name="itinerary_edit_budgeted">Edit Budgeted Expense</string>
- 	<string name="itinerary_edit_save">Save Changes</string>
- 	<!-- end budgeted details -->
+
+    <!-- Start Budgeted Details -->
+    <string name="itinerary_details_title">Details on the Budgeted Expense:</string>
+    <string name="itinerary_today_title">Todays Agenda:</string>
+    <string name="itinerary_details_associated_title">The Associated Actual Expense:</string>
+    <string name="itinerary_location">Location:</string>
+    <string name="itinerary_arrival_date">Arrival Date:</string>
+    <string name="itinerary_arrival_time">Arrival Time:</string>
+    <string name="itinerary_departure_date">Departure Date:</string>
+    <string name="itinerary_departure_time">Departure Time:</string>
+    <string name="itinerary_amount">Amount:</string>
+    <string name="itinerary_description">Description:</string>
+    <string name="itinerary_category">Category:</string>
+    <string name="itinerary_category_prompt">Choose a category</string>
+    <string name="itinerary_location_prompt">Choose a location</string>
+    <string name="itinerary_supplier">Supplier:</string>
+    <string name="itinerary_address">Address:</string>
+    <string name="itinerary_stars">Number of Stars:</string>
+    <string name="itinerary_create_actual">Create Actual Expense</string>
+    <string name="itinerary_edit_budgeted">Edit Budgeted Expense</string>
+    <string name="itinerary_edit_actual">Edit Budgeted Expense</string>
+    <string name="itinerary_create_budgeted">Create New Budgeted</string>
+    <string name="itinerary_edit_save">Save Changes</string>
+    <string name="itinerary_delete">Delete</string>
+    <!-- end budgeted details -->
+
 
     <!-- Start Currency Conversion -->
     <string name="currency_title">Currency Conversion</string>
     <string name="equals">=</string>
     <!-- End Currency Conversion -->
-    
+
     <string name="title_activity_itinerary_details">Details of Itinerary</string>
-    
+
     <!-- Start Settings -->
     <string name="settings_name">Name:</string>
     <string name="settings_email">Website Email:</string>
     <string name="settings_password">Website Password:</string>
     <string name="settings_home_country_code">Home Country Code:</string>
     <string name="settings_destination_country_code">Destination Country Code: </string>
-    <!-- End Settings-->
+    <!-- End Settings -->
 
 </resources>

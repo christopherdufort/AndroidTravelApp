@@ -567,7 +567,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public Cursor getActualExpenses(int budgetedId) {
 		String whereClause = COLUMN_BUDGETED_ID + " = ?";
 		String[] whereArgs = { String.valueOf(budgetedId) };
-		return getReadableDatabase().query(TABLE_BUDGETED_EXPENSES, null, whereClause, whereArgs, null, null, null);
+		return getReadableDatabase().query(TABLE_ACTUAL_EXPENSES, null, whereClause, whereArgs, null, null, null);
 	}
 
 	public Cursor getLocationIdWithTripId(String tripId) {
@@ -635,6 +635,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	 * 
 	 * @param id
 	 *            Id of the budgeted expense to update.
+ 	 * @param locationId
+	 *            Id of the location this budgeted expense takes place in.
 	 * @param plannedArrivalDate
 	 *            Planned arrival date.
 	 * @param plannedDepartureDate
@@ -651,9 +653,11 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *            Address of the budgeted expense.
 	 * @return The number of rows updated.
 	 */
-	public int updateBudgetedExpense(int id, GregorianCalendar plannedArrivalDate, GregorianCalendar plannedDepartureDate, double amount,
-			String description, int categoryId, String nameOfSupplier, String address) {
+	public int updateBudgetedExpense(int id, int locationId, GregorianCalendar plannedArrivalDate,
+			GregorianCalendar plannedDepartureDate, double amount, String description, int categoryId,
+			String nameOfSupplier, String address) {
 		ContentValues cv = new ContentValues();
+		cv.put(COLUMN_LOCATION_ID, locationId);
 		cv.put(COLUMN_PLANNED_ARRIVAL_DATE, getDateTime(plannedArrivalDate));
 		cv.put(COLUMN_PLANNED_DEPARTURE_DATE, getDateTime(plannedDepartureDate));
 		cv.put(COLUMN_AMOUNT, amount);
