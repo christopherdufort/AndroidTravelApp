@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -14,7 +15,6 @@ import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -779,7 +779,7 @@ public class ItineraryDetails extends Activity {
 	 * @return The formatted string.
 	 */
 	private String formatDate(GregorianCalendar date) {
-		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-M-d");
+		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-M-d", Locale.getDefault());
 		fmt.setCalendar(date);
 		String dateFormatted = fmt.format(date.getTime());
 		return dateFormatted;
@@ -794,7 +794,7 @@ public class ItineraryDetails extends Activity {
 	 * @return The formatted string.
 	 */
 	private String formatTime(GregorianCalendar time) {
-		SimpleDateFormat fmt = new SimpleDateFormat("hh:mm a");
+		SimpleDateFormat fmt = new SimpleDateFormat("hh:mm a", Locale.getDefault());
 		fmt.setCalendar(time);
 		String dateFormatted = fmt.format(time.getTime());
 		return dateFormatted;
