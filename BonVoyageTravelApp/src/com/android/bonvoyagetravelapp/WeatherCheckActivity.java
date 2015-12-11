@@ -73,7 +73,7 @@ public class WeatherCheckActivity extends Activity {
 			// there is a current trip(last edited/viewed)
 			
 			//gets location id
-			Cursor locationIdCursor = dbh.getLocationIdWithTripId("" + tripId);
+			Cursor locationIdCursor = dbh.getLocationIdByTripId("" + tripId);
 			locationIdCursor.moveToFirst();
 			int locationId = locationIdCursor.getInt(locationIdCursor.getColumnIndex(DBHelper.COLUMN_LOCATION_ID));
 

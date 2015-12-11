@@ -1,9 +1,7 @@
 package com.android.bonvoyagetravelapp;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.Locale;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -13,6 +11,16 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+/**
+ * This class is responsible for managing the application's database. It creates
+ * all the necessary tables and has methods for creating, showing, editing, and
+ * deleting rows from each table.
+ * 
+ * @author Irina Patrocinio Frazao
+ * @author Christopher Dufort
+ * @author Annie So
+ *
+ */
 public class DBHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "itinerary.db";
 	private static final int DATABASE_VERSION = 1;
@@ -48,7 +56,6 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_STARS = "stars";
 
 	// Database creation raw SQL statement
-	// TODO: Choose a data type for the dates
 	private static final String CREATE_TRIPS_TABLE = "create table " + TABLE_TRIPS + "( " + COLUMN_ID
 			+ " integer primary key autoincrement, " + COLUMN_TRIP_ID + " integer not null, " + COLUMN_CREATED_ON
 			+ " integer not null, " + COLUMN_UPDATED_ON + " integer, " + COLUMN_NAME + " text not null, "
@@ -82,7 +89,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	// Static instance to share DBHelper
 	private static DBHelper dbh = null;
-	private SQLiteDatabase db;
 
 	/**
 	 * Constructor
@@ -122,12 +128,100 @@ public class DBHelper extends SQLiteOpenHelper {
 		return dbh;
 	} // getDBHelper()
 
+	/**
+	 * onCreate()
+	 * 
+	 * SQLiteOpenHelper lifecycle method used when we first create the database,
+	 * in this case we create an empty database. You may want to populate your
+	 * database with data when you create it, this is app dependent.
+	 * 
+	 * @see android.database.sqlite.SQLiteOpenHelper#onCreate(android.database.sqlite
+	 *      .SQLiteDatabase)
+	 */
+	@Override
+	public void onCreate(SQLiteDatabase database) {
+		createDB(database);
+		seedDB(database);
+
+	}
+
+	/**
+	 * onUpgrade()
+	 * 
+	 * SQLiteOpenHelper lifecycle method used when the database is upgraded to a
+	 * different version, this one is simple, it drops then recreates the
+	 * database, you loose all of the data This is not necessarily what you will
+	 * want to do :p
+	 * 
+	 * @see android.database.sqlite.SQLiteOpenHelper#onUpgrade(android.database.sqlite
+	 *      .SQLiteDatabase, int, int)
+	 */
+	@Override
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		Log.w(DBHelper.class.getName(), "Upgrading database from version " + oldVersion + " to " + newVersion
+				+ ", which will destroy all old data");
+		try {
+			db.execSQL("DROP TABLE IF EXISTS " + TABLE_TRIPS);
+			db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOCATIONS);
+			db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORIES);
+			db.execSQL("DROP TABLE IF EXISTS " + TABLE_BUDGETED_EXPENSES);
+			db.execSQL("DROP TABLE IF EXISTS " + TABLE_ACTUAL_EXPENSES);
+		} catch (SQLException e) {
+			Log.e(DBHelper.class.getName(), "DROP exception" + Log.getStackTraceString(e));
+			throw e;
+		}
+		createDB(db);
+	}
+
+	/**
+	 * @since 2015-12-09 Added to remove all tables before a resync probably
+	 *        redundant with on upgrade.
+	 * @param database
+	 */
+	public void recreateAllTables() {
+		try {
+			getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_TRIPS);
+			getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_LOCATIONS);
+			getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORIES);
+			getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_BUDGETED_EXPENSES);
+			getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_ACTUAL_EXPENSES);
+		} catch (SQLException e) {
+			Log.e(DBHelper.class.getName(), "DROP exception" + Log.getStackTraceString(e));
+			throw e;
+		}
+		createDB(getWritableDatabase());
+	}
+
+	/**
+	 * createPopulateDB()
+	 * 
+	 * method creates database table called in onCreate() and in onUpdate()
+	 */
+	public void createDB(SQLiteDatabase database) {
+		try {
+
+			database.execSQL(CREATE_TRIPS_TABLE);
+			database.execSQL(CREATE_LOCATIONS_TABLE);
+			database.execSQL(CREATE_CATEGORIES_TABLE);
+			database.execSQL(CREATE_BUDGETED_EXPENSES_TABLE);
+			database.execSQL(CREATE_ACTUAL_EXPENSES_TABLE);
+		} catch (SQLException e) {
+			Log.e(DBHelper.class.getName(), "CREATE exception" + Log.getStackTraceString(e));
+			throw e;
+		}
+	}
+
 	// GregorianCalendar's months start at 0.
 	// GregorianCalendar's use 0 to represent noon and midnight and work on a 12
 	// hour clock.
 	// If calendar.get(Calendar.AM_PM) == Calendar.AM, it is AM.
 	// If calendar.get(Calendar.AM_PM) == Calendar.PM, it is PM.
-	@SuppressWarnings("deprecation")
+	/**
+	 * Seeds the database with mock data for two trips.
+	 * 
+	 * @param db
+	 *            The database being used.
+	 */
 	public void seedDB(SQLiteDatabase db) {
 		db.execSQL("INSERT INTO " + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY + ") VALUES('Accomodation')");
 		db.execSQL("INSERT INTO " + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY + ") VALUES('Food And Drink')");
@@ -184,7 +278,6 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ ",750.00, 'Plane trip to destination', 4, 'Air Canada', 'Montreal-Pierre Elliot Trudeau International Airport', 5)");
 
 		// Trip 2
-
 		db.execSQL("INSERT INTO " + TABLE_TRIPS + "(" + COLUMN_TRIP_ID + ", " + COLUMN_NAME + ", " + COLUMN_DESCRIPTION
 				+ ", " + COLUMN_CREATED_ON + ") VALUES(2, 'Trip 2', 'The second trip', "
 				+ getDateTime(new GregorianCalendar()) + ")");
@@ -208,98 +301,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
-	/**
-	 * onCreate()
-	 * 
-	 * SQLiteOpenHelper lifecycle method used when we first create the database,
-	 * in this case we create an empty database. You may want to populate your
-	 * database with data when you create it, this is app dependent.
-	 * 
-	 * @see android.database.sqlite.SQLiteOpenHelper#onCreate(android.database.sqlite
-	 *      .SQLiteDatabase)
-	 */
-	@Override
-	public void onCreate(SQLiteDatabase database) {
-		/*
-		 * this is one of the few places where it is not an horrific idea to use
-		 * raw SQL.
-		 */
-		createPopulateDB(database);
-		seedDB(database);
-
-	}
-
-	/**
-	 * onUpgrade()
-	 * 
-	 * SQLiteOpenHelper lifecycle method used when the database is upgraded to a
-	 * different version, this one is simple, it drops then recreates the
-	 * database, you loose all of the data This is not necessarily what you will
-	 * want to do :p
-	 * 
-	 * @see android.database.sqlite.SQLiteOpenHelper#onUpgrade(android.database.sqlite
-	 *      .SQLiteDatabase, int, int)
-	 */
-	@Override
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		Log.w(DBHelper.class.getName(), "Upgrading database from version " + oldVersion + " to " + newVersion
-				+ ", which will destroy all old data");
-		try {
-			db.execSQL("DROP TABLE IF EXISTS " + TABLE_TRIPS);
-			db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOCATIONS);
-			db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORIES);
-			db.execSQL("DROP TABLE IF EXISTS " + TABLE_BUDGETED_EXPENSES);
-			db.execSQL("DROP TABLE IF EXISTS " + TABLE_ACTUAL_EXPENSES);
-		} catch (SQLException e) {
-			Log.e(DBHelper.class.getName(), "DROP exception" + Log.getStackTraceString(e));
-			throw e;
-		}
-		createPopulateDB(db);
-	}
-
-	/**
-	 * createPopulateDB()
-	 * 
-	 * method creates database table called in onCreate() and in onUpdate()
-	 */
-	public void createPopulateDB(SQLiteDatabase database) {
-		try {
-
-			database.execSQL(CREATE_TRIPS_TABLE);
-			database.execSQL(CREATE_LOCATIONS_TABLE);
-			database.execSQL(CREATE_CATEGORIES_TABLE);
-			database.execSQL(CREATE_BUDGETED_EXPENSES_TABLE);
-			database.execSQL(CREATE_ACTUAL_EXPENSES_TABLE);
-
-			//seedDB(database);
-
-		} catch (SQLException e) {
-			Log.e(DBHelper.class.getName(), "CREATE exception" + Log.getStackTraceString(e));
-			throw e;
-		}
-	}
-	
-	/**
-	 * @since 2015-12-09
-	 * Added to remove all tables before a resync
-	 * probably redundant with on upgrade.
-	 * @param database
-	 */
-	public void recreateAllTables(){
-		try {
-			getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_TRIPS);
-			getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_LOCATIONS);
-			getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORIES);
-			getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_BUDGETED_EXPENSES);
-			getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_ACTUAL_EXPENSES);
-		} catch (SQLException e) {
-			Log.e(DBHelper.class.getName(), "DROP exception" + Log.getStackTraceString(e));
-			throw e;
-		}
-		createPopulateDB(getWritableDatabase());
-	}
-
-	// TODO: Note sure what trip id is
 	/**
 	 * Creates a new trip.
 	 * 
@@ -383,8 +384,9 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *            Address of the budgeted expense.
 	 * @return Id of the newly inserted row or -1 if there was an error.
 	 */
-	public long createBudgetedExpense(int tripId, int locationId, GregorianCalendar plannedArrivalDate, GregorianCalendar plannedDepartureDate,
-			double amount, String description, int categoryId, String nameOfSupplier, String address) {
+	public long createBudgetedExpense(int tripId, int locationId, GregorianCalendar plannedArrivalDate,
+			GregorianCalendar plannedDepartureDate, double amount, String description, int categoryId,
+			String nameOfSupplier, String address) {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_TRIP_ID, tripId);
 		cv.put(COLUMN_LOCATION_ID, locationId);
@@ -423,8 +425,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *            Rating of the supplier of the actual expense.
 	 * @return Id of the newly inserted row or -1 if there was an error.
 	 */
-	public long createActualExpense(int budgetedId, GregorianCalendar arrivalDate, GregorianCalendar departureDate, double amount,
-			String description, int categoryId, String nameOfSupplier, String address, int stars) {
+	public long createActualExpense(int budgetedId, GregorianCalendar arrivalDate, GregorianCalendar departureDate,
+			double amount, String description, int categoryId, String nameOfSupplier, String address, int stars) {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_BUDGETED_ID, budgetedId);
 		cv.put(COLUMN_ARRIVAL_DATE, getDateTime(arrivalDate));
@@ -454,7 +456,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	 * 
 	 * @return A cursor of all the locations.
 	 */
-	public Cursor getLocations() {
+	public Cursor getAllLocations() {
 		Log.d("debug", "in get locations!!");
 		return getReadableDatabase().query(TABLE_LOCATIONS, null, null, null, null, null, null);
 	}
@@ -473,11 +475,28 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	/**
+	 * Gets the all the locations associated with a certain trip.
+	 * 
+	 * @param tripId
+	 *            Id of the trip to get locations of.
+	 * @return A cursor of all the matching trip ids.
+	 */
+	public Cursor getLocationIdByTripId(String tripId) {
+		String whereClause = COLUMN_TRIP_ID + " = ?";
+		String[] whereArgs = { String.valueOf(tripId) };
+		String[] columns = { COLUMN_LOCATION_ID };
+
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cursor = db.query(TABLE_BUDGETED_EXPENSES, columns, whereClause, whereArgs, null, null, null);
+		return cursor;
+	}
+
+	/**
 	 * Gets all the categories.
 	 * 
 	 * @return A Cursor of all the categories.
 	 */
-	public Cursor getCategories() {
+	public Cursor getAllCategories() {
 		return getReadableDatabase().query(TABLE_CATEGORIES, null, null, null, null, null, null, null);
 	}
 
@@ -515,7 +534,10 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *            day of the itinerary to get the budgeted expenses of.
 	 * @return A cursor of all the budgeted expenses for a certain day.
 	 */
-	public Cursor getBudgetedExpenses(GregorianCalendar date) {
+	public Cursor getBudgetedExpensesByDay(GregorianCalendar date) {
+		// String whereClause = "? BETWEEN " + COLUMN_PLANNED_ARRIVAL_DATE + "
+		// AND " + PLANNED_DEPARTURE_DATE + " or ? BETWEEN +
+		// COLUMN_PLANNED_ARRIVAL_DATE + " AND " + PLANNED_DEPARTURE_DATE;
 		String whereClause = COLUMN_PLANNED_ARRIVAL_DATE + " BETWEEN ? AND ?";
 		GregorianCalendar startDate = new GregorianCalendar(date.get(Calendar.YEAR), date.get(Calendar.MONTH),
 				date.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
@@ -535,26 +557,10 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *            Id of the budgeted expense for which to retrieve all rows.
 	 * @return A cursor of all the budgeted fields for a certain id.
 	 */
-	public Cursor getBudgetedDetails(int budgetedId) {
+	public Cursor getBudgetedExpenseDetails(int budgetedId) {
 		String whereClause = COLUMN_ID + " = ?";
 		String[] whereArgs = { String.valueOf(budgetedId) };
 		return getReadableDatabase().query(TABLE_BUDGETED_EXPENSES, null, whereClause, whereArgs, null, null, null);
-	}
-
-	/**
-	 * 
-	 * Gets all the actual expenses fields for a given actual id. Used for
-	 * displaying details.
-	 * 
-	 * @since 2015-12-06
-	 * @param actualId
-	 *            Id of the actual expense for which to retrieve all rows.
-	 * @return A cursor of all the actual fields for a certain id.
-	 */
-	public Cursor getActualDetails(int actualId) {
-		String whereClause = COLUMN_ID + " = ?";
-		String[] whereArgs = { String.valueOf(actualId) };
-		return getReadableDatabase().query(TABLE_ACTUAL_EXPENSES, null, whereClause, whereArgs, null, null, null);
 	}
 
 	/**
@@ -564,20 +570,10 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *            Id of the budgeted expense to get the actual expense of.
 	 * @return A cursor of the actual expenses for a certain budgeted expense.
 	 */
-	public Cursor getActualExpenses(int budgetedId) {
+	public Cursor getActualExpense(int budgetedId) {
 		String whereClause = COLUMN_BUDGETED_ID + " = ?";
 		String[] whereArgs = { String.valueOf(budgetedId) };
 		return getReadableDatabase().query(TABLE_ACTUAL_EXPENSES, null, whereClause, whereArgs, null, null, null);
-	}
-
-	public Cursor getLocationIdWithTripId(String tripId) {
-		String whereClause = COLUMN_TRIP_ID + " = ?";
-		String[] whereArgs = { String.valueOf(tripId) };
-		String[] columns = { COLUMN_LOCATION_ID };
-
-		SQLiteDatabase db = getReadableDatabase();
-		Cursor cursor = db.query(TABLE_BUDGETED_EXPENSES, columns, whereClause, whereArgs, null, null, null);
-		return cursor;
 	}
 
 	/**
@@ -635,7 +631,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	 * 
 	 * @param id
 	 *            Id of the budgeted expense to update.
- 	 * @param locationId
+	 * @param locationId
 	 *            Id of the location this budgeted expense takes place in.
 	 * @param plannedArrivalDate
 	 *            Planned arrival date.
@@ -696,8 +692,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *            Rating of the supplier of the actual expense.
 	 * @return The number of rows updated.
 	 */
-	public int updateActualExpense(int id, GregorianCalendar arrivalDate, GregorianCalendar departureDate, double amount, String description,
-			int categoryId, String nameOfSupplier, String address, int stars) {
+	public int updateActualExpense(int id, GregorianCalendar arrivalDate, GregorianCalendar departureDate,
+			double amount, String description, int categoryId, String nameOfSupplier, String address, int stars) {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_ARRIVAL_DATE, getDateTime(arrivalDate));
 		cv.put(COLUMN_DEPARTURE_DATE, getDateTime(departureDate));

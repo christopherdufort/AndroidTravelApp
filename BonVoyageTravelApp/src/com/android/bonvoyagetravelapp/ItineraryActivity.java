@@ -85,7 +85,7 @@ public class ItineraryActivity extends Activity {
 				Log.d("today", "in today");
 				title.setText(R.string.today_itinerary_title);
 				tripName = "today";
-				cursor = dbh.getBudgetedExpenses(new GregorianCalendar());
+				cursor = dbh.getBudgetedExpensesByDay(new GregorianCalendar());
 				Log.d("today", "length: " + cursor.getCount());
 				cursor.moveToFirst();
 			}
@@ -247,7 +247,7 @@ public class ItineraryActivity extends Activity {
 		Cursor newCursor;
 
 		if (extras.containsKey("TODAY"))
-			newCursor = dbh.getBudgetedExpenses(new GregorianCalendar());
+			newCursor = dbh.getBudgetedExpensesByDay(new GregorianCalendar());
 		else
 			newCursor = dbh.getBudgetedExpenses(tripId);
 

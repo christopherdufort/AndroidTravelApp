@@ -25,11 +25,17 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+/**
+ * An activity that handles currency conversions.
+ * 
+ * @author Irina Patrocinio Frazao
+ * @author Christopher Dufort
+ * @author Annie So
+ */
 public class CurrencyConversion extends Activity {
 	private EditText currencyInputEditText;
 	private TextView homeCurrencyTextView, conversionCurrencyTextView, currencyOutputTextView;
@@ -43,12 +49,14 @@ public class CurrencyConversion extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.currency_conversion);
 
+		// Get the required UI views.
 		currencyInputEditText = (EditText) findViewById(R.id.currency_input);
 		homeCurrencyTextView = (TextView) findViewById(R.id.home_currency);
 		conversionCurrencyTextView = (TextView) findViewById(R.id.conversion_currency);
 		currencyOutputTextView = (TextView) findViewById(R.id.currency_output);
 		currencyErrorTextView = (TextView) findViewById(R.id.currency_error);
 
+		// If there is a bundle, use the bundle values.
 		if (savedInstanceState != null) {
 			homeCurrency = savedInstanceState.getString("homeCurrency");
 			conversionCurrency = savedInstanceState.getString("conversionCurrency");
@@ -56,30 +64,39 @@ public class CurrencyConversion extends Activity {
 		} else {
 			prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
+			// If there is no home country code in the shared preferences, use
+			// Canada as a default. There should never be a case where there is
+			// no home country code because the app does not let you proceed if
+			// you do not fill in all the necessary information. If there is a
+			// home country code in the shared preferences, use it.
 			String homeCountryCode;
 			if (prefs.getString("home", null) == null) {
-				// TODO If there is no home country code set, ask for one.
 				homeCountryCode = "CA";
 			} else {
 				homeCountryCode = prefs.getString("home", null);
 			}
 
+			// Use the Currency class to get the home currency based on the home
+			// country code.
 			homeCurrency = (Currency.getInstance(new Locale("", homeCountryCode))).getCurrencyCode();
 
 			String conversionCountryCode;
-			// TODO I thought the conversion currency was based on the location the current trip
-			// If there is no current trip, set the conversion country code to
-			// France so the conversion currency will be Euros.
+			// If there is no destination country code in the shared
+			// preferences, set the conversion country code to France so the
+			// conversion currency will be Euro. If there is a destination
+			// country code in the shared preferences, use it.
 			if (prefs.getString("destination", null) == null) {
 				conversionCountryCode = "FR";
 			} else {
-				// TODO Get country code from current trip
 				conversionCountryCode = prefs.getString("destination", null);
 			}
 
+			// Use the Currency class to get the currency to convert to based on
+			// the destination country code.
 			conversionCurrency = (Currency.getInstance(new Locale("", conversionCountryCode))).getCurrencyCode();
 		}
 
+		// Set the next views with the appropriate values.
 		homeCurrencyTextView.setText(homeCurrency);
 		conversionCurrencyTextView.setText(conversionCurrency);
 		currencyOutputTextView.setText(Double.valueOf(new DecimalFormat("#.00").format(convertedAmount)) + "");
@@ -89,6 +106,8 @@ public class CurrencyConversion extends Activity {
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
 
+		// Save the values that are not preserved automatically by Android in a
+		// bundle.
 		savedInstanceState.putDouble("convertedAmount", convertedAmount);
 		savedInstanceState.putString("homeCurrency", homeCurrency);
 		savedInstanceState.putString("conversionCurrency", conversionCurrency);
@@ -98,13 +117,22 @@ public class CurrencyConversion extends Activity {
 		try {
 			currencyErrorTextView.setText("");
 
+			// Try to parse the input into a double. If the input is not a valid
+			// double, catch the error and show an error message.
 			inputAmount = Double.parseDouble(currencyInputEditText.getText().toString());
 
 			ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(
 					Context.CONNECTIVITY_SERVICE);
+
+			// Check that there is a network manager service. If there isn't
+			// one, show an error message.
 			if (connectivityManager != null) {
 				NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+				// Check that there is net work connectivity. If there isn't,
+				// show an error message.
 				if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
+					// Start the AsyncTask responsible for currency conversion.
 					ConversionTask ct = new ConversionTask();
 					ct.execute(homeCurrency, conversionCurrency);
 				} else {
@@ -123,7 +151,6 @@ public class CurrencyConversion extends Activity {
 
 		@Override
 		protected Double doInBackground(String... params) {
-			Log.d("ConversionTask", "Running ConversionTask");
 			Double conversionRate = null;
 			try {
 				String urlString = "http://api.fixer.io/latest?base=" + URLEncoder.encode(params[0], "UTF-8")
@@ -151,7 +178,7 @@ public class CurrencyConversion extends Activity {
 				int response = connection.getResponseCode();
 				// If the response is anything but OK (200) return null.
 				if (response != HttpURLConnection.HTTP_OK)
-					return conversionRate;
+					return null;
 
 				// If the response is OK, gets the InputStream for data coming
 				// from the connection.
@@ -166,31 +193,52 @@ public class CurrencyConversion extends Activity {
 				double conversion = ratesObject.getDouble(params[1]);
 				conversionRate = Double.valueOf(conversion);
 			} catch (UnsupportedEncodingException e) {
-				// TODO Show an error?
 				e.printStackTrace();
+				return null;
 			} catch (MalformedURLException e) {
-				// TODO Show an error?
 				e.printStackTrace();
+				return null;
 			} catch (IOException e) {
-				// TODO Show error?
 				e.printStackTrace();
+				return null;
 			} catch (JSONException e) {
-				// TODO Show error?
 				e.printStackTrace();
+				return null;
 			}
 			return conversionRate;
 		}
 
+		/**
+		 * Receives a conversion rate that it uses to convert the amount entered
+		 * in the home currency into the amount in the destination currency.
+		 * 
+		 * @param conversionRate
+		 *            The conversion rate from the home currency to the
+		 *            destination currency.
+		 */
 		@Override
 		protected void onPostExecute(Double conversionRate) {
 			// If the conversionRate is not null, use it to calculate the
+			// converted amount. If the conversion rate is null, show an error
+			// message.
 			if (conversionRate != null) {
 				double conversion = conversionRate.doubleValue();
 				convertedAmount = inputAmount * conversion;
 				currencyOutputTextView.setText(Double.valueOf(new DecimalFormat("#.00").format(convertedAmount)) + "");
+				currencyErrorTextView.setText("");
+			} else {
+				currencyErrorTextView.setText("Error. Try again.");
 			}
 		}
 
+		/**
+		 * Reads the data from an InputStream and returns it as a string.
+		 * 
+		 * @param stream
+		 *            The InputStream to read.
+		 * @return A string containing the contents of the InputStream.
+		 * @throws IOException
+		 */
 		private String readInputStream(InputStream stream) throws IOException {
 			char[] buffer = new char[MAXBYTE];
 			Reader reader = null;
