@@ -13,8 +13,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -23,6 +21,20 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+/**
+ * Itinerary activity is the primary activity used for displaying lists budgeted
+ * expenses. This class is used by the Today feature, the manage trips feature,
+ * and the current trip itinerary feature. Itinerary consists of a view with
+ * ability to add new itinerary, and list view of budgeted expenses. Each
+ * expense displays a few pieces of information about itself. This activity has
+ * a custom look depending on which activity called it.
+ * 
+ * @author Irina Patrocinio Frazao
+ * @author Christopher Dufort
+ * @author Annie So
+ * @since JDK 1.6
+ * @version 1.0.0-Release
+ */
 public class ItineraryActivity extends Activity {
 
 	private int tripId;
@@ -33,10 +45,17 @@ public class ItineraryActivity extends Activity {
 	private SimpleCursorAdapter sca;
 	private SharedPreferences prefs;
 	private String tripName;
-	private boolean today;
 	private Cursor cursor;
 	private Bundle extras;
-	
+
+	/**
+	 * Overriden onCreate method that sets up the UI This method is also
+	 * responsible for setting a custom title depending on which action called
+	 * this class. This call will populate different cursors with groups of trips
+	 * depending on which type of trips to display (current, today, manage)
+	 * Different types of trips are determined by retrieving extras from the
+	 * bundle.
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -46,32 +65,41 @@ public class ItineraryActivity extends Activity {
 
 		title = (TextView) findViewById(R.id.trip_itinerary_title);
 
+		// If there is a current trip in shared prefs retrieve its name and id.
 		tripId = prefs.getInt("CURRENTTRIP", -1);
 		tripName = prefs.getString("CURRENTTRIPNAME", "");
 
+		// retrieve the type of itinerary to display based on contents of the
+		// bundle.
 		extras = getIntent().getExtras();
 		if (extras != null) {
+			// This class called from manage trips display all budgeted for a
+			// specific trip
 			if (extras.containsKey("MANAGE")) {
 				title.setText(R.string.manage_itinerary_title);
 				cursor = dbh.getBudgetedExpenses(tripId);
 			}
+			// This class called from today activity, display all budgeted for a
+			// specific date (todays date)
 			else if (extras.containsKey("TODAY")) {
 				Log.d("today", "in today");
 				title.setText(R.string.today_itinerary_title);
 				tripName = "today";
 				cursor = dbh.getBudgetedExpenses(new GregorianCalendar());
-				Log.d("today", "length: " + cursor.getCount() );
+				Log.d("today", "length: " + cursor.getCount());
 				cursor.moveToFirst();
 			}
-			else if (extras.containsKey("CURRENT"))
-			{
-				if (tripId == -1){
+			// This class called from current trips, retrieve the trips based on
+			// id from prefs or defaults to first trip.
+			else if (extras.containsKey("CURRENT")) {
+				if (tripId == -1) { // default to first trip in db
 					cursor = dbh.getAllTrips();
 					cursor.moveToFirst();
 					tripId = cursor.getInt(1);
 					tripName = cursor.getString(5);
 					cursor = dbh.getBudgetedExpenses(tripId);
-				}else{
+				} else { // use the id of the last edited, or modified, or
+							// viewed trip
 					cursor = dbh.getBudgetedExpenses(tripId);
 					SharedPreferences.Editor editor = prefs.edit();
 					editor.putInt("CURRENTTRIP", tripId);
@@ -81,6 +109,7 @@ public class ItineraryActivity extends Activity {
 			}
 		}
 
+		// Set trip title.
 		tv = (TextView) findViewById(R.id.trip_name);
 		tv.setText(tripName);
 
@@ -88,12 +117,25 @@ public class ItineraryActivity extends Activity {
 		setUpListeners();
 	}
 
+	/**
+	 * Overriden onResume that is used to refresh the view as part of the life
+	 * cycle.
+	 */
 	@Override
 	public void onResume() {
 		super.onResume();
 		refreshView();
 	}
 
+	/**
+	 * createItinerary is an event handler that will launch the details activity
+	 * for a specific trip as its called. By pressing on a specific trip in the
+	 * list the id of the trip and itinerary will be stored in the bundle and
+	 * accessed by the details activity.
+	 * 
+	 * @param view
+	 *            The view widget that called this event handler
+	 */
 	public void createItinerary(View view) {
 
 		Intent intent = new Intent(getApplicationContext(), ItineraryDetails.class);
@@ -102,6 +144,17 @@ public class ItineraryActivity extends Activity {
 		startActivity(intent);
 	}
 
+	/**
+	 * Custom method used to set up the simple cursor adapter and populate a
+	 * list view with results from a db query. Each element in the list is a
+	 * specific budgeted itinerary expense and its fields are associated with
+	 * the element in the list. A click handler is applied to each item within
+	 * the list in order to allow the user to click on each individually. Short
+	 * click will result in the ItinerayDetails activity being launched to
+	 * display more information about the itinerary. Long click will result in a
+	 * a custom dialogbox popping up to confirm the delete of the itinerary.
+	 * 
+	 */
 	private void setUpListeners() {
 		lv = (ListView) findViewById(R.id.listViewAllItinerary);
 
@@ -149,6 +202,17 @@ public class ItineraryActivity extends Activity {
 		});
 	}
 
+	/**
+	 * Custom delete alert used as a modal pop up to confirm that the user
+	 * wishes to delete an itinerary item. Custom dialog is built and displayed
+	 * showing two buttons. Clicking on yes will result in the dbh deleting the
+	 * itinerary and the view refreshing.
+	 * 
+	 * @param title
+	 *            Title of the trip used for display.
+	 * @param itineraryId
+	 *            If of itinerary used to delete by id.
+	 */
 	protected void showAlert(String title, final int itineraryId) {
 		// Build up a dialog box.
 		Builder builder = new Builder(this);
@@ -158,28 +222,35 @@ public class ItineraryActivity extends Activity {
 		// Two possible buttons.
 		builder.setNegativeButton("No", null); // Do nothing
 		builder.setPositiveButton("Yes", new OnClickListener() {
+			// User clicked yes
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				// Delete the itinerary
 				dbh.deleteBudgetedExpense(itineraryId);
 
+				// Refresh the view
 				refreshView();
 
+				// Close the dialog
 				dialog.dismiss();
 			}
 		});
-		// Display
+		// Display the dialog
 		AlertDialog dialog = builder.create();
 		dialog.show();
 	}
 
+	/**
+	 * refreshView method called to renew resources, and refresh the view.
+	 */
 	protected void refreshView() {
 		Cursor newCursor;
-		
-		if(extras.containsKey("TODAY"))
+
+		if (extras.containsKey("TODAY"))
 			newCursor = dbh.getBudgetedExpenses(new GregorianCalendar());
 		else
 			newCursor = dbh.getBudgetedExpenses(tripId);
-		
+
 		sca.changeCursor(newCursor);
 		sca.notifyDataSetChanged();
 
