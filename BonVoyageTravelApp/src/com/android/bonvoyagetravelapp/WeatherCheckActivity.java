@@ -14,7 +14,6 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
@@ -24,9 +23,16 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.widget.TextView;
 
+/**
+ * This class implements an activity that will display 
+ * the current weather information for your current location.
+ * It shows details like a general weather description, the temperature,
+ * the humidity, the pressure and the wind speed.
+ * 
+ *  @author Irina Patrocinio Frazao, Christopher Dufort and Annie So
+ */
 public class WeatherCheckActivity extends Activity {
 
 	private String country, nameOfArea = "";
@@ -38,29 +44,40 @@ public class WeatherCheckActivity extends Activity {
 	private DBHelper dbh;
 	private SharedPreferences prefs;
 
+	/**
+	 * This method sets the layout and starts the 
+	 * process of downloading the necessary weather data.
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.weathercheck_activity);
+		
 		dbh = DBHelper.getDBHelper(this);
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-		/*
-		 * Anything after must not be relying on the Async Task because you dont
-		 * know when its gonna finish
-		 */
+		/*since this will run in the background,
+		 * nothing directly after must rely on it*/
 		getWeather();
 	}
 
+	/**
+	 * This method gets the user's location, whether it is
+	 * by the current trip's location or the device's 
+	 * location and sends the appropriate data to another method.
+	 */
 	private void getWeather() {
 		int tripId = prefs.getInt("CURRENTTRIP", -1);
 
 		if (tripId != -1) {
 			// there is a current trip(last edited/viewed)
+			
+			//gets location id
 			Cursor locationIdCursor = dbh.getLocationIdWithTripId("" + tripId);
 			locationIdCursor.moveToFirst();
 			int locationId = locationIdCursor.getInt(locationIdCursor.getColumnIndex(DBHelper.COLUMN_LOCATION_ID));
 
+			//gets the full location with id
 			Cursor fullLocaltionCursor = dbh.getLocationById(locationId);
 			fullLocaltionCursor.moveToFirst();
 			String country = fullLocaltionCursor.getString(fullLocaltionCursor.getColumnIndex(DBHelper.COLUMN_CITY));
@@ -77,11 +94,9 @@ public class WeatherCheckActivity extends Activity {
 			String locationProvider = LocationManager.NETWORK_PROVIDER;
 			Location lastLocation = locationManager.getLastKnownLocation(locationProvider);
 
+			//calls method with latitude and longitude
 			if (lastLocation != null)
-			{
-				Log.d("WORKS", "location is not null");
 				launchWeatherAPI(lastLocation.getLatitude(), lastLocation.getLongitude(), null, null);
-			}
 			else {
 				//the device might not have a last known location all the time
 				LocationListener listener = new myLocationListener();
@@ -90,22 +105,41 @@ public class WeatherCheckActivity extends Activity {
 		}
 	}
 
+	/**
+	 * This private inner class is needed to implement the LocationListener.
+	 * If the device doesn't have an actual location, it is used to call 
+	 * the api everytime the device's location changes. 
+	 * 
+	 * @author Irina Patrocinio Frazao, Christopher Dufort and Annie So
+	 */
 	private class myLocationListener implements LocationListener
 	{
 		@Override
 		public void onLocationChanged(Location location) {
-			Log.d("WORKS", "From private class");
 			launchWeatherAPI(location.getLatitude(), location.getLongitude(), null, null);
 		}
 
 		@Override
-		public void onProviderDisabled(String provider) { /*nothing here*/ }
+		public void onProviderDisabled(String provider) { /*unimplemented*/ }
 		@Override
-		public void onProviderEnabled(String provider) { /*nothing here*/ }
+		public void onProviderEnabled(String provider) { /*unimplemented*/ }
 		@Override
-		public void onStatusChanged(String provider, int status, Bundle extras) { /*nothing here*/ }
+		public void onStatusChanged(String provider, int status, Bundle extras) { /*unimplemented*/ }
 	}
 
+	/**
+	 * This method creates the appropriate url for the weather
+	 * api and sends it to the private AsyncTask class.
+	 * 
+	 * @param lat
+	 * 			the latitude of the device, if applicable
+	 * @param lon
+	 * 			the longitude of the device, if applicable
+	 * @param country
+	 * 			the country of the location, if applicable
+	 * @param code
+	 * 			THE country code of the location, if applicable
+	 */
 	private void launchWeatherAPI(double lat, double lon, String country, String code) {
 		String url = "";
 		String appId = "e857fa3cafcae16ad142b30675ad2cff";
@@ -123,13 +157,24 @@ public class WeatherCheckActivity extends Activity {
 		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
+		//this calls the onPreExecute of the AsyncTask
 		if (networkInfo != null && networkInfo.isConnected()) {
 			new DownloadWeatherData().execute(url);
 		}
 	}
 
+	/**
+	 * This private class implements AsyncTask to get the information from the api,
+	 * parse the results and assign them to the input fields.
+	 * 
+	 * @author Irina Patrocinio Frazao, Christopher Dufort and Annie So
+	 */
 	private class DownloadWeatherData extends AsyncTask<String, Void, String> {
 
+		/**
+		 * This method takes the result from the api
+		 *  call and passes it to the parsing method
+		 */
 		@Override
 		protected void onPostExecute(String result) {
 
@@ -141,6 +186,10 @@ public class WeatherCheckActivity extends Activity {
 			}
 		}
 
+		/**
+		 * This method opens a connection with the url 
+		 * and reads the input from the api.
+		 */
 		@Override
 		protected String doInBackground(String... params) {
 
@@ -149,7 +198,9 @@ public class WeatherCheckActivity extends Activity {
 			String result = null;
 
 			try {
+				//the url passed to the method
 				URL url = new URL(params[0]);
+				
 				// create and open the connection
 				conn = (HttpURLConnection) url.openConnection();
 
@@ -163,6 +214,7 @@ public class WeatherCheckActivity extends Activity {
 
 				int responseCode = conn.getResponseCode();
 
+				//the connection has a problem
 				if (responseCode != HttpURLConnection.HTTP_OK)
 					return "";
 
@@ -174,7 +226,7 @@ public class WeatherCheckActivity extends Activity {
 				BufferedReader reader = new BufferedReader(new InputStreamReader(input, "UTF-8"));
 				reader.read(buffer);
 
-				// goes to onPOstExecute()
+				// sends result to onPostExecute()
 				result = new String(buffer);
 
 			} catch (IOException e) {
@@ -192,6 +244,14 @@ public class WeatherCheckActivity extends Activity {
 
 	} // end of private class
 
+	/**
+	 * This method takes the string that came from the api call,
+	 * creates a JSON object with it and parses it to extract
+	 * the information that we need and save it in private fields.
+	 * 
+	 * @param result
+	 * 			the result coming from the api to be parsed.
+	 */
 	private void parseResults(String result) {
 
 		try {
@@ -219,11 +279,13 @@ public class WeatherCheckActivity extends Activity {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-
 	}
 
+	/**
+	 * This method gets the references to all the 
+	 * input elements and assign them with the appropriate value.
+	 */
 	private void assignText() {
-
 		TextView countryView = (TextView) findViewById(R.id.locationText);
 		TextView generalDescriptionView = (TextView) findViewById(R.id.generalDescriptionValue);
 		TextView detailedDescriptionView = (TextView) findViewById(R.id.detailedDescriptionValue);
@@ -243,7 +305,5 @@ public class WeatherCheckActivity extends Activity {
 		humidityView.setText(humidity + "%");
 		pressureView.setText(pressure + " hPa");
 		speedView.setText(windSpeed + " m/s");
-
 	}
-
 }

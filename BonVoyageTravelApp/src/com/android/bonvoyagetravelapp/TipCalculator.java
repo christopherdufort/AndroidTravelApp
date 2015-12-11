@@ -4,37 +4,50 @@ import java.text.DecimalFormat;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+/**
+ * This class implements a tip calculator that let's
+ * the user input  his price, the percentage of tip
+ * he wants to give and with how many people will 
+ * the final bill be split.
+ * 
+ * @author Irina Patrocinio Frazao, Christopher Dufort and Annie So
+ */
 public class TipCalculator extends Activity {
 
 	// default
 	private double percentage = 10.0;
-
+	private double dividedPrice;
+	private double finalPrice;
+	private double tipTotalAmount;
+	
 	private TextView error;
 	private TextView tipTotal;
 	private TextView priceTotal;
 	private TextView eachPersonBill;
 
-	private double dividedPrice;
-	private double finalPrice;
-	private double tipTotalAmount;
-	
-
+	/**
+	 * This method sets the layout of the page and keeps
+	 * the state of the user's input when the activity
+	 * gets recreated during the rotation of the device.
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.tip_activity);
 		
+		//get references to view elements
 		error = (TextView) findViewById(R.id.billErrorText);
 		tipTotal = (TextView) findViewById(R.id.tipTotalAmount);
 		priceTotal = (TextView) findViewById(R.id.finalPriceAmount);
 		eachPersonBill = (TextView) findViewById(R.id.eachPersonAmount);
 
+		/*retrieves the user input from the bundle and set them back.
+		 *keeping state on rotation*/
 		if (savedInstanceState != null) {
 			tipTotalAmount = savedInstanceState.getDouble("tipTotal");
 			dividedPrice = savedInstanceState.getDouble("eachPersonBill");
@@ -47,16 +60,26 @@ public class TipCalculator extends Activity {
 		}
 	}
 
+	/**
+	 * This method saves the user's input in the bundle
+	 */
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
+		
+		//saves the user's input in the bundle
 		super.onSaveInstanceState(savedInstanceState);
-
 		savedInstanceState.putDouble("eachPersonBill", dividedPrice);
 		savedInstanceState.putDouble("priceTotal", finalPrice);
 		savedInstanceState.putDouble("tipTotal", tipTotalAmount);
 		savedInstanceState.putDouble("percentage", percentage);
-
 	}
 
+	/**
+	 * This method saves the percentage of tip the user wants
+	 * to add to his bill depending which radio button is selected.
+	 * 
+	 * @param view
+	 * 			the specific radio button that was selected
+	 */
 	public void onRadioButtonClicked(View view) {
 
 		switch (view.getId()) {
@@ -74,6 +97,15 @@ public class TipCalculator extends Activity {
 		}
 	}
 
+	/**
+	 * This method calculates the tip amount,
+	 * the final amount of the bill and how much
+	 * each person has to pay.
+	 * It populates the view with all these calculated numbers.
+	 * 
+	 * @param view
+	 * 			the specific button that was clicked
+	 */
 	public void calculateTip(View view) {
 		try {
 			error.setText("");
