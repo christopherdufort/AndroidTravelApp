@@ -3,7 +3,6 @@ package com.android.bonvoyagetravelapp;
 import java.util.Iterator;
 import java.util.List;
 
-
 import com.edsdev.jconvert.domain.ConversionType;
 import com.edsdev.jconvert.persistence.DataLoader;
 import com.edsdev.jconvert.presentation.ConversionTypeData;
@@ -16,7 +15,18 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-
+/**
+ * UnitConversionActivity is a stand along activity used to perform conversions between different units of measurements.
+ * By using an exisiting API JConvert, we dont have to reinvent the wheel in terms of coding unit conversion,
+ * and have access to many more conversions then we have time to code on our own.
+ * Conversions can be done between Imperial and metric, or any combination include Volume,Distance and Mass conversions.
+ * 
+ * @author Irina Patrocinio Frazao
+ * @author Christopher Dufort
+ * @author Annie So
+ * @since JDK 1.6
+ * @version 1.0.0-Release
+ */
 public class UnitConversionActivity extends Activity {
 
 	private String unitChoice = "Distance"; //default
@@ -26,6 +36,10 @@ public class UnitConversionActivity extends Activity {
 	private Spinner from;
 	private Spinner to;
 	
+	/**
+	 * Overriden onCreate method used to setup the UI.
+	 * Also retrieves choice of units from bundle and called spinner population.
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -47,7 +61,7 @@ public class UnitConversionActivity extends Activity {
 					
 		}
 	}
-
+	
 	/**
 	 * This method is called when the instance of the activity is destroyed.
 	 * Save UI state changes to the savedInstanceState.
@@ -64,8 +78,13 @@ public class UnitConversionActivity extends Activity {
 
 	
 	/**
-	 * Implement this through tabs and fragments instead :)
+	 * This event handler is called when different radio buttons are selected.
+	 * Depending on which button is selected a new unitchoice will be set.
+	 * unitChoice is used by the JConvert api and populate spinners method.
+	 * 
+	 * if time implement this through tabs and fragments instead :)
 	 * @param view
+	 * 			The view object that triggered this event handler to be called.
 	 */
 	public void onUnitRadioButtonClicked(View view){
 		
@@ -86,6 +105,11 @@ public class UnitConversionActivity extends Activity {
 			break;
 		}
 	}
+	/**
+	 * This method is called to populate the two spinners in the UI.
+	 * Depending on the value of the unitChoice variable when passed to the JConvert api will return all the units for associated choice.
+	 * Setting the dropDownViewResource and setting adapters.
+	 */
 	private void populateSpinners() {
 	
 		ArrayAdapter<String> adapter;
@@ -110,7 +134,16 @@ public class UnitConversionActivity extends Activity {
 		toSpinner.setAdapter(adapter);
 			
 	}
-
+	/**
+	 * This method is called to convert one unit of measuremen to another.
+	 * This method makes use of the jconvert api to access multiple units and their associated conversions.
+	 * Jconvert accepts unitchoice and types as strings and converts returning values to be displayed.
+	 * This conversion should be spun off into an asynctask to run in background as it does take some time.
+	 *
+	 * @see http://jconvert.sourceforge.net/howtoAPI.html
+	 * @param view
+	 * 			The view that triggeres this event handler
+	 */
 	public void convertUnits(View view){
 		double valueToConvert;
 		String convertMe;
@@ -118,7 +151,7 @@ public class UnitConversionActivity extends Activity {
 		EditText textValueToConvert = (EditText) findViewById(R.id.valueToConvert);
 		convertMe = textValueToConvert.getText().toString();
 		if (convertMe.length() < 1){
-			valueToConvert = 0; //TODO REPLACEME WITH A VISIBLE ERROR MESSAGE.
+			valueToConvert = 0; //Should display visible error message.
 		}
 		else
 			valueToConvert = Double.parseDouble(textValueToConvert.getText().toString());
@@ -138,12 +171,10 @@ public class UnitConversionActivity extends Activity {
             }
         } // End of chunk.
               
-        String fromUnit = from.getSelectedItem().toString();
-        
+        String fromUnit = from.getSelectedItem().toString();   
         String toUnit = to.getSelectedItem().toString();
         
         resultToShow = Double.toString(ctd.convert(valueToConvert, fromUnit, toUnit));
-        
         resultView.setText(resultToShow);
 	}
 }

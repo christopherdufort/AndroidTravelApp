@@ -2,7 +2,6 @@ package com.android.bonvoyagetravelapp;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -11,7 +10,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -32,8 +30,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -42,6 +38,18 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * ManageTrips Activity is the primary activity used for syncing and managing
+ * the users list of trips. From this activity the user and resync all his trips
+ * with the server. This activity will also display all trips associated with
+ * said user and allow them to select a trip.
+ * 
+ * @author Irina Patrocinio Frazao
+ * @author Christopher Dufort
+ * @author Annie So
+ * @since JDK 1.6
+ * @version 1.0.0-Release
+ */
 public class ManageTripsActivity extends Activity {
 
 	private String urlString, jsonStr;
@@ -51,15 +59,19 @@ public class ManageTripsActivity extends Activity {
 	private SimpleCursorAdapter sca;
 	private Cursor cursor;
 
+	// Used for long term storage.
 	private SharedPreferences prefs;
-	private Context context;
 
+	/**
+	 * Overriden onCreate method used to set up the view. This method will
+	 * retrieve user name from preferences in order to provide a custom
+	 * ownership feel.
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_manage_trips);
 		dbh = DBHelper.getDBHelper(this);
-		context = getApplicationContext();
 
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		// Custom ownership feel show current users name.
@@ -71,14 +83,18 @@ public class ManageTripsActivity extends Activity {
 	}
 
 	/**
-	 * Overwritten onResume() life cycle method called to renew resources.
+	 * Overwritten onResume() life cycle used to call updateView Also calls
+	 * update view.
 	 */
 	@Override
 	public void onResume() {
 		super.onResume();
-		// updateView();
+		updateView();
 	}
 
+	/**
+	 * UpdateView method called to renew resources, and refresh the view.
+	 */
 	private void updateView() {
 
 		// change cursor so the data view will be updated
@@ -99,7 +115,7 @@ public class ManageTripsActivity extends Activity {
 	public void onPause() {
 		super.onPause();
 		// Release resources.
-		// dbh.close();
+		dbh.close();
 	}
 
 	/**
@@ -111,7 +127,9 @@ public class ManageTripsActivity extends Activity {
 	private void setUpListeners() {
 		lv = (ListView) findViewById(R.id.listViewAllTrips);
 
+		// Column data to use
 		String[] from = { DBHelper.COLUMN_NAME, DBHelper.COLUMN_DESCRIPTION };
+		// View Widgets to populate
 		int[] to = { R.id.text_view_trip_name, R.id.text_view_trip_description };
 
 		Cursor cursor = dbh.getAllTrips();
@@ -122,7 +140,6 @@ public class ManageTripsActivity extends Activity {
 
 		// Event listener for short clicks will open details of trip in new
 		// activity.
-
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Cursor cursortemp = (Cursor) parent.getItemAtPosition(position);
@@ -135,6 +152,8 @@ public class ManageTripsActivity extends Activity {
 				editor.putString("CURRENTTRIPNAME", tripName);
 				editor.commit();
 
+				// Fire intent to Itinerary activity with bundle describing who
+				// called it.
 				Intent intent = new Intent(getApplicationContext(), ItineraryActivity.class);
 				intent.putExtra("MANAGE", true);
 				startActivity(intent);
@@ -156,29 +175,42 @@ public class ManageTripsActivity extends Activity {
 		launchSyncAPITrips();
 	}
 
+	/**
+	 * launchSyncAPITrips called when user requested all trips to be refreshed
+	 * with those from server This method will make a Post requests to server
+	 * side RESTFUL API with email and password taken from settings. Results if
+	 * successful will include JSON objects filled with trips and expenses for
+	 * user along side other table data needed to populate local sqlite db. URL
+	 * is hardcoded. JSONObject class used to form JSON Objects.
+	 * Uses connectivity manager and calls execution of async inner class.
+	 */
 	private void launchSyncAPITrips() {
 		urlString = "https://travel-bonvoyage.rhcloud.com/apiTrips";
 
+		// Taken from settings.
 		String email = prefs.getString("email", "");
 		String password = prefs.getString("password", "");
 
+		// used to build json data
 		JSONObject jsonData = new JSONObject();
 
 		try {
 			jsonData.put("email", email);
 			jsonData.put("password", password);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
+		// string is used for transmission
 		jsonStr = jsonData.toString();
 
-		// first check to see if we can get on the network
+		// first check to see if we can get on the network using the
+		// connectivity manager
 		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 		if (networkInfo != null && networkInfo.isConnected()) {
-			// invoke the AsyncTask to do the dirty work.
+			// invoke the AsyncTask to do the dirty work with background task
+			// and messaging.
 			new DownloadTripsData().execute(urlString, jsonStr);
 		} else {
 			Toast toast = Toast.makeText(this, "No network connection available.", Toast.LENGTH_SHORT);
@@ -187,12 +219,12 @@ public class ManageTripsActivity extends Activity {
 	}
 
 	/**
-	 * Uses AsyncTask to create a task away from the main UI thread. This task
-	 * takes a URL string and uses it to create an HttpsUrlConnection. Once the
-	 * connection has been established, the AsyncTask downloads the contents of
-	 * the webpage via an an InputStream. The InputStream is converted into a
-	 * string, which is displayed in the UI by the AsyncTask's onPostExecute
-	 * method.
+	 * DownloadTripsData class entension of AsyncTask Uses AsyncTask to create a
+	 * task away from the main UI thread. This task takes a URL string and uses
+	 * it to create an HttpsUrlConnection. Once the connection has been
+	 * established, the AsyncTask downloads the contents of the webpage via an
+	 * an InputStream. The InputStream is converted into a JSON object and JSON
+	 * Array which are parsed to then seed the local db.
 	 */
 	private class DownloadTripsData extends AsyncTask<String, Void, String> {
 
@@ -218,8 +250,8 @@ public class ManageTripsActivity extends Activity {
 		}
 
 		/**
-		 * onPostExecute displays the results of the AsyncTask. runs in calling
-		 * thread (in UI thread)
+		 * onPostExecute logs the results of the AsyncTask. runs in calling
+		 * thread (in UI thread) and calls update view.
 		 */
 		@Override
 		protected void onPostExecute(String result) {
@@ -235,9 +267,10 @@ public class ManageTripsActivity extends Activity {
 
 	/**
 	 * Given a URL, establishes an HttpUrlConnection and retrieves the web page
-	 * content as a InputStream, which it returns as a string.
+	 * content as a InputStream, which it sends to be parsed and returns if it was successful. 
 	 *
 	 * @param params
+	 *            String url and string representation of data to be sent.
 	 * @return
 	 * @throws IOException
 	 * @throws JSONException
@@ -270,9 +303,6 @@ public class ManageTripsActivity extends Activity {
 			conn.setDoInput(true);
 			conn.setRequestMethod("POST");
 
-			// conn.setFixedLengthStreamingMode(params[1].getBytes().length);
-			// send body unknown length
-			// conn.setChunkedStreamingMode(0);
 			conn.setReadTimeout(10000);
 			conn.setConnectTimeout(15000 /* milliseconds */);
 
@@ -280,16 +310,15 @@ public class ManageTripsActivity extends Activity {
 			// set length of POST data to send
 			conn.addRequestProperty("Content-Length", bytesLeng.toString());
 
-			// send the POST out
+			// create the post message out
 			out = new BufferedOutputStream(conn.getOutputStream());
 
+			// Send the message
 			out.write(bytes);
 			out.flush();
 			out.close();
 
-			// logCertsInfo(conn);
-
-			// now get response
+			// retrieve response code
 			response = conn.getResponseCode();
 
 			/*
@@ -306,17 +335,20 @@ public class ManageTripsActivity extends Activity {
 			Log.d("downloadData", "Downloading new data tables dropped and recreated");
 			dbh.recreateAllTables();
 			is = conn.getInputStream();
+			// parse response
 			contentAsString = readIt(is);
 			return contentAsString;
 
 		} finally {
-			// Make sure that the Reader is closed after the app is finished
+			// Make sure that the input stream used for reading is closed after
+			// the app is finished
 			// using it.
 			if (is != null) {
 				try {
 					is.close();
-				} catch (IOException ignore) {
-					/* ignore */
+				} catch (IOException e) {
+					// Wont happen , but not a good idea to ignore an exception.
+					e.printStackTrace();
 				}
 			}
 			// * Make sure the connection is closed after the app is finished
@@ -324,8 +356,9 @@ public class ManageTripsActivity extends Activity {
 			if (conn != null) {
 				try {
 					conn.disconnect();
-				} catch (IllegalStateException ignore) {
-					/* ignore */
+				} catch (IllegalStateException e) {
+					// Wont happen , but not a good idea to ignore an exception.
+					e.printStackTrace();
 				}
 			}
 		}
@@ -333,11 +366,11 @@ public class ManageTripsActivity extends Activity {
 
 	/**
 	 * 
-	 * Reads stream from HTTP connection and converts it to a String. See
-	 * stackoverflow or a good explanation of why I did it this way.
-	 * http://stackoverflow
-	 * .com/questions/3459127/should-i-buffer-the-inputstream
-	 * -or-the-inputstreamreader
+	 * Reads stream from HTTP connection and sends data to a local method to
+	 * populate db. Using stringBuilder and JSON Objects. This method will
+	 * formulate multiple JSONArrays and JSONObjects from the contents of the
+	 * response message. This method currently parses one huge response, in the
+	 * future we should make multiple smaller requests.
 	 * 
 	 * @param stream
 	 * @return
@@ -347,26 +380,28 @@ public class ManageTripsActivity extends Activity {
 	 */
 	private String readIt(InputStream stream) throws IOException, UnsupportedEncodingException, JSONException {
 		StringBuilder responseStrBuilder = new StringBuilder();
-		String buffer = "";
 		BufferedReader reader = null;
 
+		// Read stream from https
 		reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
 
 		String line = null;
 		while ((line = reader.readLine()) != null) {
-			// could use string builder
+			// use string builder
 			Log.d("RequestResponse", line);
-			// the \n is for display, if I'm parsing the JSON I don't want it
+			// I'm parsing the JSON
 			responseStrBuilder.append(line);
+			// turn the string response into a large jsonObject
 			JSONObject jsonObject = new JSONObject(responseStrBuilder.toString());
 
-			// email = jsonObject.get("email").toString();
+			// retrieve individual json arrays from the object.
 			JSONArray tripsArray = jsonObject.getJSONArray("trips");
 			JSONArray budgetedArray = jsonObject.getJSONArray("budgeted");
 			JSONArray locationsArray = jsonObject.getJSONArray("locations");
 			JSONArray categoriesArray = jsonObject.getJSONArray("categories");
 			JSONArray actualArray = jsonObject.getJSONArray("actualExpenses");
 
+			// Seed the local db with contents of each array.
 			syncLocalDb(tripsArray, budgetedArray, locationsArray, categoriesArray, actualArray);
 
 		}
@@ -374,9 +409,34 @@ public class ManageTripsActivity extends Activity {
 
 	} // readIt()
 
+	/**
+	 * I apologize to anyone in advance for the mess of a method this is.
+	 * 
+	 * private method syncLocalDb called to fill the local sqlitedb with
+	 * contents of serverside db associated with particular user. This method
+	 * accepts multiple arrays and loops through each list in tandem to insert
+	 * with proper foreignkey structure. In the future this method should be
+	 * broken up into several smaller methods based on several smaller requests.
+	 * 
+	 * @param tripsArray
+	 *            A JSONArray of all trips associated with user who requested
+	 *            sync.
+	 * @param budgetedArray
+	 *            A JSONArray of all budgeted expenses associated with user who
+	 *            requested sync.
+	 * @param locationsArray
+	 *            A JSONArray of all locations used to update local db.
+	 * @param categoriesArray
+	 *            A JSONArray of all categories used to update local db.
+	 * @param actualArray
+	 *            A JSONArray of all actual expenses associated with user who
+	 *            requested sync.
+	 * @throws JSONException
+	 */
 	private void syncLocalDb(JSONArray tripsArray, JSONArray budgetedArray, JSONArray locationsArray,
 			JSONArray categoriesArray, JSONArray actualArray) throws JSONException {
 
+		// Loop through each item in locations array inserting it into the db
 		for (int l = 0; l < locationsArray.length(); l++) {
 			String city = locationsArray.getJSONObject(l).getString("city");
 			String country_code = locationsArray.getJSONObject(l).getString("country_code");
@@ -385,6 +445,7 @@ public class ManageTripsActivity extends Activity {
 
 		}
 
+		// Loop through each item in categoies array inserting it into the db.
 		for (int c = 0; c < categoriesArray.length(); c++) {
 			String category = categoriesArray.getJSONObject(c).getString("category");
 			dbh.createCategory(category);
@@ -392,7 +453,7 @@ public class ManageTripsActivity extends Activity {
 
 		int insertedBudgetedId = -1;
 		int budgeted_id = -1;
-		// Insert all trips
+		// Loop through each item in trips array insertting it into the db
 		for (int i = 0; i < tripsArray.length(); i++) {
 			int tripId = tripsArray.getJSONObject(i).getInt("id");
 			String description = tripsArray.getJSONObject(i).getString("description");
@@ -401,13 +462,15 @@ public class ManageTripsActivity extends Activity {
 			int insertedTripId = (int) dbh.createTrip(tripId, name, description);
 			Log.d("InsertedTripId", insertedTripId + "");
 
-			// Insert all budgeted
+			// Loop through each item in budgeted array inseting it into db with
+			// associated newly inserted trip id
 			for (int b = 0; b < budgetedArray.length(); b++) {
 				budgeted_id = budgetedArray.getJSONObject(b).getInt("id");
 				int trip_id = budgetedArray.getJSONObject(b).getInt("trip_id");
 				int location_id = budgetedArray.getJSONObject(b).getInt("location_id");
 				int category_id = budgetedArray.getJSONObject(b).getInt("category_id");
 
+				// convert serverside php date to local date format
 				String planned_arrival_date = budgetedArray.getJSONObject(b).getString("planned_arrival_date");
 				int firstHyphen = planned_arrival_date.indexOf("-");
 				int secondHyphen = planned_arrival_date.indexOf("-", firstHyphen + 1);
@@ -418,12 +481,13 @@ public class ManageTripsActivity extends Activity {
 				int month = Integer.parseInt(planned_arrival_date.substring(firstHyphen + 1, secondHyphen));
 				int day = Integer.parseInt(planned_arrival_date.substring(secondHyphen + 1, space));
 				int hour = Integer.parseInt(planned_arrival_date.substring(space + 1, firstColon));
-				int minute = Integer.parseInt(planned_arrival_date.substring(firstColon + 1, secondColon));
+				int minute = Integer.parseInt(planned_arrival_date.substring(firstColon + 1, secondColon));	
 				GregorianCalendar plannedArrivalDate = new GregorianCalendar(year, month - 1, day);
 				plannedArrivalDate.set(Calendar.HOUR_OF_DAY, hour);
 				plannedArrivalDate.set(Calendar.MINUTE, minute);
 				plannedArrivalDate.set(Calendar.SECOND, 0);
 
+				// convert serverside php date to local date format
 				String planned_departure_date = budgetedArray.getJSONObject(b).getString("planned_departure_date");
 				firstHyphen = planned_departure_date.indexOf("-");
 				secondHyphen = planned_departure_date.indexOf("-", firstHyphen + 1);
@@ -439,25 +503,26 @@ public class ManageTripsActivity extends Activity {
 				plannedDepartureDate.set(Calendar.HOUR_OF_DAY, hour);
 				plannedDepartureDate.set(Calendar.MINUTE, minute);
 				plannedDepartureDate.set(Calendar.SECOND, 0);
-				
 
 				double amount = budgetedArray.getJSONObject(b).getDouble("amount");
 				String budgetedDescription = budgetedArray.getJSONObject(b).getString("description");
 				String name_of_supplier = budgetedArray.getJSONObject(b).getString("name_of_supplier");
 				String address = budgetedArray.getJSONObject(b).getString("address");
 				if (trip_id == tripId) {
+					//Insert the budgeted expense with all the retrieved fields.
 					insertedBudgetedId = (int) dbh.createBudgetedExpense(insertedTripId, location_id,
 							plannedArrivalDate, plannedDepartureDate, amount, budgetedDescription, category_id,
 							name_of_supplier, address);
 					Log.d("InsertedBudgetedId", insertedBudgetedId + "");
 				}
 
-				// Insert associated actual
-
+				// Loop through all items in actual array if they match budgeted
+				// insert them with its newly inserted id
 				for (int a = 0; a < actualArray.length(); a++) {
 					if (budgeted_id == actualArray.getJSONObject(a).getInt("budgeted_id")) {
 						int actualCategory_id = actualArray.getJSONObject(a).getInt("category_id");
 
+						// convert serverside php date to local date format
 						String arrival_date = actualArray.getJSONObject(a).getString("arrival_date");
 						firstHyphen = arrival_date.indexOf("-");
 						secondHyphen = arrival_date.indexOf("-", firstHyphen + 1);
@@ -474,6 +539,7 @@ public class ManageTripsActivity extends Activity {
 						arrivalDate.set(Calendar.MINUTE, minute);
 						arrivalDate.set(Calendar.SECOND, 0);
 
+						// convert serverside php date to local date format
 						String departure_date = actualArray.getJSONObject(a).getString("arrival_date");
 						firstHyphen = departure_date.indexOf("-");
 						secondHyphen = departure_date.indexOf("-", firstHyphen + 1);
@@ -495,7 +561,8 @@ public class ManageTripsActivity extends Activity {
 						String actualName_of_supplier = actualArray.getJSONObject(a).getString("name_of_supplier");
 						String actualAddress = actualArray.getJSONObject(a).getString("address");
 						int stars = actualArray.getJSONObject(a).getInt("stars");
-
+						
+						//Insert the actual expense with all the retrieved fields
 						dbh.createActualExpense(insertedBudgetedId, arrivalDate, departureDate, actualAmount,
 								actualDescription, actualCategory_id, actualName_of_supplier, actualAddress, stars);
 					}
