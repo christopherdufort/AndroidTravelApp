@@ -36,7 +36,7 @@ public class ItineraryActivity extends Activity {
 	private boolean today;
 	private Cursor cursor;
 	private Bundle extras;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
