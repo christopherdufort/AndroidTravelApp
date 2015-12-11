@@ -44,6 +44,12 @@ public class CurrencyConversion extends Activity {
 	private String homeCurrency, conversionCurrency;
 	private double inputAmount, convertedAmount;
 
+	/**
+	 * Sets up the UI.
+	 * 
+	 * @param savedInstanceState
+	 *            The bundle with values related to state.
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -102,17 +108,30 @@ public class CurrencyConversion extends Activity {
 		currencyOutputTextView.setText(Double.valueOf(new DecimalFormat("#.00").format(convertedAmount)) + "");
 	}
 
+	
+	/**
+	 * Saves the values that are not automatcall preserved by Android in the
+	 * bundle.
+	 * 
+	 * @param savedInstance
+	 *            The bundle to save values into.
+	 */
 	@Override
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
 
-		// Save the values that are not preserved automatically by Android in a
-		// bundle.
 		savedInstanceState.putDouble("convertedAmount", convertedAmount);
 		savedInstanceState.putString("homeCurrency", homeCurrency);
 		savedInstanceState.putString("conversionCurrency", conversionCurrency);
 	}
 
+	/**
+	 * Converts the input amount fromm the home currency to the conversion
+	 * currency.
+	 * 
+	 * @param view
+	 *            The view that called this method.
+	 */
 	public void convertCurrency(View view) {
 		try {
 			currencyErrorTextView.setText("");
@@ -146,10 +165,25 @@ public class CurrencyConversion extends Activity {
 		}
 	}
 
+	/**
+	 * An AsyncTask for getting the conversion rate and updating the UI with the
+	 * converted amount.
+	 * 
+	 * @author Irina Patrocinio Frazao
+	 * @author Christopher Dufort
+	 * @author Annie So
+	 */
 	private class ConversionTask extends AsyncTask<String, Void, Double> {
 		private int MAXBYTE = 500;
 
 		@Override
+		/**
+		 * Makes a request to the web api to get the conversion rate and passes
+		 * it to onPostExecute.
+		 * 
+		 * @param params
+		 *            The strings for the home currency and conversion currency.
+		 */
 		protected Double doInBackground(String... params) {
 			Double conversionRate = null;
 			try {
