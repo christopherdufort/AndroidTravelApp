@@ -181,8 +181,8 @@ public class ManageTripsActivity extends Activity {
 	 * side RESTFUL API with email and password taken from settings. Results if
 	 * successful will include JSON objects filled with trips and expenses for
 	 * user along side other table data needed to populate local sqlite db. URL
-	 * is hardcoded. JSONObject class used to form JSON Objects.
-	 * Uses connectivity manager and calls execution of async inner class.
+	 * is hardcoded. JSONObject class used to form JSON Objects. Uses
+	 * connectivity manager and calls execution of async inner class.
 	 */
 	private void launchSyncAPITrips() {
 		urlString = "https://travel-bonvoyage.rhcloud.com/apiTrips";
@@ -267,7 +267,8 @@ public class ManageTripsActivity extends Activity {
 
 	/**
 	 * Given a URL, establishes an HttpUrlConnection and retrieves the web page
-	 * content as a InputStream, which it sends to be parsed and returns if it was successful. 
+	 * content as a InputStream, which it sends to be parsed and returns if it
+	 * was successful.
 	 *
 	 * @param params
 	 *            String url and string representation of data to be sent.
@@ -472,44 +473,19 @@ public class ManageTripsActivity extends Activity {
 
 				// convert serverside php date to local date format
 				String planned_arrival_date = budgetedArray.getJSONObject(b).getString("planned_arrival_date");
-				int firstHyphen = planned_arrival_date.indexOf("-");
-				int secondHyphen = planned_arrival_date.indexOf("-", firstHyphen + 1);
-				int space = planned_arrival_date.indexOf(" ");
-				int firstColon = planned_arrival_date.indexOf(":", space + 1);
-				int secondColon = planned_arrival_date.indexOf(":", firstColon + 1);
-				int year = Integer.parseInt(planned_arrival_date.substring(0, firstHyphen));
-				int month = Integer.parseInt(planned_arrival_date.substring(firstHyphen + 1, secondHyphen));
-				int day = Integer.parseInt(planned_arrival_date.substring(secondHyphen + 1, space));
-				int hour = Integer.parseInt(planned_arrival_date.substring(space + 1, firstColon));
-				int minute = Integer.parseInt(planned_arrival_date.substring(firstColon + 1, secondColon));	
-				GregorianCalendar plannedArrivalDate = new GregorianCalendar(year, month - 1, day);
-				plannedArrivalDate.set(Calendar.HOUR_OF_DAY, hour);
-				plannedArrivalDate.set(Calendar.MINUTE, minute);
-				plannedArrivalDate.set(Calendar.SECOND, 0);
+				GregorianCalendar plannedArrivalDate = parseStringToDate(planned_arrival_date);
 
 				// convert serverside php date to local date format
 				String planned_departure_date = budgetedArray.getJSONObject(b).getString("planned_departure_date");
-				firstHyphen = planned_departure_date.indexOf("-");
-				secondHyphen = planned_departure_date.indexOf("-", firstHyphen + 1);
-				space = planned_departure_date.indexOf(" ");
-				firstColon = planned_departure_date.indexOf(":", space + 1);
-				secondColon = planned_departure_date.indexOf(":", firstColon + 1);
-				year = Integer.parseInt(planned_departure_date.substring(0, firstHyphen));
-				month = Integer.parseInt(planned_departure_date.substring(firstHyphen + 1, secondHyphen));
-				day = Integer.parseInt(planned_departure_date.substring(secondHyphen + 1, space));
-				hour = Integer.parseInt(planned_departure_date.substring(space + 1, firstColon));
-				minute = Integer.parseInt(planned_departure_date.substring(firstColon + 1, secondColon));
-				GregorianCalendar plannedDepartureDate = new GregorianCalendar(year, month - 1, day);
-				plannedDepartureDate.set(Calendar.HOUR_OF_DAY, hour);
-				plannedDepartureDate.set(Calendar.MINUTE, minute);
-				plannedDepartureDate.set(Calendar.SECOND, 0);
+				GregorianCalendar plannedDepartureDate = parseStringToDate(planned_departure_date);
 
 				double amount = budgetedArray.getJSONObject(b).getDouble("amount");
 				String budgetedDescription = budgetedArray.getJSONObject(b).getString("description");
 				String name_of_supplier = budgetedArray.getJSONObject(b).getString("name_of_supplier");
 				String address = budgetedArray.getJSONObject(b).getString("address");
 				if (trip_id == tripId) {
-					//Insert the budgeted expense with all the retrieved fields.
+					// Insert the budgeted expense with all the retrieved
+					// fields.
 					insertedBudgetedId = (int) dbh.createBudgetedExpense(insertedTripId, location_id,
 							plannedArrivalDate, plannedDepartureDate, amount, budgetedDescription, category_id,
 							name_of_supplier, address);
@@ -524,45 +500,20 @@ public class ManageTripsActivity extends Activity {
 
 						// convert serverside php date to local date format
 						String arrival_date = actualArray.getJSONObject(a).getString("arrival_date");
-						firstHyphen = arrival_date.indexOf("-");
-						secondHyphen = arrival_date.indexOf("-", firstHyphen + 1);
-						space = arrival_date.indexOf(" ");
-						firstColon = arrival_date.indexOf(":", space + 1);
-						secondColon = arrival_date.indexOf(":", firstColon + 1);
-						year = Integer.parseInt(arrival_date.substring(0, firstHyphen));
-						month = Integer.parseInt(arrival_date.substring(firstHyphen + 1, secondHyphen));
-						day = Integer.parseInt(arrival_date.substring(secondHyphen + 1, space));
-						hour = Integer.parseInt(arrival_date.substring(space + 1, firstColon));
-						minute = Integer.parseInt(arrival_date.substring(firstColon + 1, secondColon));
-						GregorianCalendar arrivalDate = new GregorianCalendar(year, month - 1, day);
-						arrivalDate.set(Calendar.HOUR_OF_DAY, hour);
-						arrivalDate.set(Calendar.MINUTE, minute);
-						arrivalDate.set(Calendar.SECOND, 0);
+						GregorianCalendar arrivalDate = parseStringToDate(arrival_date);
 
 						// convert serverside php date to local date format
 						String departure_date = actualArray.getJSONObject(a).getString("arrival_date");
-						firstHyphen = departure_date.indexOf("-");
-						secondHyphen = departure_date.indexOf("-", firstHyphen + 1);
-						space = departure_date.indexOf(" ");
-						firstColon = departure_date.indexOf(":", space + 1);
-						secondColon = departure_date.indexOf(":", firstColon + 1);
-						year = Integer.parseInt(departure_date.substring(0, firstHyphen));
-						month = Integer.parseInt(departure_date.substring(firstHyphen + 1, secondHyphen));
-						day = Integer.parseInt(departure_date.substring(secondHyphen + 1, space));
-						hour = Integer.parseInt(departure_date.substring(space + 1, firstColon));
-						minute = Integer.parseInt(departure_date.substring(firstColon + 1, secondColon));
-						GregorianCalendar departureDate = new GregorianCalendar(year, month - 1, day);
-						departureDate.set(Calendar.HOUR_OF_DAY, hour);
-						departureDate.set(Calendar.MINUTE, minute);
-						departureDate.set(Calendar.SECOND, 0);
+						GregorianCalendar departureDate = parseStringToDate(departure_date);
 
 						double actualAmount = actualArray.getJSONObject(a).getDouble("amount");
 						String actualDescription = actualArray.getJSONObject(a).getString("description");
 						String actualName_of_supplier = actualArray.getJSONObject(a).getString("name_of_supplier");
 						String actualAddress = actualArray.getJSONObject(a).getString("address");
 						int stars = actualArray.getJSONObject(a).getInt("stars");
-						
-						//Insert the actual expense with all the retrieved fields
+
+						// Insert the actual expense with all the retrieved
+						// fields
 						dbh.createActualExpense(insertedBudgetedId, arrivalDate, departureDate, actualAmount,
 								actualDescription, actualCategory_id, actualName_of_supplier, actualAddress, stars);
 					}
@@ -570,5 +521,39 @@ public class ManageTripsActivity extends Activity {
 			}
 
 		}
+	}
+
+	/**
+	 * Parses a string from the PHP server representing a date and time into a
+	 * GregorianCalendar object.
+	 * 
+	 * Only works if the string is formatted as
+	 * "year-month-day hour:minute:second".
+	 * 
+	 * Assumes the hour is in 24 hour format.
+	 * 
+	 * @param dateString
+	 *            String representing a date and time.
+	 * @return
+	 */
+	private GregorianCalendar parseStringToDate(String dateString) {
+		int firstHyphen = dateString.indexOf("-");
+		int secondHyphen = dateString.indexOf("-", firstHyphen + 1);
+		int space = dateString.indexOf(" ");
+		int firstColon = dateString.indexOf(":", space + 1);
+		int secondColon = dateString.indexOf(":", firstColon + 1);
+
+		int year = Integer.parseInt(dateString.substring(0, firstHyphen));
+		int month = Integer.parseInt(dateString.substring(firstHyphen + 1, secondHyphen));
+		int day = Integer.parseInt(dateString.substring(secondHyphen + 1, space));
+		int hour = Integer.parseInt(dateString.substring(space + 1, firstColon));
+		int minute = Integer.parseInt(dateString.substring(firstColon + 1, secondColon));
+
+		GregorianCalendar parsedDate = new GregorianCalendar(year, month - 1, day);
+		parsedDate.set(Calendar.HOUR_OF_DAY, hour);
+		parsedDate.set(Calendar.MINUTE, minute);
+		parsedDate.set(Calendar.SECOND, 0);
+
+		return parsedDate;
 	}
 }
