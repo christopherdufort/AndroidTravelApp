@@ -25,6 +25,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -108,7 +109,6 @@ public class CurrencyConversion extends Activity {
 		currencyOutputTextView.setText(Double.valueOf(new DecimalFormat("#.00").format(convertedAmount)) + "");
 	}
 
-	
 	/**
 	 * Saves the values that are not automatcall preserved by Android in the
 	 * bundle.
@@ -186,6 +186,7 @@ public class CurrencyConversion extends Activity {
 		 */
 		protected Double doInBackground(String... params) {
 			Double conversionRate = null;
+			JSONObject responseObject = null;
 			try {
 				String urlString = "http://api.fixer.io/latest?base=" + URLEncoder.encode(params[0], "UTF-8")
 						+ "&symbols=" + URLEncoder.encode(params[1], "UTF-8");
@@ -210,22 +211,26 @@ public class CurrencyConversion extends Activity {
 
 				// Gets the request's response code
 				int response = connection.getResponseCode();
+				Log.d("Response Code", response + "");
 				// If the response is anything but OK (200) return null.
-				if (response != HttpURLConnection.HTTP_OK)
-					return null;
+				if (response == HttpURLConnection.HTTP_OK) {
+					// If the response is OK, gets the InputStream for data
+					// coming
+					// from the connection.
+					InputStream is = connection.getInputStream();
+					String data = readInputStream(is);
+					is.close();
+					connection.disconnect();
 
-				// If the response is OK, gets the InputStream for data coming
-				// from the connection.
-				InputStream is = connection.getInputStream();
-				String data = readInputStream(is);
-				is.close();
-				connection.disconnect();
-
-				// Gets a JSON object and parses it to find the conversion rate.
-				JSONObject responseObject = new JSONObject(data);
-				JSONObject ratesObject = responseObject.getJSONObject("rates");
-				double conversion = ratesObject.getDouble(params[1]);
-				conversionRate = Double.valueOf(conversion);
+					// Gets a JSON object and parses it to find the conversion
+					// rate.
+					responseObject = new JSONObject(data);
+					JSONObject ratesObject = responseObject.getJSONObject("rates");
+					double conversion = ratesObject.getDouble(params[1]);
+					conversionRate = Double.valueOf(conversion);
+				} else if (response == 422) {
+					return Double.valueOf(-1);
+				}
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 				return null;
@@ -237,8 +242,9 @@ public class CurrencyConversion extends Activity {
 				return null;
 			} catch (JSONException e) {
 				e.printStackTrace();
-				return null;
+				return Double.valueOf(-2);
 			}
+			
 			return conversionRate;
 		}
 
@@ -252,14 +258,22 @@ public class CurrencyConversion extends Activity {
 		 */
 		@Override
 		protected void onPostExecute(Double conversionRate) {
+			Log.d("Value", conversionRate.toString());
 			// If the conversionRate is not null, use it to calculate the
 			// converted amount. If the conversion rate is null, show an error
 			// message.
 			if (conversionRate != null) {
-				double conversion = conversionRate.doubleValue();
-				convertedAmount = inputAmount * conversion;
-				currencyOutputTextView.setText(Double.valueOf(new DecimalFormat("#.00").format(convertedAmount)) + "");
-				currencyErrorTextView.setText("");
+				if (conversionRate.equals(Double.valueOf("-1"))) {
+					currencyErrorTextView.setText("Error. " + homeCurrency + " is not supported.");
+				} else if (conversionRate.equals(Double.valueOf("-2"))) {
+					currencyErrorTextView.setText("Error. " + conversionCurrency + " is not supported.");
+				} else {
+					double conversion = conversionRate.doubleValue();
+					convertedAmount = inputAmount * conversion;
+					currencyOutputTextView
+							.setText(Double.valueOf(new DecimalFormat("#.00").format(convertedAmount)) + "");
+					currencyErrorTextView.setText("");
+				}
 			} else {
 				currencyErrorTextView.setText("Error. Try again.");
 			}
@@ -280,6 +294,5 @@ public class CurrencyConversion extends Activity {
 			reader.read(buffer);
 			return new String(buffer);
 		}
-
 	}
 }
