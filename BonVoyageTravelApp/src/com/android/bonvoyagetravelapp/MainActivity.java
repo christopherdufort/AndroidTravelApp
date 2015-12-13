@@ -1,5 +1,9 @@
 package com.android.bonvoyagetravelapp;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Locale;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -130,8 +134,10 @@ public class MainActivity extends Activity {
 				String name = nameInput.getText().toString().trim();
 				String email = emailInput.getText().toString().trim();
 				String password = passwordInput.getText().toString().trim();
-				String home = homeInput.getText().toString().trim();
-				String destination = destinationInput.getText().toString().trim();
+				String home = homeInput.getText().toString().trim().toUpperCase(Locale.getDefault());
+				String destination = destinationInput.getText().toString().trim().toUpperCase(Locale.getDefault());
+
+				ArrayList<String> allCountryCodes = new ArrayList<String>(Arrays.asList(Locale.getISOCountries()));
 
 				// if any one is empty, ask again (all fields required)
 				if (name.equals("") || email.equals("") || password.equals("") || home.equals("")
@@ -140,8 +146,15 @@ public class MainActivity extends Activity {
 					// spamming by user.
 					Toast.makeText(MainActivity.this, R.string.nameProblem, Toast.LENGTH_LONG).show();
 					// Redeploy alert.
-					showAlertSettingsBox("", "", "", "", "");
-				} else {
+					showAlertSettingsBox(name, email, password, home, destination);
+				} else if (!allCountryCodes.contains(home)) {
+					Toast.makeText(MainActivity.this, "Enter a valid home country code.", Toast.LENGTH_LONG).show();
+					showAlertSettingsBox(name, email, password, "", destination);
+				} else if (!allCountryCodes.contains(destination)) {
+					Toast.makeText(MainActivity.this, "Enter a valid destination country code.", Toast.LENGTH_LONG).show();
+					showAlertSettingsBox(name, email, password, home, "");
+				}
+				else {
 					// All values provided
 					// save in shared prefs and display name
 					SharedPreferences.Editor editor = prefs.edit();

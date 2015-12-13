@@ -323,7 +323,6 @@ public class ItineraryDetails extends Activity {
 		departureTime.setClickable(editing);
 	}
 
-	// TODO Make sure every field has values.
 	/**
 	 * Creates a new budgeted expense.
 	 * 
@@ -331,23 +330,27 @@ public class ItineraryDetails extends Activity {
 	 *            The view that called this method.
 	 */
 	public void createBudgeted(View view) {
-		// Hide the button to create a new budgeted expense, set the
-		// appropriate title, and show the button to show the create form for a
-		// new actual expense.
-		createBudgetedButton.setVisibility(Button.GONE);
-		title.setText(R.string.itinerary_details_title);
-		showNewActualButton.setVisibility(Button.VISIBLE);
+		// Check that all the fields have a value.
+		if (validateBudgeted()) {
+			// If all the fields have a value, hide the button to create a new
+			// budgeted expense, set the appropriate title, and show the button
+			// to show the create form for a new actual expense.
+			createBudgetedButton.setVisibility(Button.GONE);
+			title.setText(R.string.itinerary_details_title);
+			showNewActualButton.setVisibility(Button.VISIBLE);
 
-		// Disable editing the budgeted expense fields.
-		editingBudgetedFields(false);
+			// Disable editing the budgeted expense fields.
+			editingBudgetedFields(false);
 
-		// Create the new budgeted expense in the database.
-		budgetedId = (int) dbh.createBudgetedExpense(tripId, locationIds.get(location.getSelectedItemPosition()),
-				arrivalDateTime, departureDateTime, Double.parseDouble(amount.getText().toString()),
-				description.getText().toString(), categoryIds.get(category.getSelectedItemPosition()),
-				supplier.getText().toString(), address.getText().toString());
-		amount.setText(Double.valueOf(new DecimalFormat("#.00").format(Double.parseDouble(amount.getText().toString())))
-				.toString());
+			// Create the new budgeted expense in the database.
+			budgetedId = (int) dbh.createBudgetedExpense(tripId, locationIds.get(location.getSelectedItemPosition()),
+					arrivalDateTime, departureDateTime, Double.parseDouble(amount.getText().toString().trim()),
+					description.getText().toString().trim(), categoryIds.get(category.getSelectedItemPosition()),
+					supplier.getText().toString().trim(), address.getText().toString().trim());
+			amount.setText(
+					Double.valueOf(new DecimalFormat("#.00").format(Double.parseDouble(amount.getText().toString())))
+							.toString());
+		}
 	}
 
 	/**
@@ -360,7 +363,6 @@ public class ItineraryDetails extends Activity {
 		editingBudgetedFields(true);
 	}
 
-	// TODO Make sure every field has values.
 	/**
 	 * Saves the changes made to a budgeted expense.
 	 * 
@@ -368,16 +370,21 @@ public class ItineraryDetails extends Activity {
 	 *            The view that called this method.
 	 */
 	public void saveBudgeted(View view) {
-		// Disable editing the budgeted expense fields.
-		editingBudgetedFields(false);
+		// Check that all the fields have a value.
+		if (validateBudgeted()) {
+			// If all the fields have a value, disable editing the budgeted
+			// expense fields.
+			editingBudgetedFields(false);
 
-		// Save the changes to the database.
-		dbh.updateBudgetedExpense(budgetedId, locationIds.get(location.getSelectedItemPosition()), arrivalDateTime,
-				departureDateTime, Double.parseDouble(amount.getText().toString()), description.getText().toString(),
-				categoryIds.get(category.getSelectedItemPosition()), supplier.getText().toString(),
-				address.getText().toString());
-		amount.setText(Double.valueOf(new DecimalFormat("#.00").format(Double.parseDouble(amount.getText().toString())))
-				.toString());
+			// Save the changes to the database.
+			dbh.updateBudgetedExpense(budgetedId, locationIds.get(location.getSelectedItemPosition()), arrivalDateTime,
+					departureDateTime, Double.parseDouble(amount.getText().toString().trim()),
+					description.getText().toString().trim(), categoryIds.get(category.getSelectedItemPosition()),
+					supplier.getText().toString().trim(), address.getText().toString().trim());
+			amount.setText(
+					Double.valueOf(new DecimalFormat("#.00").format(Double.parseDouble(amount.getText().toString())))
+							.toString());
+		}
 	}
 
 	/**
@@ -471,7 +478,6 @@ public class ItineraryDetails extends Activity {
 		createActualButton.setVisibility(Button.VISIBLE);
 	}
 
-	// TODO Make sure every field has values
 	/**
 	 * Creates a new actual expense.
 	 * 
@@ -479,19 +485,23 @@ public class ItineraryDetails extends Activity {
 	 *            The view that called this method.
 	 */
 	public void createActual(View view) {
-		// Hide the button to create a new budgeted expense and disable editing
-		// the actual expense fields.
-		createActualButton.setVisibility(Button.GONE);
-		editingActualFields(false);
+		// Check that all the fields have a value.
+		if (validateActual()) {
+			// If all the fields have a value, hide the button to create a new
+			// budgeted expense and disable editing the actual expense fields.
+			createActualButton.setVisibility(Button.GONE);
+			editingActualFields(false);
 
-		// Create the new actual expense in the database.
-		actualId = (int) dbh.createActualExpense(budgetedId, actualArrivalDateTime, actualDepartureDateTime,
-				Double.parseDouble(actualAmount.getText().toString()), actualDescription.getText().toString(),
-				categoryIds.get(category.getSelectedItemPosition()), actualSupplier.getText().toString(),
-				actualAddress.getText().toString(), (int) (stars.getRating()));
-		actualAmount.setText(
-				Double.valueOf(new DecimalFormat("#.00").format(Double.parseDouble(actualAmount.getText().toString())))
-						.toString());
+			// Create the new actual expense in the database.
+			actualId = (int) dbh.createActualExpense(budgetedId, actualArrivalDateTime, actualDepartureDateTime,
+					Double.parseDouble(actualAmount.getText().toString().trim()),
+					actualDescription.getText().toString().trim(), categoryIds.get(category.getSelectedItemPosition()),
+					actualSupplier.getText().toString().trim(), actualAddress.getText().toString().trim(),
+					(int) (stars.getRating()));
+			actualAmount.setText(Double
+					.valueOf(new DecimalFormat("#.00").format(Double.parseDouble(actualAmount.getText().toString())))
+					.toString());
+		}
 	}
 
 	/**
@@ -504,7 +514,6 @@ public class ItineraryDetails extends Activity {
 		editingActualFields(true);
 	}
 
-	// TODO Make sure every field has values
 	/**
 	 * Saves the changes made to a actual expense.
 	 * 
@@ -512,17 +521,22 @@ public class ItineraryDetails extends Activity {
 	 *            The view that called this method.
 	 */
 	public void saveActual(View view) {
-		// Disable editing the actual expense fields.
-		editingActualFields(false);
+		// Check that all the fields have a value.
+		if (validateActual()) {
+			// If all the fields have a value, disable editing the actual
+			// expense fields.
+			editingActualFields(false);
 
-		// Save the changes to the database.
-		dbh.updateActualExpense(actualId, actualArrivalDateTime, actualDepartureDateTime,
-				Double.parseDouble(actualAmount.getText().toString()), actualDescription.getText().toString(),
-				categoryIds.get(category.getSelectedItemPosition()), actualSupplier.getText().toString(),
-				actualAddress.getText().toString(), (int) (stars.getRating()));
-		actualAmount.setText(
-				Double.valueOf(new DecimalFormat("#.00").format(Double.parseDouble(actualAmount.getText().toString())))
-						.toString());
+			// Save the changes to the database.
+			dbh.updateActualExpense(actualId, actualArrivalDateTime, actualDepartureDateTime,
+					Double.parseDouble(actualAmount.getText().toString().trim()),
+					actualDescription.getText().toString().trim(), categoryIds.get(category.getSelectedItemPosition()),
+					actualSupplier.getText().toString().trim(), actualAddress.getText().toString().trim(),
+					(int) (stars.getRating()));
+			actualAmount.setText(Double
+					.valueOf(new DecimalFormat("#.00").format(Double.parseDouble(actualAmount.getText().toString())))
+					.toString());
+		}
 	}
 
 	/**
@@ -798,5 +812,52 @@ public class ItineraryDetails extends Activity {
 		fmt.setCalendar(time);
 		String dateFormatted = fmt.format(time.getTime());
 		return dateFormatted;
+	}
+
+	/**
+	 * Checks that every budgeted expense field that could be empty has a value.
+	 * 
+	 * @return true if if every field has a value, false if there is an empty
+	 *         field.
+	 */
+	private boolean validateBudgeted() {
+		if (description.getText().toString().trim().equals("") || supplier.getText().toString().trim().equals("")
+				|| address.getText().toString().trim().equals("") || amount.getText().toString().trim().equals("")) {
+			Toast.makeText(this, "All fields must have a value.", Toast.LENGTH_SHORT).show();
+			return false;
+		}
+		
+		try {
+			Double.parseDouble(amount.getText().toString().trim());
+		} catch (NumberFormatException nfe) {
+			Toast.makeText(this, "Invalid amount.", Toast.LENGTH_SHORT).show();
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Checks that every actual expense field that could be empty has a value.
+	 * 
+	 * @return true if if every field has a value, false if there is an empty
+	 *         field.
+	 */
+	private boolean validateActual() {
+		if (actualDescription.getText().toString().trim().equals("")
+				|| actualSupplier.getText().toString().trim().equals("")
+				|| actualAddress.getText().toString().trim().equals("")
+				|| actualAmount.getText().toString().trim().equals("")) {
+			Toast.makeText(this, "All fields must have a value.", Toast.LENGTH_SHORT).show();
+			return false;
+		}
+		
+		try {
+			Double.parseDouble(amount.getText().toString().trim());
+		} catch (NumberFormatException nfe) {
+			Toast.makeText(this, "Invalid amount.", Toast.LENGTH_SHORT).show();
+			return false;
+		}
+		return true;
 	}
 }
