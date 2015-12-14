@@ -8,161 +8,174 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.android.bonvoyagetravelapp.MainActivity" >
-
-    <TextView
-        android:id="@+id/aboutTitle"
-        android:layout_width="wrap_content"
+    <ScrollView
+        android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:padding="20sp"
-        android:text="@string/aboutTitle"
-        android:textSize="40sp"
-        android:textStyle="bold" />
-
+        android:layout_weight="1"
+        android:scrollbars="none">
+            
+        <!-- TO BE ABLE TO SET SCROLLING VERTICAL -->
+        
     <LinearLayout
-        android:id="@+id/aboutSchoolRow"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:id="@+id/aboutSchoolText"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:padding="20sp"
-            android:text="@string/aboutSchoolText"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/aboutSchoolLink"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:onClick="dawsonWebPage"
-            android:padding="20sp"
-            android:text="@string/aboutSchoolLink"
-            android:textColor="@color/blue"
-            android:textSize="20sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/aboutCourseRow"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:orientation="horizontal"
-        android:paddingBottom="20sp" >
-
-        <TextView
-            android:id="@+id/aboutCourseText"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:padding="20sp"
-            android:text="@string/aboutCourseText"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/aboutCourseLink"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:onClick="computerScienceWebPage"
-            android:padding="20sp"
-            android:text="@string/aboutCourseLink"
-            android:textColor="@color/blue"
-            android:textSize="20sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/aboutAuthorsRow"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:id="@+id/aboutAuthorsText"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:padding="15sp"
-            android:text="@string/aboutAuthorsText"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/aboutAuthor1Row"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:orientation="horizontal" >
-
-        <ImageButton
-            android:id="@+id/imageAuthor1"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:onClick="launchWiki"
-            android:padding="20sp"
-            android:background="@null"
-            android:src="@drawable/annie" />
-
-        <TextView
-            android:id="@+id/aboutAuthor1Text"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:padding="15sp"
-            android:gravity="center"
-            android:text="@string/aboutAuthor1"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/aboutAuthor2Row"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:orientation="horizontal" >
-
-        <ImageButton
-            android:id="@+id/imageAuthor2"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:onClick="launchWiki"
-            android:padding="20sp"
-            android:background="@null"
-            android:src="@drawable/christopher" />
-
-        <TextView
-            android:id="@+id/aboutAuthor2Text"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:padding="15sp"
-            android:text="@string/aboutAuthor2"
-            android:textSize="20sp"
-            android:gravity="center"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/aboutAuthor3Row"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:orientation="horizontal" >
-
-        <ImageButton
-            android:id="@+id/imageAuthor3"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:onClick="launchWiki"
-            android:padding="20sp"
-            android:background="@null"
-            android:src="@drawable/irina" />
-
-        <TextView
-            android:id="@+id/aboutAuthor3Text"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:padding="15sp"
-            android:text="@string/aboutAuthor3"
-            android:textSize="20sp"
-            android:gravity="center"
-            android:textStyle="bold" />
-    </LinearLayout>
-
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+            
+	    <TextView
+	        android:id="@+id/aboutTitle"
+	        android:layout_width="wrap_content"
+	        android:layout_height="fill_parent"
+	        android:padding="20sp"
+	        android:text="@string/aboutTitle"
+	        android:textSize="40sp"
+	        android:textStyle="bold" />
+	
+	    <LinearLayout
+	        android:id="@+id/aboutSchoolRow"
+	        android:layout_width="wrap_content"
+	        android:layout_height="fill_parent"
+	        android:orientation="horizontal" >
+	
+	        <TextView
+	            android:id="@+id/aboutSchoolText"
+	            android:layout_width="wrap_content"
+	            android:layout_height="fill_parent"
+	            android:padding="20sp"
+	            android:text="@string/aboutSchoolText"
+	            android:textSize="20sp"
+	            android:textStyle="bold" />
+	
+	        <TextView
+	            android:id="@+id/aboutSchoolLink"
+	            android:layout_width="wrap_content"
+	            android:layout_height="fill_parent"
+	            android:onClick="dawsonWebPage"
+	            android:padding="20sp"
+	            android:text="@string/aboutSchoolLink"
+	            android:textColor="@color/blue"
+	            android:textSize="20sp" />
+	    </LinearLayout>
+	
+	    <LinearLayout
+	        android:id="@+id/aboutCourseRow"
+	        android:layout_width="wrap_content"
+	        android:layout_height="fill_parent"
+	        android:orientation="horizontal"
+	        android:paddingBottom="20sp" >
+	
+	        <TextView
+	            android:id="@+id/aboutCourseText"
+	            android:layout_width="wrap_content"
+	            android:layout_height="fill_parent"
+	            android:padding="20sp"
+	            android:text="@string/aboutCourseText"
+	            android:textSize="20sp"
+	            android:textStyle="bold" />
+	
+	        <TextView
+	            android:id="@+id/aboutCourseLink"
+	            android:layout_width="wrap_content"
+	            android:layout_height="fill_parent"
+	            android:onClick="computerScienceWebPage"
+	            android:padding="20sp"
+	            android:text="@string/aboutCourseLink"
+	            android:textColor="@color/blue"
+	            android:textSize="20sp" />
+	    </LinearLayout>
+	
+	    <LinearLayout
+	        android:id="@+id/aboutAuthorsRow"
+	        android:layout_width="wrap_content"
+	        android:layout_height="fill_parent"
+	        android:orientation="horizontal" >
+	
+	        <TextView
+	            android:id="@+id/aboutAuthorsText"
+	            android:layout_width="wrap_content"
+	            android:layout_height="fill_parent"
+	            android:padding="15sp"
+	            android:text="@string/aboutAuthorsText"
+	            android:textSize="20sp"
+	            android:textStyle="bold" />
+	    </LinearLayout>
+	
+	    <LinearLayout
+	        android:id="@+id/aboutAuthor1Row"
+	        android:layout_width="wrap_content"
+	        android:layout_height="fill_parent"
+	        android:orientation="horizontal" >
+	
+	        <ImageButton
+	            android:id="@+id/imageAuthor1"
+	            android:layout_width="wrap_content"
+	            android:layout_height="fill_parent"
+	            android:onClick="launchWiki"
+	            android:padding="20sp"
+	            android:background="@null"
+	            android:src="@drawable/annie" />
+	
+	        <TextView
+	            android:id="@+id/aboutAuthor1Text"
+	            android:layout_width="wrap_content"
+	            android:layout_height="fill_parent"
+	            android:padding="15sp"
+	            android:gravity="center"
+	            android:text="@string/aboutAuthor1"
+	            android:textSize="20sp"
+	            android:textStyle="bold" />
+	    </LinearLayout>
+	
+	    <LinearLayout
+	        android:id="@+id/aboutAuthor2Row"
+	        android:layout_width="wrap_content"
+	        android:layout_height="fill_parent"
+	        android:orientation="horizontal" >
+	
+	        <ImageButton
+	            android:id="@+id/imageAuthor2"
+	            android:layout_width="wrap_content"
+	            android:layout_height="fill_parent"
+	            android:onClick="launchWiki"
+	            android:padding="20sp"
+	            android:background="@null"
+	            android:src="@drawable/christopher" />
+	
+	        <TextView
+	            android:id="@+id/aboutAuthor2Text"
+	            android:layout_width="wrap_content"
+	            android:layout_height="fill_parent"
+	            android:padding="15sp"
+	            android:text="@string/aboutAuthor2"
+	            android:textSize="20sp"
+	            android:gravity="center"
+	            android:textStyle="bold" />
+	    </LinearLayout>
+	
+	    <LinearLayout
+	        android:id="@+id/aboutAuthor3Row"
+	        android:layout_width="wrap_content"
+	        android:layout_height="fill_parent"
+	        android:orientation="horizontal" >
+	
+	        <ImageButton
+	            android:id="@+id/imageAuthor3"
+	            android:layout_width="wrap_content"
+	            android:layout_height="fill_parent"
+	            android:onClick="launchWiki"
+	            android:padding="20sp"
+	            android:background="@null"
+	            android:src="@drawable/irina" />
+	
+	        <TextView
+	            android:id="@+id/aboutAuthor3Text"
+	            android:layout_width="wrap_content"
+	            android:layout_height="fill_parent"
+	            android:padding="15sp"
+	            android:text="@string/aboutAuthor3"
+	            android:textSize="20sp"
+	            android:gravity="center"
+	            android:textStyle="bold" />
+	    </LinearLayout>
+	    </LinearLayout>
+	</ScrollView>
 </LinearLayout>

@@ -2,10 +2,14 @@ package com.android.bonvoyagetravelapp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.DatePickerDialog.OnDateSetListener;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -249,10 +254,13 @@ public class MainActivity extends Activity {
 	 *            The view that triggered the onClick event calling this method.
 	 */
 	public void today(View view) {
+			
 		Intent intent = new Intent(this, ItineraryActivity.class);
 		intent.putExtra("TODAY", true);
+		//intent.putExtra("TODAYSDATE", correspondingDate.toString());
 		startActivity(intent);
 	}
+	
 
 	/**
 	 * Launch ManageTripsActivity activity when button is pressed.

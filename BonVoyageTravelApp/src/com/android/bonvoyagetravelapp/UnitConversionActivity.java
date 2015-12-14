@@ -8,6 +8,7 @@ import com.edsdev.jconvert.persistence.DataLoader;
 import com.edsdev.jconvert.presentation.ConversionTypeData;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -145,36 +146,78 @@ public class UnitConversionActivity extends Activity {
 	 * 			The view that triggeres this event handler
 	 */
 	public void convertUnits(View view){
-		double valueToConvert;
-		String convertMe;
 		
 		EditText textValueToConvert = (EditText) findViewById(R.id.valueToConvert);
-		convertMe = textValueToConvert.getText().toString();
+		String convertMe = textValueToConvert.getText().toString();
+		
+		String fromUnit = from.getSelectedItem().toString();   
+	    String toUnit = to.getSelectedItem().toString();
+	    
+	    double valueToConvert;
+		
 		if (convertMe.length() < 1){
 			valueToConvert = 0; //Should display visible error message.
 		}
 		else
 			valueToConvert = Double.parseDouble(textValueToConvert.getText().toString());
 		
-		//This chunk of code is used to retrieve conversion from the JConvert API
-		List<?> domainData = new DataLoader().loadData();
-		
-        ConversionTypeData ctd = null;
-        Iterator<?> iter = domainData.iterator();
-        while (iter.hasNext()) 
-        {
-            ConversionType type = (ConversionType) iter.next();
-            if (type.getTypeName().equals(unitChoice)) 
-            {
-                ctd = new ConversionTypeData(type);
-                break;
-            }
-        } // End of chunk.
-              
-        String fromUnit = from.getSelectedItem().toString();   
-        String toUnit = to.getSelectedItem().toString();
+		new convertData().execute(String.valueOf(valueToConvert), fromUnit, toUnit);
         
-        resultToShow = Double.toString(ctd.convert(valueToConvert, fromUnit, toUnit));
-        resultView.setText(resultToShow);
+	}
+	
+	/**
+	 * This class was added after the documentation was handed in.
+	 * Its purpose is to improve the UX of the user by off loading the long conversion into a background task.
+	 * 
+	 * @author Irina Patrocinio Frazao
+ 	 * @author Christopher Dufort
+ 	 * @author Annie So
+ 	 * @since JDK 1.6
+ 	 * @version 1.1.0-Post-Release
+ 	 * 
+ 	 */
+	private class convertData extends AsyncTask<String, Void, String>{
+		/**
+		 * Happens in UI thread before (updates view to show user something is happening.)
+		 */
+		@Override
+		protected void onPreExecute(){
+			resultView.setText("Converting...");
+
+		}
+		/**
+		 * Happens in background thread.
+		 * Does long conversion.
+		 */
+		@Override
+		protected String doInBackground(String... params) {
+			
+			//This chunk of code is used to retrieve conversion from the JConvert API
+			List<?> domainData = new DataLoader().loadData();
+			
+	        ConversionTypeData ctd = null;
+	        Iterator<?> iter = domainData.iterator();
+	        while (iter.hasNext()) 
+	        {
+	            ConversionType type = (ConversionType) iter.next();
+	            if (type.getTypeName().equals(unitChoice)) 
+	            {
+	                ctd = new ConversionTypeData(type);
+	                break;
+	            }
+	        } // End of chunk.
+			
+			resultToShow = Double.toString(ctd.convert(Double.parseDouble(params[0]),
+						params[1], params[2]));
+			
+			return resultToShow;
+		}
+		/**
+		 * Happens in UI thread after (updates view to show user the result.)
+		 */
+		@Override
+		protected void onPostExecute(String result){
+			resultView.setText(resultToShow);
+		}
 	}
 }

@@ -282,6 +282,7 @@ public class ManageTripsActivity extends Activity {
 		String contentAsString = "";
 		int response;
 		URL url;
+		
 		// Website api support Https - ssl
 		HttpsURLConnection conn = null;
 

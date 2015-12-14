@@ -1,10 +1,13 @@
 package com.android.bonvoyagetravelapp;
 
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.AlertDialog.Builder;
+import android.app.DatePickerDialog.OnDateSetListener;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -15,6 +18,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.DatePicker;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
@@ -47,6 +51,7 @@ public class ItineraryActivity extends Activity {
 	private String tripName;
 	private Cursor cursor;
 	private Bundle extras;
+	private GregorianCalendar correspondingDate = new GregorianCalendar();
 
 	/**
 	 * Overriden onCreate method that sets up the UI This method is also
@@ -81,11 +86,26 @@ public class ItineraryActivity extends Activity {
 			}
 			// This class called from today activity, display all budgeted for a
 			// specific date (todays date)
-			else if (extras.containsKey("TODAY")) {
+			else if (extras.containsKey("TODAY")) 
+			{
+				GregorianCalendar currentDate= new GregorianCalendar();
+				
+
+				// Set the DatePickerDialog to have the same date as the view that was
+				// clicked.
+				DatePickerDialog datePicker = new DatePickerDialog(this, handleSetDate, currentDate.get(Calendar.YEAR),
+						currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH));
+
+				// Show the DatePickerDialog.
+				datePicker.show();
+				
+				
 				Log.d("today", "in today");
 				title.setText(R.string.today_itinerary_title);
 				tripName = "today";
-				cursor = dbh.getBudgetedExpensesByDay(new GregorianCalendar());
+				cursor = dbh.getBudgetedExpensesByDay(correspondingDate);
+				Log.d("today", "date from picker: " + correspondingDate);
+				//cursor = dbh.getBudgetedExpensesByDay(new GregorianCalendar());
 				Log.d("today", "length: " + cursor.getCount());
 				cursor.moveToFirst();
 			}
@@ -116,6 +136,28 @@ public class ItineraryActivity extends Activity {
 		// Setup multiple unique click events available for tasks shown.
 		setUpListeners();
 	}
+	
+	private OnDateSetListener handleSetDate = new OnDateSetListener() {
+		
+		private Calendar currentDate = new GregorianCalendar();
+
+		@Override
+		public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+			
+
+			// Set the current date from the spinner.
+			currentDate.set(Calendar.YEAR, year);
+			currentDate.set(Calendar.MONTH, monthOfYear);
+			currentDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+			
+			correspondingDate.set(Calendar.YEAR, currentDate.get(Calendar.YEAR));
+			correspondingDate.set(Calendar.MONTH, currentDate.get(Calendar.MONTH));
+			correspondingDate.set(Calendar.DAY_OF_MONTH, currentDate.get(Calendar.DAY_OF_MONTH));
+			
+			refreshView();
+
+		}
+	};
 
 	/**
 	 * Overriden onResume that is used to refresh the view as part of the life
@@ -247,7 +289,7 @@ public class ItineraryActivity extends Activity {
 		Cursor newCursor;
 
 		if (extras.containsKey("TODAY"))
-			newCursor = dbh.getBudgetedExpensesByDay(new GregorianCalendar());
+			newCursor = dbh.getBudgetedExpensesByDay(correspondingDate);
 		else
 			newCursor = dbh.getBudgetedExpenses(tripId);
 
